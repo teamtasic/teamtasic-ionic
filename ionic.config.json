@@ -1,0 +1,7 @@
+{
+  "name": "teamtasic-ionic",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
