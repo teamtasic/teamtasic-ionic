@@ -1,8 +1,8 @@
 {
   "name": "teamtasic-ionic",
   "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "author": "jesseb0rn",
+  "homepage": "https://teamtasic.ch/",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -15,6 +15,7 @@
   "dependencies": {
     "@angular/common": "~12.0.1",
     "@angular/core": "~12.0.1",
+    "@angular/fire": "^6.1.5",
     "@angular/forms": "~12.0.1",
     "@angular/platform-browser": "~12.0.1",
     "@angular/platform-browser-dynamic": "~12.0.1",
@@ -25,6 +26,7 @@
     "@capacitor/keyboard": "1.0.2",
     "@capacitor/status-bar": "1.0.2",
     "@ionic/angular": "^5.5.2",
+    "firebase": "^8.7.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
     "zone.js": "~0.11.4"
@@ -60,7 +62,14 @@
     "karma-jasmine-html-reporter": "^1.5.0",
     "protractor": "~7.0.0",
     "ts-node": "~8.3.0",
-    "typescript": "~4.2.4"
+    "typescript": "~4.2.4",
+    "@angular-devkit/architect": ">= 0.900 < 0.1300",
+    "firebase-tools": "^8.0.0 || ^9.0.0",
+    "fuzzy": "^0.1.3",
+    "inquirer": "^6.2.2",
+    "inquirer-autocomplete-prompt": "^1.0.1",
+    "open": "^7.0.3",
+    "jsonc-parser": "^3.0.0"
   },
-  "description": "An Ionic project"
+  "description": "the teamtasic web and native apps"
 }

@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "teamtasic-dev": {
+      "hosting": {
+        "app": [
+          "teamtasic-dev"
+        ]
+      }
+    }
+  }
+}
