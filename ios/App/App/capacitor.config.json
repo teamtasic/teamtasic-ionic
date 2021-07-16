@@ -1,0 +1,6 @@
+{
+	"appId": "app.teamtasic.ionic",
+	"appName": "teamtasic",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}

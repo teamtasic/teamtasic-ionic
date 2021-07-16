@@ -1,0 +1,61 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title> Home </ion-title>
+    <ion-avatar slot="end"> </ion-avatar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Home</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- already registered -->
+  <ion-list *ngIf="userHasJoinedTeam">
+    <ion-item button>
+      <ion-avatar slot="start">
+        <img
+          src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y"
+        />
+      </ion-avatar>
+      <ion-label>Switch Team</ion-label>
+    </ion-item>
+
+    <ion-card class="ion-activated" *ngFor="let training of trainings">
+      <ion-card-header>
+        <ion-card-subtitle>{{training.displayName}}</ion-card-subtitle>
+        <ion-card-title>{{training.date.toDateString()}}</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content> {{training.description}} </ion-card-content>
+      <ion-item button>
+        <ion-label>Check out in Calendar</ion-label>
+      </ion-item>
+    </ion-card>
+
+    <ion-row style="height: 1em"> </ion-row>
+    <ion-item *ngIf="trainings.length == 0">
+      <p>You currently don't have any trainings planned.</p>
+    </ion-item>
+  </ion-list>
+
+  <!-- regsiter new subuser -->
+  <ion-list *ngIf="!userHasJoinedTeam">
+    <ion-row style="height: 1em"> </ion-row>
+    <ion-item>
+      <p>
+        You currently haven't joined any teams. You can join a team now or
+        create a new one.
+        <ion-router-link href="">learn more...</ion-router-link>
+      </p>
+    </ion-item>
+
+    <ion-row style="height: 1em"> </ion-row>
+
+    <ion-button expand="block"> Join team </ion-button>
+
+    <ion-button color="light" expand="block"> Create Team </ion-button>
+  </ion-list>
+</ion-content>

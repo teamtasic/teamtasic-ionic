@@ -1,0 +1,43 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title> Sign up </ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Sign up</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- page start -->
+  <ion-list>
+    <ion-item-divider>
+      <ion-label>Welcome!</ion-label>
+    </ion-item-divider>
+    <ion-item>
+      <ion-label>Displayname <ion-text color="danger">*</ion-text></ion-label>
+      <ion-input type="text" required></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Email <ion-text color="danger">*</ion-text></ion-label>
+      <ion-input type="email" required></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Password <ion-text color="danger">*</ion-text></ion-label>
+      <ion-input type="password" required></ion-input>
+    </ion-item>
+  </ion-list>
+</ion-content>
+<ion-footer>
+  <ion-button expand="block"> Sign up </ion-button>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button> Help </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

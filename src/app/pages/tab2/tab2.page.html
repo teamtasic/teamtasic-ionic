@@ -1,0 +1,123 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title> Calendar </ion-title>
+    <ion-buttons slot="end">
+      <ion-button>
+        <ion-icon name="list-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Calendar</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- content start -->
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>Training</ion-card-subtitle>
+      <ion-card-title>Thu Jul 15 2021</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item-divider>
+          <ion-label>Informations</ion-label>
+        </ion-item-divider>
+        <ion-item>
+          <ion-label>Time:</ion-label>
+          <ion-note> 10.00 - 12.00</ion-note>
+        </ion-item>
+        <ion-item>
+          <ion-label>Location: </ion-label>
+          <ion-note>Baden</ion-note>
+        </ion-item>
+        <ion-item>
+          <ion-label>Participants: </ion-label>
+          <ion-note>20 Athletes</ion-note>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Additional Information:</ion-label>
+          <ion-note>-</ion-note>
+        </ion-item>
+        <!-- divider -->
+        <ion-item-divider>
+          <ion-label>My status</ion-label>
+        </ion-item-divider>
+        <!-- divider -->
+        <ion-item
+          >Me
+          <ion-badge [color]="statusColor" slot="end">
+            <ion-icon [name]="statusIcon"></ion-icon>
+          </ion-badge>
+        </ion-item>
+
+        <!-- divider -->
+        <ion-item-divider>
+          <ion-label>Coaches</ion-label>
+        </ion-item-divider>
+        <!-- divider -->
+
+        <ion-item *ngFor="let coach of coaches"
+          >{{coach}}
+          <ion-badge color="success" slot="end">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+          </ion-badge>
+        </ion-item>
+        <!-- divider -->
+        <ion-item-divider>
+          <ion-label>Athletes</ion-label>
+        </ion-item-divider>
+        <!-- divider -->
+        <ion-item *ngFor="let athlete of athletes"
+          >{{athlete}}
+          <ion-badge color="success" slot="end">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+          </ion-badge>
+        </ion-item>
+
+        <ion-item> &nbsp; </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-fab
+    *ngIf="isUserCoach"
+    vertical="bottom"
+    horizontal="start"
+    slot="fixed"
+  >
+    <ion-fab-button size="small">
+      <ion-icon name="add-circle-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-fab vertical="bottom" horizontal="center" slot="fixed">
+    <ion-fab-button [color]="statusColor" (click)="toggleUserStatus()">
+      <ion-icon [name]="statusIcon"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="isUserCoach">
+    <ion-fab-button color="medium" size="small">
+      <ion-icon name="cog-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <!-- navigation fabs -->
+  <ion-fab vertical="center" horizontal="start" slot="fixed">
+    <ion-fab-button size="small">
+      <ion-icon name="caret-back-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  <ion-fab vertical="center" horizontal="end" slot="fixed">
+    <ion-fab-button size="small">
+      <ion-icon name="caret-forward-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
