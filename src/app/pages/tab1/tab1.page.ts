@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { Training } from 'src/app/services/data-repository.service';
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
@@ -9,7 +8,7 @@ import { Training } from 'src/app/services/data-repository.service';
 export class Tab1Page {
   userHasJoinedTeam: boolean = true;
   hasTrainings: boolean = true;
-  trainings: Training[] = [
+  /*trainings: Training[] = [
     new Training(
       '',
       'Training',
@@ -38,7 +37,7 @@ export class Tab1Page {
       '',
       new Date('2021-07-23T14:00')
     ),
-  ];
+  ];*/
   constructor(private auth: AuthService) {
     //this.trainings = [];
   }

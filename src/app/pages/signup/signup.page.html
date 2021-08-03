@@ -15,26 +15,40 @@
   </ion-header>
 
   <!-- page start -->
-  <ion-list>
-    <ion-item-divider>
-      <ion-label>Welcome!</ion-label>
-    </ion-item-divider>
+  <form [formGroup]="signupform" (submit)="signUp()">
+
     <ion-item>
       <ion-label>Displayname <ion-text color="danger">*</ion-text></ion-label>
-      <ion-input type="text" required></ion-input>
+      <ion-input type="text" required formControlName="name"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label>Email <ion-text color="danger">*</ion-text></ion-label>
-      <ion-input type="email" required></ion-input>
+      <ion-input type="email" required formControlName="email"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label>Password <ion-text color="danger">*</ion-text></ion-label>
-      <ion-input type="password" required></ion-input>
+      <ion-input type="password" required formControlName="password"></ion-input>
     </ion-item>
-  </ion-list>
+
+    <ion-row>
+      <ion-col>
+        <ion-checkbox  formControlName="tos">  </ion-checkbox>
+        <ion-label>
+          I agree to the <a href="#">terms and conditions</a>
+        </ion-label>
+
+      </ion-col>
+    </ion-row>
+
+        <ion-row>
+      <ion-col>
+        <ion-button type="submit" expand="block" [disabled]="signupform.invalid">sign up</ion-button>
+      </ion-col>
+    </ion-row>
+  </form>
 </ion-content>
 <ion-footer>
-  <ion-button expand="block"> Sign up </ion-button>
+
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button> Help </ion-button>
