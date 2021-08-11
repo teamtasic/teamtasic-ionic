@@ -10,9 +10,7 @@ import { DataRepositoryService } from './data-repository.service';
   providedIn: 'root',
 })
 export class AuthService {
-  isAuthenticated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
-    null
-  );
+  isAuthenticated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
 
   async createUser(email: string, pw: string, username: string) {
     await this.fba
@@ -27,15 +25,15 @@ export class AuthService {
         const alert = await this.alertController.create({
           header: 'Signup succesfull',
           subHeader: 'You can now login',
-          buttons: ['OK']
+          buttons: ['Go to login'],
         });
         await alert.present();
 
         await alert.onDidDismiss().then(() => {
           this.router.navigateByUrl('/login', { replaceUrl: true });
         });
-
-      }).catch((error) => {
+      })
+      .catch((error) => {
         console.error('[ 🔑 createUser ]', 'createUser failed.');
         return error;
       });
@@ -44,20 +42,21 @@ export class AuthService {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
   async login(user, pw) {
-    console.log('Email sign in');
+    console.log('[ 🔑 login ]', 'Signing in with email and password');
     this.fba
       .signInWithEmailAndPassword(user, pw)
       .then(async (user) => {
         let userData = await this.drs.getUserData(user.user.uid);
+        console.log('[ 🔑 login ]', 'Signed in succsessfully, preparing session kickstart');
         this.drs.currentUser.next(userData);
-        console.log('[ 🔑 login ]','Signed in succsessfully.');
         this.isAuthenticated.next(true);
+        await this.drs.kickstartPostLogin();
         return { state: true, error: '' };
       })
       .catch((error) => {
         var errorCode = error.code;
         this.isAuthenticated.next(false);
-        console.error('[ 🔑 login ]','authentication failed.');
+        console.error('[ 🔑 login ]', 'authentication failed.');
         return { state: false, error: errorCode };
       });
   }
@@ -71,14 +70,17 @@ export class AuthService {
     private drs: DataRepositoryService,
     public alertController: AlertController
   ) {
-    this.isAuthenticated.subscribe((data) => {
-      if (data == true) {
-        this.router.navigateByUrl('/tabs');
-      } else {
-        this.router.navigateByUrl('/login', {replaceUrl: true});
+    this.isAuthenticated.subscribe(
+      (data) => {
+        if (data == true) {
+          this.router.navigateByUrl('/tabs');
+        } else {
+          this.router.navigateByUrl('/login', { replaceUrl: true });
+        }
+      },
+      (err) => {
+        console.error('[ 🔑 AuthService ]', 'Error in AuthService "guard"');
       }
-    }, (err) => {
-      console.error('[ 🔑 AuthService ]', 'Error in AuthService:');
-    });
+    );
   }
 }

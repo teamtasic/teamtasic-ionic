@@ -16,14 +16,12 @@
   <ion-list *ngIf="userHasJoinedTeam">
     <ion-item button>
       <ion-avatar slot="start">
-        <img
-          src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y"
-        />
+        <img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y" />
       </ion-avatar>
       <ion-label>Switch Team</ion-label>
     </ion-item>
 
-    <ion-card class="ion-activated" *ngFor="let training of trainings">
+    <!--<ion-card class="ion-activated" *ngFor="let training of trainings">
       <ion-card-header>
         <ion-card-subtitle>{{training.displayName}}</ion-card-subtitle>
         <ion-card-title>{{training.date.toDateString()}}</ion-card-title>
@@ -38,7 +36,7 @@
     <ion-row style="height: 1em"> </ion-row>
     <ion-item *ngIf="trainings.length == 0">
       <p>You currently don't have any trainings planned.</p>
-    </ion-item>
+    </ion-item>-->
   </ion-list>
 
   <!-- regsiter new subuser -->
@@ -46,16 +44,21 @@
     <ion-row style="height: 1em"> </ion-row>
     <ion-item>
       <p>
-        You currently haven't joined any teams. You can join a team now or
-        create a new one.
+        You currently haven't joined any teams. You can join a team now or create a new one.
         <ion-router-link href="">learn more...</ion-router-link>
       </p>
     </ion-item>
 
     <ion-row style="height: 1em"> </ion-row>
 
-    <ion-button expand="block"> Join team </ion-button>
+    <ion-row>
+      <ion-col>
+        <ion-button expand="block"> Join team </ion-button>
+      </ion-col>
+    </ion-row>
 
-    <ion-button color="light" expand="block"> Create Team </ion-button>
+    <ion-item button routerLink="/create-team" routerLinkActive="active">
+      <ion-label>create team</ion-label>
+    </ion-item>
   </ion-list>
 </ion-content>

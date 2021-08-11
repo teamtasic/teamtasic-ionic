@@ -1,4 +1,4 @@
-import { DocumentReference } from "@angular/fire/firestore";
+import { DocumentReference } from '@angular/fire/firestore';
 
 export class AuthUserData {
   uid: string;
@@ -8,7 +8,13 @@ export class AuthUserData {
   email: string;
   memberships: string[];
 
-  constructor(uid: string, ref: DocumentReference, username: string, email: string, memberships: string[]) {
+  constructor(
+    uid: string,
+    ref: DocumentReference,
+    username: string,
+    email: string,
+    memberships: string[] | null
+  ) {
     this.uid = uid;
     this.ref = ref;
     this.username = username;
@@ -21,18 +27,15 @@ export class AuthUserData {
       return {
         username: data.username,
         email: data.email,
-        memberships: data.memberships
+        memberships: data.memberships,
       };
     },
     fromFirestore(data: any): AuthUserData {
-      return new AuthUserData(
-        data.ref.uid,
-        data.ref,
-        data.username,
-        data.email,
-        data.memberships
-      );
-    }
+      let _memberships = data.memberships;
+      if (!_memberships) {
+        _memberships = [];
+      }
+      return new AuthUserData(data.ref.uid, data.ref, data.username, data.email, _memberships);
+    },
   };
 }
-

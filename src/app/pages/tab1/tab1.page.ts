@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { DataRepositoryService } from 'src/app/services/data-repository.service';
 import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-tab1',
@@ -8,37 +9,8 @@ import { AuthService } from '../../services/auth.service';
 export class Tab1Page {
   userHasJoinedTeam: boolean = true;
   hasTrainings: boolean = true;
-  /*trainings: Training[] = [
-    new Training(
-      '',
-      'Training',
-      'Techniktraining, Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae, cupiditate.',
-      '',
-      new Date('2021-07-15T14:00')
-    ),
-    new Training(
-      '',
-      'Training',
-      'Techniktraining, Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae, cupiditate.',
-      '',
-      new Date('2021-07-18T14:00')
-    ),
-    new Training(
-      '',
-      'Training',
-      'Techniktraining, Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae, cupiditate.',
-      '',
-      new Date('2021-07-20T14:00')
-    ),
-    new Training(
-      '',
-      'Training',
-      'Techniktraining, Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae, cupiditate.',
-      '',
-      new Date('2021-07-23T14:00')
-    ),
-  ];*/
-  constructor(private auth: AuthService) {
-    //this.trainings = [];
+
+  constructor(private auth: AuthService, private drs: DataRepositoryService) {
+    this.userHasJoinedTeam = this.drs.currentMemberships.length > 0;
   }
 }

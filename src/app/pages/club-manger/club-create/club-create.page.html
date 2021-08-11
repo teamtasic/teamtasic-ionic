@@ -1,0 +1,78 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title> Create club </ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Create club</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Create club form -->
+
+  <ion-item>
+    <p>
+      To create a new club fill out the information below and select a pricing tier.
+      <a routerLink="#learnMore">watch video...</a>
+    </p>
+  </ion-item>
+  <form>
+    <ion-item>
+      <!--<ion-input formControlName="displayName" placeholder="Name" type="text"></ion-input>-->
+      <ion-input placeholder="Name" type="text"></ion-input>
+    </ion-item>
+
+    <ion-list>
+      <ion-radio-group value="standart">
+        <ion-list-header>
+          <ion-label>Tier - select one</ion-label>
+        </ion-list-header>
+
+        <ion-item>
+          <p>Bare - 1 Team for 3 months, CHF 15.00</p>
+          <ion-radio slot="start" value="bare"></ion-radio>
+        </ion-item>
+
+        <ion-item>
+          <p>Standart - 5 Teams for 12 Months, CHF 120.00</p>
+          <ion-radio slot="start" value="standart"></ion-radio>
+        </ion-item>
+
+        <ion-item>
+          <p>NOLIMIT - &infin; Teams for 12 Months, CHF 250.00</p>
+          <ion-radio slot="start" value="nolimit"></ion-radio>
+        </ion-item>
+      </ion-radio-group>
+    </ion-list>
+
+    <ion-item>
+      <p>
+        I confirm I read the TOS and consent to them. I understand that ordering this product
+        results in an invoice for <b>CHF 120.00</b> being sent to my registered email.
+      </p>
+      <ion-checkbox color="primary" slot="start"></ion-checkbox>
+    </ion-item>
+    <ion-item>
+      <p>
+        automatic renewal after 12 months,
+        <ion-badge color="danger" slot="end"> 5% off </ion-badge>
+      </p>
+      <ion-checkbox color="primary" slot="start"></ion-checkbox>
+    </ion-item>
+    <ion-row>
+      <ion-col>
+        <ion-button expand="block" (click)="login()"> create club and order license</ion-button>
+      </ion-col>
+    </ion-row>
+  </form>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar></ion-toolbar>
+</ion-footer>

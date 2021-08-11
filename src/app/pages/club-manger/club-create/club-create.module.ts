@@ -4,9 +4,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { LoginmodalPageRoutingModule } from './loginmodal-routing.module';
+import { ClubCreatePageRoutingModule } from './club-create-routing.module';
 
-import { LoginmodalPage } from './loginmodal.page';
+import { ClubCreatePage } from './club-create.page';
 
 @NgModule({
   imports: [
@@ -14,8 +14,8 @@ import { LoginmodalPage } from './loginmodal.page';
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    LoginmodalPageRoutingModule
+    ClubCreatePageRoutingModule,
   ],
-  declarations: [LoginmodalPage]
+  declarations: [ClubCreatePage],
 })
-export class LoginmodalPageModule {}
+export class ClubCreatePageModule {}

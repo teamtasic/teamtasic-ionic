@@ -6,7 +6,7 @@ export class Privilege {
   }
 
   setValue(intValue) {
-    console.log('[ 🥸 ROLES ]', 'attemting role change to value: ', intValue);
+    console.log('[ 🔏 ROLES ]', 'attemting role change to value: ', intValue);
     this.intValue = intValue;
   }
 

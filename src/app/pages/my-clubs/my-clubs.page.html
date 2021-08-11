@@ -1,0 +1,23 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title> my clubs </ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large"> my clubs </ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-item>
+    <p>You currently do not hold administrative permissions for any clubs.</p>
+  </ion-item>
+  <ion-item button routerLink="/my-clubs/create-club">
+    <ion-label>Create new club</ion-label>
+  </ion-item>
+</ion-content>

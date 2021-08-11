@@ -11,10 +11,10 @@
     </ion-toolbar>
   </ion-header>
   <ion-list>
-    <ion-item-divider>
+    <ion-list-header>
       <ion-label>Account & Clubs</ion-label>
-    </ion-item-divider>
-    <ion-item button>
+    </ion-list-header>
+    <ion-item button routerLink="/my-clubs" routerLinkActive="active">
       <ion-label>Manage my clubs</ion-label>
     </ion-item>
     <ion-item button>
@@ -23,16 +23,12 @@
     <ion-item button>
       <ion-label>Switch team</ion-label>
     </ion-item>
-    <ion-item-divider>
+    <ion-list-header>
       <ion-label>Danger zone</ion-label>
-    </ion-item-divider>
+    </ion-list-header>
 
-    <ion-button (click)="logout()" expand="block" color="danger">
-      log out
-    </ion-button>
+    <ion-button (click)="logout()" expand="block" color="danger"> log out </ion-button>
 
-    <ion-button (click)="logout()" expand="block" color="light">
-      delete account
-    </ion-button>
+    <ion-button (click)="logout()" expand="block" color="light"> delete account </ion-button>
   </ion-list>
 </ion-content>
