@@ -6,14 +6,21 @@ export class AuthUserData {
 
   username: string;
   email: string;
-  memberships: string[];
+  // memberships{
+  /*  "teamUID": {
+        "displayName": "teamLabel",
+        "role": "owner",
+        "name": "Username"
+    }
+  }*/
+  memberships: Object;
 
   constructor(
     uid: string,
     ref: DocumentReference,
     username: string,
     email: string,
-    memberships: string[] | null
+    memberships: Object | null
   ) {
     this.uid = uid;
     this.ref = ref;
@@ -23,19 +30,22 @@ export class AuthUserData {
   }
 
   static converter = {
+    fromFirestore(snapshot: any, options: any): AuthUserData {
+      const data = snapshot.data(options);
+      return new AuthUserData(
+        snapshot.id,
+        snapshot.ref,
+        data.username,
+        data.email,
+        data.memberships
+      );
+    },
     toFirestore(data: AuthUserData): any {
       return {
         username: data.username,
         email: data.email,
         memberships: data.memberships,
       };
-    },
-    fromFirestore(data: any): AuthUserData {
-      let _memberships = data.memberships;
-      if (!_memberships) {
-        _memberships = [];
-      }
-      return new AuthUserData(data.ref.uid, data.ref, data.username, data.email, _memberships);
     },
   };
 }

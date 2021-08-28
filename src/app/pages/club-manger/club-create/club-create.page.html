@@ -22,14 +22,13 @@
       <a routerLink="#learnMore">watch video...</a>
     </p>
   </ion-item>
-  <form>
+  <form [formGroup]="clubCreateForm">
     <ion-item>
-      <!--<ion-input formControlName="displayName" placeholder="Name" type="text"></ion-input>-->
-      <ion-input placeholder="Name" type="text"></ion-input>
+      <ion-input formControlName="name" placeholder="Name" type="text"></ion-input>
     </ion-item>
 
     <ion-list>
-      <ion-radio-group value="standart">
+      <ion-radio-group formControlName="tier">
         <ion-list-header>
           <ion-label>Tier - select one</ion-label>
         </ion-list-header>
@@ -41,7 +40,7 @@
 
         <ion-item>
           <p>Standart - 5 Teams for 12 Months, CHF 120.00</p>
-          <ion-radio slot="start" value="standart"></ion-radio>
+          <ion-radio slot="start" value="standard"></ion-radio>
         </ion-item>
 
         <ion-item>
@@ -56,18 +55,20 @@
         I confirm I read the TOS and consent to them. I understand that ordering this product
         results in an invoice for <b>CHF 120.00</b> being sent to my registered email.
       </p>
-      <ion-checkbox color="primary" slot="start"></ion-checkbox>
+      <ion-checkbox formControlName="tos" color="primary" slot="start"></ion-checkbox>
     </ion-item>
-    <ion-item>
+    <!-- <ion-item>
       <p>
         automatic renewal after 12 months,
         <ion-badge color="danger" slot="end"> 5% off </ion-badge>
       </p>
       <ion-checkbox color="primary" slot="start"></ion-checkbox>
-    </ion-item>
+    </ion-item> -->
     <ion-row>
       <ion-col>
-        <ion-button expand="block" (click)="login()"> create club and order license</ion-button>
+        <ion-button expand="block" (click)="createClub()" [disabled]="!clubCreateForm.valid">
+          create club and order license</ion-button
+        >
       </ion-col>
     </ion-row>
   </form>

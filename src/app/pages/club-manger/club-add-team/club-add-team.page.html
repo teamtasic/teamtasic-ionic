@@ -1,9 +1,38 @@
-<ion-header>
+<ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>club-add-team</ion-title>
+    <ion-title> add team </ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">add team</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
+  <!-- content start -->
+  <ion-item>
+    <p>
+      Um ein neues Team zu erstellen, fülle einen Namen aus. Anschliessnd erhältst du einen Link um
+      Teilnehmer hinzuzufügen.
+      <a routerLink="#learnMore">watch video...</a>
+    </p>
+  </ion-item>
+  <!-- <ion-item>
+    <p>Deinem Club stehen noch 4/5 Teams zur verfügung.</p>
+  </ion-item> -->
+  <form [formGroup]="teamCreateForm">
+    <ion-item>
+      <ion-input placeholder="Name" formControlName="teamName" type="text"></ion-input>
+    </ion-item>
+    <ion-row>
+      <ion-col>
+        <ion-button expand="block" (click)="createTeam()"> add team</ion-button>
+      </ion-col>
+    </ion-row>
+  </form>
 </ion-content>

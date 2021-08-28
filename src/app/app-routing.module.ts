@@ -61,7 +61,7 @@ const routes: Routes = [
         redirectTo: 'detail/0',
       },
       {
-        path: 'detail/:id',
+        path: 'detail/:clubId',
         children: [
           {
             path: '',
@@ -78,7 +78,7 @@ const routes: Routes = [
               ),
           },
           {
-            path: 'edit-team/:id',
+            path: 'edit-team/:teamId',
             loadChildren: () =>
               import('./pages/club-manger/club-edit-team/club-edit-team.module').then(
                 (m) => m.ClubEditTeamPageModule

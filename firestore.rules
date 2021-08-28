@@ -1,0 +1,43 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+    match /users/{userId} {
+    	allow read, create, update : if isOwner(userId)
+      allow delete : if false
+    }
+
+    match /clubs/{clubId} {
+    	allow read, write : if true;
+
+      match /clubData/clubData {
+      	allow read, write : if true;
+      }
+    }
+    match /memberships/{membershipId} {
+    	allow read : if true;
+      allow write : if isMembershipOwner();
+    }
+    /// Functions ///
+
+
+    function isOwner(userId) {
+    	return request.auth.uid == userId
+    }
+    function isMembershipOwner(membershipId) {
+    	return incomingData().owner == request.auth.uid;
+    }
+    function getUserData(userId) {
+    	return get(/databases/$(database)/documents/users/$(userId))
+    }
+    function existingData() {
+    	return resource.data
+    }
+    function incomingData() {
+    	return request.resource.data
+    }
+
+  }
+}

@@ -1,9 +1,77 @@
-<ion-header>
+<ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>club-edit-team</ion-title>
+    <ion-title> edit team </ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">edit team</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
+  <!-- content start -->
+
+  <form>
+    <ion-list-header> Name </ion-list-header>
+    <ion-item>
+      <ion-input placeholder="Name" type="text"></ion-input>
+    </ion-item>
+    <ion-list-header> Members </ion-list-header>
+    <ion-row>
+      <ion-col>
+        <ion-searchbar></ion-searchbar>
+      </ion-col>
+    </ion-row>
+
+    <ion-item>
+      <ion-label>
+        <h2>Jesse Born</h2>
+        <p>Coach</p>
+      </ion-label>
+      <ion-avatar slot="start">
+        <img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y" />
+      </ion-avatar>
+    </ion-item>
+    <ion-item *ngFor="let i of items">
+      <ion-label>
+        <h2>Blala blaslg</h2>
+        <p>Athlete</p>
+      </ion-label>
+      <ion-avatar slot="start">
+        <img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y" />
+      </ion-avatar>
+    </ion-item>
+
+    <ion-list-header> Add members </ion-list-header>
+
+    <ion-item>
+      <ion-label>
+        <p>Athletes</p>
+        <h2>https://teamtasic.app/join/2394u234u235423543</h2>
+      </ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>
+        <p>Coaches</p>
+        <h2>https://teamtasic.app/join/2394u234u235423543</h2>
+      </ion-label>
+    </ion-item>
+
+    <ion-row>
+      <ion-col>
+        <ion-button expand="block" (click)="createClub()"> save changes</ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-button color="light" expand="block"> discard changes</ion-button>
+      </ion-col>
+    </ion-row>
+  </form>
 </ion-content>

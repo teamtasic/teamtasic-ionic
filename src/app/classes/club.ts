@@ -1,4 +1,5 @@
-import { DocumentReference } from "@angular/fire/firestore";
+import { DocumentReference } from '@angular/fire/firestore';
+import { Team } from './team';
 
 export class Club {
   uid: string;
@@ -10,7 +11,7 @@ export class Club {
   // non-constructor fields
   clubData: ClubData;
   // constructor for all fields
-  constructor(uid: string, ref:DocumentReference,name: string, logo: string) {
+  constructor(uid: string, ref: DocumentReference, name: string, logo: string) {
     this.uid = uid;
     this.name = name;
     this.logo = logo;
@@ -21,34 +22,41 @@ export class Club {
     toFirestore: function (club: Club) {
       return {
         name: club.name,
-        logo: club.logo
-      }
+        logo: club.logo,
+      };
     },
     fromFirestore: function (snapshot: any) {
-      return new Club(snapshot.id, snapshot.ref ,snapshot.data().name, snapshot.data().logo);
-      }
-  }
+      return new Club(snapshot.id, snapshot.ref, snapshot.data().name, snapshot.data().logo);
+    },
+  };
 }
 
 export class ClubData {
   uid: string;
   ref: DocumentReference;
-  roles: Map<string, number>;
+  users: Object;
+  license: number;
+  teams: Map<string, Team> = new Map<string, Team>([
+    ['sdoifnsidf', new Team('sdoifnsidf', null, 'team01')],
+  ]);
 
-  constructor(uid: string, ref: DocumentReference, roles: Map<string, number>) {
+  constructor(uid: string, ref: DocumentReference, roles: any, license: number) {
     this.uid = uid;
     this.ref = ref;
-    this.roles = roles;
+    this.users = roles;
+    this.license = license;
   }
 
   static converter = {
     toFirestore: function (clubData: ClubData) {
       return {
-        roles: clubData.roles
-      }
+        roles: clubData.users,
+        license: clubData.license,
+      };
     },
-    fromFirestore: function (snapshot: any) {
-      return new ClubData(snapshot.id, snapshot.ref, snapshot.data().roles);
-    }
-  }
+    fromFirestore: function (snapshot: any, options: any) {
+      const data = snapshot.data(options);
+      return new ClubData(snapshot.id, snapshot.ref, data.roles, data.license);
+    },
+  };
 }

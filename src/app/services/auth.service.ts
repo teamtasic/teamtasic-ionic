@@ -46,8 +46,10 @@ export class AuthService {
     this.fba
       .signInWithEmailAndPassword(user, pw)
       .then(async (user) => {
+        console.log('[ 🔑 login ]', 'User logged in:', user.user.uid);
         let userData = await this.drs.getUserData(user.user.uid);
         console.log('[ 🔑 login ]', 'Signed in succsessfully, preparing session kickstart');
+        console.log(userData as Object);
         this.drs.currentUser.next(userData);
         this.isAuthenticated.next(true);
         await this.drs.kickstartPostLogin();
@@ -56,7 +58,7 @@ export class AuthService {
       .catch((error) => {
         var errorCode = error.code;
         this.isAuthenticated.next(false);
-        console.error('[ 🔑 login ]', 'authentication failed.');
+        console.error('[ 🔑 login ]', 'authentication failed:', error);
         return { state: false, error: errorCode };
       });
   }
