@@ -35,13 +35,71 @@ export class DataRepositoryService {
         'memberships:',
         this.currentUser.getValue().memberships
       );
-      for (let clubId in this.currentUser.getValue().memberships) {
+      this.syncClubs();
+      console.log('[ clubs ]', this.syncedClubs);
+    }
+  }
+  /**
+   * sync all clubs current user is member of from firestore
+   * @returns void
+   * @throws error if current user is undefined
+   * @throws error if current user has no memberships
+   * @throws error if club is not found in firestore
+   */
+  async syncClubs() {
+    if (!this.currentUser.getValue()) {
+      throw new Error('no current user');
+    }
+    if (Object.keys(this.currentUser.getValue().memberships).length === 0) {
+      throw new Error('no memberships');
+    }
+    for (let clubId in this.currentUser.getValue().memberships) {
+      if (this.currentUser.getValue().memberships[clubId].type === 'club') {
         let c = await this.getClub(clubId);
         c.clubData = await this.getClubData(clubId);
         this.syncedClubs.set(clubId, c);
       }
-      console.log('[ clubs ]', this.syncedClubs);
     }
+    console.log('[ clubs ]', this.syncedClubs);
+  }
+  /** sync all teams current user is member of from firestore
+   * @returns void
+   * @throws error if current user is undefined
+   * @throws error if current user has no memberships
+   * @throws error if team is not found in firestore
+   */
+  async syncTeams() {
+    if (!this.currentUser.getValue()) {
+      throw new Error('no current user');
+    }
+    if (Object.keys(this.currentUser.getValue().memberships).length === 0) {
+      throw new Error('no memberships');
+    }
+    for (let teamId in this.currentUser.getValue().memberships) {
+      if (this.currentUser.getValue().memberships[teamId].type === 'team') {
+        let t = await this.getTeam(teamId, this.currentUser.getValue().memberships[teamId].club);
+        t.teamData = await this.getTeamData(
+          teamId,
+          this.currentUser.getValue().memberships[teamId].club
+        );
+        this.syncedTeams.set(teamId, t);
+      }
+    }
+    console.log('[ teams ]', this.syncedTeams);
+  }
+  /**
+   * resync all clubs and team from firestore
+   * @returns void
+   * @throws error if current user is undefined
+   */
+  async resync() {
+    if (!this.currentUser.getValue()) {
+      throw new Error('no current user');
+    }
+    this.syncedClubs.clear();
+    this.syncedTeams.clear();
+    this.syncClubs();
+    this.syncTeams();
   }
   /**
    * get user document from firestore

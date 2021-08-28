@@ -49,6 +49,7 @@ export class ClubAddTeamPage implements OnInit {
       role: 'owner',
       displayName: team.name,
       name: user.username,
+      club: this.clubId,
       type: 'team',
     };
     console.log(user);
