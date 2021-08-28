@@ -11,8 +11,6 @@ import { AuthUserData } from '../classes/auth-user-data';
 })
 export class DataRepositoryService {
   syncedClubs: Map<string, Club> = new Map<string, Club>();
-  syncedTeams: Map<string, Team> = new Map<string, Team>();
-  syncedMeets: Map<string, Meet> = new Map<string, Meet>();
 
   currentUser: BehaviorSubject<AuthUserData> = new BehaviorSubject<AuthUserData>(null);
 
@@ -35,7 +33,7 @@ export class DataRepositoryService {
         'memberships:',
         this.currentUser.getValue().memberships
       );
-      this.syncClubs();
+      this.syncCurrentUser();
       console.log('[ clubs ]', this.syncedClubs);
     }
   }
@@ -46,18 +44,23 @@ export class DataRepositoryService {
    * @throws error if current user has no memberships
    * @throws error if club is not found in firestore
    */
-  async syncClubs() {
+  async syncCurrentUser() {
     if (!this.currentUser.getValue()) {
       throw new Error('no current user');
     }
     if (Object.keys(this.currentUser.getValue().memberships).length === 0) {
       throw new Error('no memberships');
     }
+
     for (let clubId in this.currentUser.getValue().memberships) {
       if (this.currentUser.getValue().memberships[clubId].type === 'club') {
         let c = await this.getClub(clubId);
         c.clubData = await this.getClubData(clubId);
         this.syncedClubs.set(clubId, c);
+        const d = await this.getTeams(clubId);
+        for (let team of d) {
+          this.syncedClubs.get(clubId).clubData.teams.set(team.uid, team);
+        }
       }
     }
     console.log('[ clubs ]', this.syncedClubs);
@@ -68,25 +71,31 @@ export class DataRepositoryService {
    * @throws error if current user has no memberships
    * @throws error if team is not found in firestore
    */
-  async syncTeams() {
-    if (!this.currentUser.getValue()) {
-      throw new Error('no current user');
-    }
-    if (Object.keys(this.currentUser.getValue().memberships).length === 0) {
-      throw new Error('no memberships');
-    }
-    for (let teamId in this.currentUser.getValue().memberships) {
-      if (this.currentUser.getValue().memberships[teamId].type === 'team') {
-        let t = await this.getTeam(teamId, this.currentUser.getValue().memberships[teamId].club);
-        t.teamData = await this.getTeamData(
-          teamId,
-          this.currentUser.getValue().memberships[teamId].club
-        );
-        this.syncedTeams.set(teamId, t);
-      }
-    }
-    console.log('[ teams ]', this.syncedTeams);
-  }
+  // async syncTeams() {
+  //   if (!this.currentUser.getValue()) {
+  //     throw new Error('no current user');
+  //   }
+  //   if (Object.keys(this.currentUser.getValue().memberships).length === 0) {
+  //     throw new Error('no memberships');
+  //   }
+  //   for (let teamId in this.currentUser.getValue().memberships) {
+  //     if (this.currentUser.getValue().memberships[teamId].type === 'team') {
+  //       let t = await this.getTeam(teamId, this.currentUser.getValue().memberships[teamId].club);
+  //       t.teamData = await this.getTeamData(
+  //         teamId,
+  //         this.currentUser.getValue().memberships[teamId].club
+  //       );
+  //       const clubId: string = t.ref.parent.parent.id;
+  //       this.syncedTeams.set(teamId, t);
+
+  //       let club = this.syncedClubs.get(clubId);
+  //       console.log(club);
+  //       club.clubData.teams.set(teamId, t);
+  //       this.syncedClubs.set(clubId, club);
+  //     }
+  //   }
+  //   console.log('[ teams ]', this.syncedTeams);
+  // }
   /**
    * resync all clubs and team from firestore
    * @returns void
@@ -97,10 +106,9 @@ export class DataRepositoryService {
       throw new Error('no current user');
     }
     this.syncedClubs.clear();
-    this.syncedTeams.clear();
-    this.syncClubs();
-    this.syncTeams();
+    this.syncCurrentUser();
   }
+
   /**
    * get user document from firestore
    * @param userId
@@ -333,6 +341,7 @@ export class DataRepositoryService {
         .then((data) => {
           const doc = data.data();
           if (doc) {
+            new Team(data.id, data.ref, (doc as Team).name);
             resolve(doc as Team);
           } else {
             reject(new Error('team does not exist'));
@@ -404,6 +413,35 @@ export class DataRepositoryService {
             resolve(doc as TeamData);
           } else {
             reject(new Error('team data does not exist'));
+          }
+        });
+    });
+  }
+  /**
+   * get all teams of a club from firestore
+   * @param clubId
+   * @returns array of team documents
+   * @throws error if club does not exist
+   */
+  async getTeams(clubId: string) {
+    return await new Promise<Team[]>((resolve, reject) => {
+      this.afs
+        .collection(this.getCollectionRefWithConverter(`clubs/${clubId}/teams`, Team.converter))
+        .get()
+        .toPromise()
+        .then((data) => {
+          const docs = data.docs;
+          if (docs.length > 0) {
+            console.log(docs);
+            resolve(
+              docs.map((doc) => {
+                console.log('-------', doc.data());
+                return doc.data() as Team;
+              })
+            );
+          } else {
+            console.warn('no teams found');
+            resolve([]);
           }
         });
     });

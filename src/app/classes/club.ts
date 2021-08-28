@@ -36,9 +36,7 @@ export class ClubData {
   ref: DocumentReference;
   users: Object;
   license: number;
-  teams: Map<string, Team> = new Map<string, Team>([
-    ['sdoifnsidf', new Team('sdoifnsidf', null, 'team01')],
-  ]);
+  teams: Map<string, Team> = new Map<string, Team>();
 
   constructor(uid: string, ref: DocumentReference, roles: any, license: number) {
     this.uid = uid;

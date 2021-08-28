@@ -26,10 +26,6 @@ export class ClubAddTeamPage implements OnInit {
       teamName: ['', Validators.required],
     });
 
-    this.teamCreateForm.valueChanges.subscribe((data) => {
-      console.log(data);
-    });
-
     this.clubId = this.route.snapshot.paramMap.get('clubId');
   }
 
@@ -57,6 +53,9 @@ export class ClubAddTeamPage implements OnInit {
     await this.drs.setTeamData(team.uid, this.clubId, teamData);
     this.drs.currentUser.next(user);
     await this.drs.updateUser();
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    await this.drs.resync();
+    this.router.navigate(['/my-clubs/detail', this.clubId]);
   }
   get teamName() {
     return this.teamCreateForm.get('teamName');

@@ -10,6 +10,7 @@ export class Team {
 
   constructor(uid: string, ref: DocumentReference, name: string) {
     this.uid = uid;
+    this.ref = ref;
     this.name = name;
   }
 

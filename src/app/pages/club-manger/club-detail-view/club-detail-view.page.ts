@@ -13,7 +13,9 @@ export class ClubDetailViewPage implements OnInit {
     private drs: DataRepositoryService,
     private route: ActivatedRoute,
     private router: Router
-  ) {}
+  ) {
+    console.log('construct');
+  }
 
   clubId: string;
   club: Club;
@@ -24,7 +26,9 @@ export class ClubDetailViewPage implements OnInit {
     this.route.paramMap.subscribe((params) => {
       this.clubId = params.get('clubId');
     });
+    console.log('init 2');
     this.club = this.drs.syncedClubs.get(this.clubId);
+
     for (const member in this.club.clubData.users) {
       if (this.club.clubData.users[member].role === 'admin') {
         this.admins.push(this.club.clubData.users[member]);
@@ -32,5 +36,9 @@ export class ClubDetailViewPage implements OnInit {
         this.admins.push(this.club.clubData.users[member]);
       }
     }
+  }
+
+  reload() {
+    this.club = this.drs.syncedClubs.get(this.clubId);
   }
 }

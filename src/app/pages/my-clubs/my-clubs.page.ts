@@ -11,7 +11,9 @@ import { DataRepositoryService } from 'src/app/services/data-repository.service'
 export class MyClubsPage implements OnInit {
   constructor(public drs: DataRepositoryService, public auth: AuthService) {}
   displayableClubs: Map<string, string> = new Map();
+
   ngOnInit() {
+    console.log('init)');
     const memberships = this.drs.currentUser.getValue().memberships;
     Object.keys(memberships).forEach((membership) => {
       if (
