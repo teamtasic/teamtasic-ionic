@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Club } from 'src/app/classes/club';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
 
@@ -12,7 +13,7 @@ export class ClubCreatePage implements OnInit {
   clubCreateForm: FormGroup;
   licenseTier: string = 'standard';
 
-  constructor(public fb: FormBuilder, private drs: DataRepositoryService) {}
+  constructor(public fb: FormBuilder, private drs: DataRepositoryService, private router: Router) {}
 
   ngOnInit() {
     this.clubCreateForm = this.fb.group({
@@ -22,10 +23,16 @@ export class ClubCreatePage implements OnInit {
     });
   }
 
-  createClub() {
+  async createClub() {
     console.log(this.clubCreateForm.value);
 
-    this.drs.createClub(new Club('', null, this.clubCreateForm.value.name, ''), this.licenseNumber);
+    await this.drs.createClub(
+      new Club('', null, this.clubCreateForm.value.name, ''),
+      this.licenseNumber
+    );
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await this.drs.resync();
+    this.router.navigate(['/my-clubs']);
   }
 
   get name() {
