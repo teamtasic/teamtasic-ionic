@@ -34,7 +34,6 @@ export class DataRepositoryService {
         this.currentUser.getValue().memberships
       );
       this.syncCurrentUser();
-      console.log('[ clubs ]', this.syncedClubs);
     }
   }
   /**
@@ -123,7 +122,6 @@ export class DataRepositoryService {
         .toPromise()
         .then((data) => {
           const doc = data.data();
-          console.log(doc);
           resolve(doc as AuthUserData);
         });
     });
@@ -211,7 +209,6 @@ export class DataRepositoryService {
     );
   }
   async createClubData(club: Club, license: number) {
-    console.log('license', license);
     const clubDataRef = this.afs
       .collection(
         this.getCollectionRefWithConverter(`clubs/${club.ref.id}/clubData/`, ClubData.converter)
@@ -432,10 +429,8 @@ export class DataRepositoryService {
         .then((data) => {
           const docs = data.docs;
           if (docs.length > 0) {
-            console.log(docs);
             resolve(
               docs.map((doc) => {
-                console.log('-------', doc.data());
                 return doc.data() as Team;
               })
             );
