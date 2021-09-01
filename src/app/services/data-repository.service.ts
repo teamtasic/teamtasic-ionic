@@ -11,7 +11,7 @@ import { AuthUserData } from '../classes/auth-user-data';
 })
 export class DataRepositoryService {
   syncedClubs: Map<string, Club> = new Map<string, Club>();
-
+  needsUpdateUserData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   currentUser: BehaviorSubject<AuthUserData> = new BehaviorSubject<AuthUserData>(null);
 
   constructor(private afs: AngularFirestore) {}
@@ -58,6 +58,7 @@ export class DataRepositoryService {
         this.syncedClubs.set(clubId, c);
         const d = await this.getTeams(clubId);
         for (let team of d) {
+          team.teamData = await this.getTeamData(team.uid, clubId);
           this.syncedClubs.get(clubId).clubData.teams.set(team.uid, team);
         }
       }
@@ -106,6 +107,8 @@ export class DataRepositoryService {
     }
     this.syncedClubs.clear();
     this.syncCurrentUser();
+
+    this.needsUpdateUserData.next(true);
   }
 
   /**
@@ -409,7 +412,7 @@ export class DataRepositoryService {
           if (doc) {
             resolve(doc as TeamData);
           } else {
-            reject(new Error('team data does not exist'));
+            reject(new Error('team data does not exist. TEAM: ' + teamId + 'of CLUB: ' + clubId));
           }
         });
     });

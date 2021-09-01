@@ -16,15 +16,18 @@
 
   <!-- content start -->
 
-  <form>
+  <form [formGroup]="editGroup">
     <ion-list-header> Name </ion-list-header>
     <ion-item>
-      <ion-input placeholder="Name" type="text"></ion-input>
+      <ion-input placeholder="Name" type="text" formControlName="name"></ion-input>
     </ion-item>
     <ion-list-header> Members </ion-list-header>
     <ion-row>
       <ion-col>
-        <ion-searchbar></ion-searchbar>
+        <ion-searchbar
+          formControlName="searchterm"
+          (ionChange)="setFilteredItems()"
+        ></ion-searchbar>
       </ion-col>
     </ion-row>
 
@@ -52,14 +55,14 @@
     <ion-item>
       <ion-label>
         <p>Athletes</p>
-        <h2>https://teamtasic.app/join/2394u234u235423543</h2>
+        <h2>https://teamtasic.app/join/{{clubId}}/{{teamID}}</h2>
       </ion-label>
     </ion-item>
 
     <ion-item>
       <ion-label>
         <p>Coaches</p>
-        <h2>https://teamtasic.app/join/2394u234u235423543</h2>
+        <h2>https://teamtasic.app/join/{{clubId}}/{{teamID}}</h2>
       </ion-label>
     </ion-item>
 

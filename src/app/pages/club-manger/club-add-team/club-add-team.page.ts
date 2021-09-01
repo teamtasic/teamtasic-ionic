@@ -53,8 +53,10 @@ export class ClubAddTeamPage implements OnInit {
     await this.drs.setTeamData(team.uid, this.clubId, teamData);
     this.drs.currentUser.next(user);
     await this.drs.updateUser();
+
     await new Promise((resolve) => setTimeout(resolve, 100));
     await this.drs.resync();
+    this.drs.needsUpdateUserData.next(true);
     this.router.navigate(['/my-clubs/detail', this.clubId]);
   }
   get teamName() {

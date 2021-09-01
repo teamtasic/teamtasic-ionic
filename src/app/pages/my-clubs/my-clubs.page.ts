@@ -13,15 +13,16 @@ export class MyClubsPage implements OnInit {
   displayableClubs: Map<string, string> = new Map();
 
   ngOnInit() {
-    console.log('init)');
-    const memberships = this.drs.currentUser.getValue().memberships;
-    Object.keys(memberships).forEach((membership) => {
-      if (
-        memberships[membership].type === 'club' &&
-        (memberships[membership].role === 'owner' || memberships[membership].role === 'admin')
-      ) {
-        this.displayableClubs.set(membership, memberships[membership].displayName);
-      }
+    this.drs.needsUpdateUserData.subscribe(() => {
+      const memberships = this.drs.currentUser.getValue().memberships;
+      Object.keys(memberships).forEach((membership) => {
+        if (
+          memberships[membership].type === 'club' &&
+          (memberships[membership].role === 'owner' || memberships[membership].role === 'admin')
+        ) {
+          this.displayableClubs.set(membership, memberships[membership].displayName);
+        }
+      });
     });
   }
 }

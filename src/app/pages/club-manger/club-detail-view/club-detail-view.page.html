@@ -18,13 +18,13 @@
       <ion-title size="large">edit Club</ion-title>
     </ion-toolbar>
   </ion-header>
-  <form>
+  <form [formGroup]="editClub">
     <ion-list>
       <ion-list-header> Name & contact </ion-list-header>
 
       <ion-item>
         <ion-label position="floating">Name</ion-label>
-        <ion-input type="text"></ion-input>
+        <ion-input type="text" formControlName="name"></ion-input>
       </ion-item>
 
       <ion-list-header> Teams </ion-list-header>

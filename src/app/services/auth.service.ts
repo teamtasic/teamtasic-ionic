@@ -84,5 +84,9 @@ export class AuthService {
         console.error('[ 🔑 AuthService ]', 'Error in AuthService "guard"');
       }
     );
+
+    this.fba.onAuthStateChanged((user) => {
+      console.log('[ 🔑 AuthService ]', 'AuthStateChanged:', user);
+    });
   }
 }

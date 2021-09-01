@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Club } from 'src/app/classes/club';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
@@ -12,10 +13,13 @@ export class ClubDetailViewPage implements OnInit {
   constructor(
     private drs: DataRepositoryService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private fb: FormBuilder
   ) {
     console.log('construct');
   }
+
+  editClub: FormGroup;
 
   clubId: string;
   club: Club;
@@ -26,9 +30,12 @@ export class ClubDetailViewPage implements OnInit {
     this.route.paramMap.subscribe((params) => {
       this.clubId = params.get('clubId');
     });
-    console.log('init 2');
-    this.club = this.drs.syncedClubs.get(this.clubId);
 
+    this.drs.needsUpdateUserData.subscribe(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      this.reload();
+    });
+    this.reload();
     for (const member in this.club.clubData.users) {
       if (this.club.clubData.users[member].role === 'admin') {
         this.admins.push(this.club.clubData.users[member]);
@@ -36,6 +43,10 @@ export class ClubDetailViewPage implements OnInit {
         this.admins.push(this.club.clubData.users[member]);
       }
     }
+
+    this.editClub = this.fb.group({
+      name: [this.club.name, [Validators.required]],
+    });
   }
 
   reload() {

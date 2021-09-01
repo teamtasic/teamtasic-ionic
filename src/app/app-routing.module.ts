@@ -23,9 +23,20 @@ const routes: Routes = [
       import('./pages/switch-team/switch-team.module').then((m) => m.SwitchTeamPageModule),
   },
   {
-    path: 'join-team',
-    loadChildren: () =>
-      import('./pages/join-team/join-team.module').then((m) => m.JoinTeamPageModule),
+    path: 'join',
+
+    children: [
+      {
+        path: '',
+        loadChildren: () =>
+          import('./pages/join-team/join-team.module').then((m) => m.JoinTeamPageModule),
+      },
+      {
+        path: ':teamId',
+        loadChildren: () =>
+          import('./pages/join-team/join-team.module').then((m) => m.JoinTeamPageModule),
+      },
+    ],
   },
   {
     path: 'reset',
