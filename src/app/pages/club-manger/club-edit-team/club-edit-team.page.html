@@ -22,32 +22,26 @@
       <ion-input placeholder="Name" type="text" formControlName="name"></ion-input>
     </ion-item>
     <ion-list-header> Members </ion-list-header>
-    <ion-row>
+    <!--<ion-row>
       <ion-col>
         <ion-searchbar
           formControlName="searchterm"
           (ionChange)="setFilteredItems()"
         ></ion-searchbar>
       </ion-col>
-    </ion-row>
+    </ion-row>-->
 
-    <ion-item>
+    <ion-item *ngFor="let member of members | keyvalue">
       <ion-label>
-        <h2>Jesse Born</h2>
-        <p>Coach</p>
+        <h2>{{member.value.name}}</h2>
+        <p>{{member.value.role}}</p>
       </ion-label>
       <ion-avatar slot="start">
         <img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y" />
       </ion-avatar>
-    </ion-item>
-    <ion-item *ngFor="let i of items">
-      <ion-label>
-        <h2>Blala blaslg</h2>
-        <p>Athlete</p>
-      </ion-label>
-      <ion-avatar slot="start">
-        <img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y" />
-      </ion-avatar>
+      <ion-button slot="end" color="clear" (click)="presentActionSheet(member.key)">
+        <ion-icon slot="icon-only" name="ellipsis-horizontal-circle-outline"></ion-icon>
+      </ion-button>
     </ion-item>
 
     <ion-list-header> Add members </ion-list-header>

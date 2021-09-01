@@ -37,7 +37,7 @@ export class TeamData {
   static converter = {
     fromFirestore: function (snapshot: any, options: any) {
       const data = snapshot.data(options);
-      return new TeamData(snapshot.roles);
+      return new TeamData(data.roles);
     },
     toFirestore: function (team: TeamData) {
       return {

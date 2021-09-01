@@ -2,19 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
-
+import { ActionSheetController } from '@ionic/angular';
 @Component({
   selector: 'app-club-edit-team',
   templateUrl: './club-edit-team.page.html',
   styleUrls: ['./club-edit-team.page.scss'],
 })
 export class ClubEditTeamPage implements OnInit {
-  items = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private fb: FormBuilder,
-    private drs: DataRepositoryService
+    private drs: DataRepositoryService,
+    public actionSheetController: ActionSheetController
   ) {}
 
   editGroup: FormGroup;
@@ -22,10 +22,7 @@ export class ClubEditTeamPage implements OnInit {
   clubId: string;
   teamId: string;
 
-  memebers: Object[];
-  d_memebers: Object[];
-
-  searchValue: string;
+  members: Object;
 
   ngOnInit() {
     this.route.paramMap.subscribe((params) => {
@@ -38,38 +35,70 @@ export class ClubEditTeamPage implements OnInit {
         this.drs.syncedClubs.get(this.clubId).clubData.teams.get(this.teamId).name,
         [Validators.required],
       ],
-      searchterm: ['', []],
     });
 
-    for (let member in this.drs.syncedClubs.get(this.clubId).clubData.teams.get(this.teamId)
-      .teamData.roles) {
-      this.memebers.push(
-        this.drs.syncedClubs.get(this.clubId).clubData.teams.get(this.teamId).teamData.roles[member]
-      );
-      this.memebers[this.memebers.length - 1]['id'] = member;
-    }
-    console.log(this.memebers);
-    console.log(
-      this.drs.syncedClubs.get(this.clubId).clubData.teams.get(this.teamId).teamData.roles
-    );
+    // for (let member in this.drs.syncedClubs.get(this.clubId).clubData.teams.get(this.teamId)
+    //   .teamData.roles) {
+    //   this.members.push(
+    //     this.drs.syncedClubs.get(this.clubId).clubData.teams.get(this.teamId).teamData.roles[member]
+    //   );
+    //   this.members[this.members.length - 1]['id'] = member;
+    // }
+
+    this.members = this.drs.syncedClubs
+      .get(this.clubId)
+      .clubData.teams.get(this.teamId).teamData.roles;
   }
 
-  search() {
-    console.log(this.searchValue);
-  }
+  async presentActionSheet(userId: string) {
+    console.log('present');
+    const actionSheet = await this.actionSheetController.create({
+      header: this.members[userId].name,
+      cssClass: 'my-custom-class',
+      buttons: [
+        {
+          text: 'Remove',
+          role: 'destructive',
+          icon: 'trash',
+          handler: () => {
+            console.log('Delete clicked');
+          },
+        },
+        {
+          text: 'Make trainer',
+          icon: 'person-add-outline',
+          handler: () => {
+            console.log('Share clicked');
+          },
+        },
+        {
+          text: 'Make athlete',
+          icon: 'person-remove-outline',
+          handler: () => {
+            console.log('Share clicked');
+          },
+        },
+        {
+          text: 'See user',
+          icon: 'list-outline',
+          handler: () => {
+            console.log('Play clicked');
+          },
+        },
 
-  filterItems(searchTerm) {
-    return this.memebers.filter((member) => {
-      return member['username'].toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
+        {
+          text: 'Cancel',
+          icon: 'close',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          },
+        },
+      ],
     });
-  }
+    await actionSheet.present();
 
-  setFilteredItems() {
-    this.d_memebers = this.filterItems(this.searchterm.value);
-    console.log(this.d_memebers);
-  }
-
-  get searchterm() {
-    return this.editGroup.get('searchterm');
+    const { role } = await actionSheet.onDidDismiss();
+    console.log('onDidDismiss resolved with role', role);
   }
 }
