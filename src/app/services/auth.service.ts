@@ -47,12 +47,12 @@ export class AuthService {
       .signInWithEmailAndPassword(user, pw)
       .then(async (user) => {
         console.log('[ 🔑 login ]', 'User logged in:', user.user.uid);
-        let userData = await this.drs.getUserData(user.user.uid);
-        console.log('[ 🔑 login ]', 'Signed in succsessfully, preparing session kickstart');
-        console.log(userData as Object);
-        this.drs.currentUser.next(userData);
-        this.isAuthenticated.next(true);
-        await this.drs.kickstartPostLogin();
+        // let userData = await this.drs.getUserData(user.user.uid);
+        // console.log('[ 🔑 login ]', 'Signed in succsessfully, preparing session kickstart');
+        // console.log(userData as Object);
+        // this.drs.currentUser.next(userData);
+        // this.isAuthenticated.next(true);
+        // await this.drs.kickstartPostLogin();
         return { state: true, error: '' };
       })
       .catch((error) => {
@@ -85,8 +85,18 @@ export class AuthService {
       }
     );
 
-    this.fba.onAuthStateChanged((user) => {
+    this.fba.onAuthStateChanged(async (user) => {
       console.log('[ 🔑 AuthService ]', 'AuthStateChanged:', user);
+      if (user) {
+        let userData = await this.drs.getUserData(user.uid);
+        console.log('[ 🔑 login ]', 'Signed in succsessfully, preparing session kickstart');
+        console.log(userData as Object);
+        this.drs.currentUser.next(userData);
+        this.isAuthenticated.next(true);
+        await this.drs.kickstartPostLogin();
+      } else {
+        this.isAuthenticated.next(false);
+      }
     });
   }
 }
