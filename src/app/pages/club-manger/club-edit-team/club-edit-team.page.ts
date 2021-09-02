@@ -24,6 +24,8 @@ export class ClubEditTeamPage implements OnInit {
 
   members: Object;
 
+  hasChanges: boolean;
+
   ngOnInit() {
     this.route.paramMap.subscribe((params) => {
       this.clubId = params.get('clubId');
@@ -54,36 +56,27 @@ export class ClubEditTeamPage implements OnInit {
     console.log('present');
     const actionSheet = await this.actionSheetController.create({
       header: this.members[userId].name,
-      cssClass: 'my-custom-class',
       buttons: [
         {
           text: 'Remove',
           role: 'destructive',
           icon: 'trash',
-          handler: () => {
-            console.log('Delete clicked');
-          },
+          handler: this.romoveMember.bind(this, userId),
         },
         {
           text: 'Make trainer',
           icon: 'person-add-outline',
-          handler: () => {
-            console.log('Share clicked');
-          },
+          handler: this.makeTrainer.bind(this, userId),
         },
         {
           text: 'Make athlete',
           icon: 'person-remove-outline',
-          handler: () => {
-            console.log('Share clicked');
-          },
+          handler: this.makeAthlete.bind(this, userId),
         },
         {
           text: 'See user',
           icon: 'list-outline',
-          handler: () => {
-            console.log('Play clicked');
-          },
+          handler: this.seeUser.bind(this, userId),
         },
 
         {
@@ -97,8 +90,42 @@ export class ClubEditTeamPage implements OnInit {
       ],
     });
     await actionSheet.present();
+    await actionSheet.onDidDismiss();
+    console.log(this.members);
+  }
 
-    const { role } = await actionSheet.onDidDismiss();
-    console.log('onDidDismiss resolved with role', role);
+  romoveMember(userId: string) {
+    this.hasChanges = true;
+    console.log('remove');
+    if (this.members[userId].role != 'owner') {
+      delete this.members[userId];
+    }
+  }
+  makeTrainer(userId: string) {
+    this.hasChanges = true;
+    console.log('make trainer');
+    if (this.members[userId].role != 'owner') this.members[userId].role = 'trainer';
+  }
+  makeAthlete(userId: string) {
+    this.hasChanges = true;
+    console.log('make athlete');
+    if (this.members[userId].role != 'owner') this.members[userId].role = 'athlete';
+  }
+  seeUser(userId: string) {
+    console.log('see user');
+  }
+
+  async saveChanges() {
+    this.drs.syncedClubs.get(this.clubId).clubData.teams.get(this.teamId).teamData.roles =
+      this.members;
+    this.drs.syncedClubs.get(this.clubId).clubData.teams.get(this.teamId).name =
+      this.editGroup.value.name;
+    this.hasChanges = false;
+    await this.drs.updateTeam(this.teamId, this.clubId);
+    await this.drs.setTeamData(
+      this.teamId,
+      this.clubId,
+      this.drs.syncedClubs.get(this.clubId).clubData.teams.get(this.teamId).teamData
+    );
   }
 }
