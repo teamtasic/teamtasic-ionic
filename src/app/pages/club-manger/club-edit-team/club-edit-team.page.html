@@ -25,15 +25,8 @@
     <ion-item>
       <ion-input placeholder="Name" type="text" formControlName="name"></ion-input>
     </ion-item>
+
     <ion-list-header> Members </ion-list-header>
-    <!--<ion-row>
-      <ion-col>
-        <ion-searchbar
-          formControlName="searchterm"
-          (ionChange)="setFilteredItems()"
-        ></ion-searchbar>
-      </ion-col>
-    </ion-row>-->
 
     <ion-item *ngFor="let member of members | keyvalue">
       <ion-label>
@@ -43,36 +36,52 @@
       <ion-avatar slot="start">
         <img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y" />
       </ion-avatar>
-      <ion-button slot="end" color="clear" (click)="presentActionSheet(member.key)">
+      <ion-button slot="end" fill="clear" color="medium" (click)="presentActionSheet(member.key)">
         <ion-icon slot="icon-only" name="ellipsis-horizontal-circle-outline"></ion-icon>
       </ion-button>
     </ion-item>
+  </form>
 
-    <ion-list-header> Add members </ion-list-header>
-
+  <ion-list-header> Add member </ion-list-header>
+  <!-- form for adding members -->
+  <form [formGroup]="addGroup">
     <ion-item>
-      <ion-label>
-        <p>Athletes</p>
-        <h2>https://teamtasic.app/join/{{clubId}}/{{teamID}}</h2>
-      </ion-label>
+      <ion-input placeholder="user id" type="text" formControlName="uid"></ion-input>
     </ion-item>
-
     <ion-item>
-      <ion-label>
-        <p>Coaches</p>
-        <h2>https://teamtasic.app/join/{{clubId}}/{{teamID}}</h2>
-      </ion-label>
+      <ion-input placeholder="name" type="text" formControlName="aname"></ion-input>
     </ion-item>
-
+    <ion-item>
+      <ion-checkbox color="danger" formControlName="asCoach"></ion-checkbox>
+      <ion-label> as Coach? </ion-label>
+    </ion-item>
     <ion-row>
       <ion-col>
-        <ion-button expand="block" (click)="saveChanges()"> save changes</ion-button>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col>
-        <ion-button color="light" expand="block"> discard changes</ion-button>
+        <ion-button expand="block" (click)="addMember()" color="success"> add member </ion-button>
       </ion-col>
     </ion-row>
   </form>
+
+  <ion-list-header> Save changes </ion-list-header>
+  <ion-item *ngIf="hasChanges" color="danger">
+    <ion-label> unsaved changes </ion-label>
+  </ion-item>
+  <ion-row>
+    <ion-col>
+      <ion-button expand="block" (click)="saveChanges()"> save changes</ion-button>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-button color="secondary" expand="block" (click)="resetChanges()">
+        discard changes</ion-button
+      >
+    </ion-col>
+  </ion-row>
+  <ion-list-header> delete team </ion-list-header>
+  <ion-row>
+    <ion-col>
+      <ion-button color="danger" expand="block"> delete team</ion-button>
+    </ion-col>
+  </ion-row>
 </ion-content>

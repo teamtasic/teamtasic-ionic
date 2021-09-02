@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
-import { ActionSheetController } from '@ionic/angular';
+import { ActionSheetController, AlertController } from '@ionic/angular';
 @Component({
   selector: 'app-club-edit-team',
   templateUrl: './club-edit-team.page.html',
@@ -14,14 +14,16 @@ export class ClubEditTeamPage implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private drs: DataRepositoryService,
-    public actionSheetController: ActionSheetController
+    public actionSheetController: ActionSheetController,
+    public alertController: AlertController
   ) {
-    if (!this.drs.currentUser) {
-      this.router.navigate(['/login']);
+    if (this.drs.syncedClubs.size == 0) {
+      this.router.navigate(['/login'], { replaceUrl: true });
     }
   }
 
   editGroup: FormGroup;
+  addGroup: FormGroup;
 
   clubId: string;
   teamId: string;
@@ -43,17 +45,19 @@ export class ClubEditTeamPage implements OnInit {
       ],
     });
 
-    // for (let member in this.drs.syncedClubs.get(this.clubId).clubData.teams.get(this.teamId)
-    //   .teamData.roles) {
-    //   this.members.push(
-    //     this.drs.syncedClubs.get(this.clubId).clubData.teams.get(this.teamId).teamData.roles[member]
-    //   );
-    //   this.members[this.members.length - 1]['id'] = member;
-    // }
+    this.addGroup = this.fb.group({
+      uid: ['', [Validators.required]],
+      aname: ['', [Validators.required]],
+      asCoach: [false],
+    });
 
     this.members = this.drs.syncedClubs
       .get(this.clubId)
       .clubData.teams.get(this.teamId).teamData.roles;
+
+    this.editGroup.valueChanges.subscribe((data) => {
+      this.hasChanges = true;
+    });
   }
 
   async presentActionSheet(userId: string) {
@@ -65,7 +69,7 @@ export class ClubEditTeamPage implements OnInit {
           text: 'Remove',
           role: 'destructive',
           icon: 'trash',
-          handler: this.romoveMember.bind(this, userId),
+          handler: this.removeMember.bind(this, userId),
         },
         {
           text: 'Make trainer',
@@ -78,9 +82,9 @@ export class ClubEditTeamPage implements OnInit {
           handler: this.makeAthlete.bind(this, userId),
         },
         {
-          text: 'See user',
-          icon: 'list-outline',
-          handler: this.seeUser.bind(this, userId),
+          text: 'Rename member',
+          icon: 'create-outline',
+          handler: this.renameUser.bind(this, userId),
         },
 
         {
@@ -98,7 +102,7 @@ export class ClubEditTeamPage implements OnInit {
     console.log(this.members);
   }
 
-  romoveMember(userId: string) {
+  removeMember(userId: string) {
     this.hasChanges = true;
     console.log('remove');
     if (this.members[userId].role != 'owner') {
@@ -119,6 +123,51 @@ export class ClubEditTeamPage implements OnInit {
     console.log('see user');
   }
 
+  async renameUser(userId: string) {
+    const alert = await this.alertController.create({
+      header: 'Rename user ' + this.members[userId].name,
+      inputs: [
+        {
+          name: 'name1',
+          type: 'text',
+          placeholder: 'new name',
+          value: this.members[userId].name,
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            console.log('Canceled');
+          },
+        },
+        {
+          text: 'Ok',
+          handler: () => {
+            console.log('renaming');
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+    const namingData = await alert.onDidDismiss();
+    if (namingData.data.values.name1) {
+      this.hasChanges = true;
+      this.members[userId].name = namingData.data.values.name1;
+    }
+  }
+
+  async addMember() {
+    this.members[this.addGroup.value.uid] = {
+      name: this.addGroup.value.aname,
+      role: this.addGroup.value.asCoach ? 'trainer' : 'athlete',
+    };
+    this.hasChanges = true;
+  }
+
   async saveChanges() {
     this.drs.syncedClubs.get(this.clubId).clubData.teams.get(this.teamId).teamData.roles =
       this.members;
@@ -131,5 +180,11 @@ export class ClubEditTeamPage implements OnInit {
       this.clubId,
       this.drs.syncedClubs.get(this.clubId).clubData.teams.get(this.teamId).teamData
     );
+  }
+
+  resetChanges() {
+    console.log('reset');
+    this.hasChanges = false;
+    this.ngOnInit();
   }
 }

@@ -363,9 +363,9 @@ export class DataRepositoryService {
    * @throws error if team data is undefined
    */
   async updateTeam(teamId: string, clubId: string) {
-    if (!this.syncedClubs.get(clubId).clubData.teams[teamId]) {
-      throw new Error('no team with id: ' + teamId + 'for club ' + clubId);
-    }
+    // if (!this.syncedClubs.get(clubId).clubData.teams[teamId]) {
+    //   throw new Error('no team with id: ' + teamId + 'for club ' + clubId);
+    // }
     const teamRef = this.afs
       .collection(this.getCollectionRefWithConverter(`clubs/${clubId}/teams`, Team.converter))
       .doc(teamId);
