@@ -9,7 +9,11 @@ import { DataRepositoryService } from 'src/app/services/data-repository.service'
   styleUrls: ['./my-clubs.page.scss'],
 })
 export class MyClubsPage implements OnInit {
-  constructor(public drs: DataRepositoryService, public auth: AuthService) {}
+  constructor(public drs: DataRepositoryService, public auth: AuthService, private router: Router) {
+    if (!this.drs.currentUser) {
+      this.router.navigate(['/login']);
+    }
+  }
   displayableClubs: Map<string, string> = new Map();
 
   ngOnInit() {

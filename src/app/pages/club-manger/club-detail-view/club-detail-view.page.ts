@@ -16,7 +16,9 @@ export class ClubDetailViewPage implements OnInit {
     private router: Router,
     private fb: FormBuilder
   ) {
-    console.log('construct');
+    if (!this.drs.currentUser) {
+      this.router.navigate(['/login']);
+    }
   }
 
   editClub: FormGroup;

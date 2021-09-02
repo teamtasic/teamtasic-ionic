@@ -15,7 +15,11 @@ export class ClubEditTeamPage implements OnInit {
     private fb: FormBuilder,
     private drs: DataRepositoryService,
     public actionSheetController: ActionSheetController
-  ) {}
+  ) {
+    if (!this.drs.currentUser) {
+      this.router.navigate(['/login']);
+    }
+  }
 
   editGroup: FormGroup;
 

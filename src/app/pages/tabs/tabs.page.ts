@@ -16,11 +16,7 @@ export class TabsPage {
     public authService: AuthService,
     private router: Router,
     private route: ActivatedRoute
-  ) {
-    if (!this.authService.isAuthenticated.getValue()) {
-      this.router.navigate(['/login']);
-    }
-  }
+  ) {}
 
   ngOnInit() {}
 

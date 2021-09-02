@@ -14,6 +14,8 @@ export class DataRepositoryService {
   needsUpdateUserData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   currentUser: BehaviorSubject<AuthUserData> = new BehaviorSubject<AuthUserData>(null);
 
+  hasPreloadedAfterLogin: boolean = false;
+
   constructor(private afs: AngularFirestore) {}
 
   /**
@@ -34,6 +36,7 @@ export class DataRepositoryService {
         this.currentUser.getValue().memberships
       );
       this.syncCurrentUser();
+      this.hasPreloadedAfterLogin = true;
     }
   }
   /**

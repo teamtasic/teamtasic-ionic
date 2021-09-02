@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { BehaviorSubject } from 'rxjs';
 import { AuthUserData } from '../classes/auth-user-data';
@@ -10,8 +10,6 @@ import { DataRepositoryService } from './data-repository.service';
   providedIn: 'root',
 })
 export class AuthService {
-  isAuthenticated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
-
   async createUser(email: string, pw: string, username: string) {
     await this.fba
       .createUserWithEmailAndPassword(email, pw)
@@ -47,44 +45,26 @@ export class AuthService {
       .signInWithEmailAndPassword(user, pw)
       .then(async (user) => {
         console.log('[ 🔑 login ]', 'User logged in:', user.user.uid);
-        // let userData = await this.drs.getUserData(user.user.uid);
-        // console.log('[ 🔑 login ]', 'Signed in succsessfully, preparing session kickstart');
-        // console.log(userData as Object);
-        // this.drs.currentUser.next(userData);
-        // this.isAuthenticated.next(true);
-        // await this.drs.kickstartPostLogin();
         return { state: true, error: '' };
       })
       .catch((error) => {
         var errorCode = error.code;
-        this.isAuthenticated.next(false);
+
         console.error('[ 🔑 login ]', 'authentication failed:', error);
         return { state: false, error: errorCode };
       });
   }
   async logout() {
     await this.fba.signOut();
-    this.isAuthenticated.next(false);
   }
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private fba: AngularFireAuth,
     private drs: DataRepositoryService,
-    public alertController: AlertController
+    public alertController: AlertController,
+    private ng: NgZone
   ) {
-    this.isAuthenticated.subscribe(
-      (data) => {
-        if (data == true) {
-          this.router.navigateByUrl('/tabs');
-        } else {
-          this.router.navigateByUrl('/login', { replaceUrl: true });
-        }
-      },
-      (err) => {
-        console.error('[ 🔑 AuthService ]', 'Error in AuthService "guard"');
-      }
-    );
-
     this.fba.onAuthStateChanged(async (user) => {
       console.log('[ 🔑 AuthService ]', 'AuthStateChanged:', user);
       if (user) {
@@ -92,10 +72,14 @@ export class AuthService {
         console.log('[ 🔑 login ]', 'Signed in succsessfully, preparing session kickstart');
         console.log(userData as Object);
         this.drs.currentUser.next(userData);
-        this.isAuthenticated.next(true);
+        ng.run(() => {
+          this.router.navigateByUrl('/tabs');
+        });
         await this.drs.kickstartPostLogin();
       } else {
-        this.isAuthenticated.next(false);
+        ng.run(() => {
+          this.router.navigateByUrl('/', { replaceUrl: true });
+        });
       }
     });
   }

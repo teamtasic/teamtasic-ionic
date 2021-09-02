@@ -13,7 +13,11 @@ export class ClubCreatePage implements OnInit {
   clubCreateForm: FormGroup;
   licenseTier: string = 'standard';
 
-  constructor(public fb: FormBuilder, private drs: DataRepositoryService, private router: Router) {}
+  constructor(public fb: FormBuilder, private drs: DataRepositoryService, private router: Router) {
+    if (!this.drs.currentUser) {
+      this.router.navigate(['/login']);
+    }
+  }
 
   ngOnInit() {
     this.clubCreateForm = this.fb.group({
