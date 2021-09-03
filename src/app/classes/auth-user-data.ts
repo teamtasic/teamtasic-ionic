@@ -13,14 +13,14 @@ export class AuthUserData {
         "name": "Username"
     }
   }*/
-  memberships: Object;
+  memberships: Object[];
 
   constructor(
     uid: string,
     ref: DocumentReference,
     username: string,
     email: string,
-    memberships: Object | null
+    memberships: Object[]
   ) {
     this.uid = uid;
     this.ref = ref;

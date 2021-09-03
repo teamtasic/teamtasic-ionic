@@ -182,6 +182,15 @@ export class ClubEditTeamPage implements OnInit {
     );
   }
 
+  async deleteTeam() {
+    this.drs.deleteTeam(this.teamId, this.clubId);
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await this.drs.resync();
+    this.drs.needsUpdateUserData.next(true);
+    this.router.navigate(['/my-clubs/detail', this.clubId]);
+  }
+
   resetChanges() {
     console.log('reset');
     this.hasChanges = false;

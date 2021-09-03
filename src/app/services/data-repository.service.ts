@@ -66,6 +66,19 @@ export class DataRepositoryService {
         }
       }
     }
+    for (let clubIndex in this.currentUser.getValue().memberships) {
+      if (this.currentUser.getValue().memberships[clubIndex]['type'] === 'club') {
+        let clubId = this.currentUser.getValue().memberships[clubIndex]['club'];
+        let c = await this.getClub(clubId);
+        c.clubData = await this.getClubData(clubId);
+        this.syncedClubs.set(clubId, c);
+        const d = await this.getTeams(clubId);
+        for (let team of d) {
+          team.teamData = await this.getTeamData(team.uid, clubId);
+          this.syncedClubs.get(clubId).clubData.teams.set(team.uid, team);
+        }
+      }
+    }
     console.log('[ clubs ]', this.syncedClubs);
   }
   /** sync all teams current user is member of from firestore
@@ -372,6 +385,20 @@ export class DataRepositoryService {
     await teamRef.set(this.syncedClubs.get(clubId).clubData.teams.get(teamId));
     return teamRef;
   }
+  /**
+   * delete team document from firestore
+   * @param teamId
+   * @param clubId
+   * @returns team document reference
+   */
+  async deleteTeam(teamId: string, clubId: string) {
+    const teamRef = this.afs
+      .collection(this.getCollectionRefWithConverter(`clubs/${clubId}/teams`, Team.converter))
+      .doc(teamId);
+    await teamRef.delete();
+    return teamRef;
+  }
+
   /**
    * set team data document in firestore
    * @param teamId
