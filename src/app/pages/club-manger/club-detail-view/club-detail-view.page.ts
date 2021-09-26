@@ -32,12 +32,18 @@ export class ClubDetailViewPage implements OnInit {
     this.route.paramMap.subscribe((params) => {
       this.clubId = params.get('clubId');
     });
+    this.reload();
+    console.log(this.club);
+
+    this.editClub = this.fb.group({
+      name: [this.club.name, [Validators.required]],
+    });
 
     this.drs.needsUpdateUserData.subscribe(async () => {
       await new Promise((resolve) => setTimeout(resolve, 500));
       this.reload();
     });
-    this.reload();
+
     for (const member in this.club.clubData.users) {
       if (this.club.clubData.users[member].role === 'admin') {
         this.admins.push(this.club.clubData.users[member]);
@@ -45,10 +51,6 @@ export class ClubDetailViewPage implements OnInit {
         this.admins.push(this.club.clubData.users[member]);
       }
     }
-
-    this.editClub = this.fb.group({
-      name: [this.club.name, [Validators.required]],
-    });
   }
 
   reload() {

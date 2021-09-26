@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Team, TeamData } from '../classes/team';
 import { Club, ClubData } from '../classes/club';
-import { Meet } from '../classes/meet';
+import { Meet, userMeetStatus } from '../classes/meet';
 import { AngularFirestore, DocumentReference, DocumentSnapshot } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { AuthUserData } from '../classes/auth-user-data';
 
+//! this is bad
+import * as fb from 'firebase';
 @Injectable({
   providedIn: 'root',
 })
@@ -26,10 +28,7 @@ export class DataRepositoryService {
       '[ 📲 data repository ]',
       'started loading all session data for authenticated user.'
     );
-    if (
-      this.currentUser.getValue() &&
-      Object.keys(this.currentUser.getValue().memberships).length > 0
-    ) {
+    if (this.currentUser.getValue() && this.currentUser.getValue().memberships.length > 0) {
       console.log(
         '[ 📲 data repository ]',
         'memberships:',
@@ -54,31 +53,40 @@ export class DataRepositoryService {
       throw new Error('no memberships');
     }
 
-    for (let clubId in this.currentUser.getValue().memberships) {
-      if (this.currentUser.getValue().memberships[clubId].type === 'club') {
+    // for (let clubId in this.currentUser.getValue().memberships) {
+    //   if (this.currentUser.getValue().memberships[clubId].type === 'club') {
+    //     let c = await this.getClub(clubId);
+    //     c.clubData = await this.getClubData(clubId);
+    //     this.syncedClubs.set(clubId, c);
+    //     const d = await this.getTeams(clubId);
+    //     for (let team of d) {
+    //       team.teamData = await this.getTeamData(team.uid, clubId);
+    //       this.syncedClubs.get(clubId).clubData.teams.set(team.uid, team);
+    //     }
+    //   }
+    // }
+    for (let memershipdIndex in this.currentUser.getValue().memberships) {
+      if (this.currentUser.getValue().memberships[memershipdIndex]['type'] === 'club') {
+        let clubId = this.currentUser.getValue().memberships[memershipdIndex]['club'];
         let c = await this.getClub(clubId);
+
         c.clubData = await this.getClubData(clubId);
         this.syncedClubs.set(clubId, c);
-        const d = await this.getTeams(clubId);
-        for (let team of d) {
-          team.teamData = await this.getTeamData(team.uid, clubId);
-          this.syncedClubs.get(clubId).clubData.teams.set(team.uid, team);
-        }
       }
     }
-    for (let clubIndex in this.currentUser.getValue().memberships) {
-      if (this.currentUser.getValue().memberships[clubIndex]['type'] === 'club') {
-        let clubId = this.currentUser.getValue().memberships[clubIndex]['club'];
-        let c = await this.getClub(clubId);
-        c.clubData = await this.getClubData(clubId);
-        this.syncedClubs.set(clubId, c);
-        const d = await this.getTeams(clubId);
-        for (let team of d) {
-          team.teamData = await this.getTeamData(team.uid, clubId);
-          this.syncedClubs.get(clubId).clubData.teams.set(team.uid, team);
-        }
+    for (let memershipdIndex in this.currentUser.getValue().memberships) {
+      if (this.currentUser.getValue().memberships[memershipdIndex]['type'] === 'team') {
+        console.log('memberships found: ');
+        let teamId = this.currentUser.getValue().memberships[memershipdIndex]['team'];
+        let clubId = this.currentUser.getValue().memberships[memershipdIndex]['club'];
+
+        const team = await this.getTeam(teamId, clubId);
+
+        team.teamData = await this.getTeamData(teamId, clubId);
+        this.syncedClubs.get(clubId).clubData.teams.set(team.uid, team);
       }
     }
+
     console.log('[ clubs ]', this.syncedClubs);
   }
   /** sync all teams current user is member of from firestore
@@ -210,12 +218,13 @@ export class DataRepositoryService {
     await this.createClubData(club, license);
 
     let user = this.currentUser.getValue();
-    user.memberships[club.uid] = {
+    user.memberships.push({
       role: 'owner',
       displayName: club.name,
       name: user.username,
       type: 'club',
-    };
+      club: club.uid,
+    });
     this.currentUser.next(user);
     this.updateUser();
   }
@@ -303,7 +312,7 @@ export class DataRepositoryService {
    * @throws error if club data is undefined
    */
   async updateClub(clubId: string) {
-    if (!this.syncedClubs[clubId]) {
+    if (!this.syncedClubs.get(clubId)) {
       throw new Error('no club');
     }
     const clubRef = this.afs
@@ -475,6 +484,236 @@ export class DataRepositoryService {
     });
   }
 
+  /**
+   * checks if a user with uid exists in firestore
+   * @param uid
+   * @returns true if user exists or false if not
+   */
+  async userExists(uid: string) {
+    return await new Promise<Boolean>((resolve) => {
+      this.afs
+        .collection('users')
+        .doc(uid)
+        .get()
+        .toPromise()
+        .then((data) => {
+          resolve(data.exists);
+        });
+    });
+  }
+
+  /**
+   * create meet document in firestore
+   * @param meet
+   * @param teamId
+   * @param clubId
+   * @returns meet document reference
+   * @throws error if team does not exist
+   * @throws error if club does not exist
+   * @throws error if meet is undefined
+   * @throws error if meet data is undefined
+   */
+  async createMeet(meet: Meet, teamId: string, clubId: string) {
+    const meetRef = this.afs
+      .collection(
+        this.getCollectionRefWithConverter(`clubs/${clubId}/teams/${teamId}/meets`, Meet.converter)
+      )
+      .doc();
+    meet.uid = meetRef.ref.id;
+    await meetRef.set(meet);
+    return meetRef;
+  }
+  /**
+   * get meet document from firestore
+   * @param meetId
+   * @param teamId
+   * @param clubId
+   * @returns meet document
+   * @throws error if team does not exist
+   * @throws error if club does not exist
+   * @throws error if meet does not exist
+   * @throws error if meet data is undefined
+   */
+  async getMeet(meetId: string, teamId: string, clubId: string) {
+    return await new Promise<Meet>((resolve, reject) => {
+      this.afs
+        .collection(
+          this.getCollectionRefWithConverter(
+            `clubs/${clubId}/teams/${teamId}/meets`,
+            Meet.converter
+          )
+        )
+        .doc(meetId)
+        .get()
+        .toPromise()
+        .then((data) => {
+          const doc = data.data();
+          if (doc) {
+            resolve(doc as Meet);
+          } else {
+            reject(
+              new Error(
+                'meet does not exist. MEET: ' + meetId + 'of TEAM: ' + teamId + 'of CLUB: ' + clubId
+              )
+            );
+          }
+        });
+    });
+  }
+  /**
+   * get all meets of a team from firestore
+   * @param teamId
+   * @param clubId
+   * @returns array of meet documents
+   * @throws error if team does not exist
+   * @throws error if club does not exist
+   * @throws error if meets are undefined
+   */
+  async getMeets(
+    teamId: string,
+    clubId: string,
+    start: number = 0,
+    limit: number = 5,
+    userId: string
+  ) {
+    return await new Promise<Meet[]>((resolve, reject) => {
+      const ref = this.afs.collection(
+        this.getCollectionRefWithConverter(`clubs/${clubId}/teams/${teamId}/meets`, Meet.converter),
+        (ref) =>
+          ref
+            //.where('start', '>=', fb.default.firestore.Timestamp.fromDate(new Date(Date.now())))
+            .orderBy('start', 'asc')
+            .startAt(start)
+            .limit(limit)
+      );
+      ref
+        .get()
+        .toPromise()
+        .then((data) => {
+          const docs = data.docs;
+          if (docs.length > 0) {
+            resolve(
+              docs.map((doc) => {
+                let _ = doc.data() as Meet;
+                console.log('fixing status for user with uid of:', userId);
+                _.fixUserStatus(userId);
+                return _;
+              })
+            );
+          } else {
+            console.warn('no meets found');
+            resolve([]);
+          }
+        });
+    });
+  }
+
+  /**
+   * writes a join request to collection 'joinReq'
+   * @param teamId
+   * @param clubId
+   * @param userId
+   * @param actualUserId
+   * @param userName
+   * @returns void
+   */
+  async createJoinRequest(
+    teamId: string,
+    clubId: string,
+    userId: string,
+    actualUserId: string,
+    userName: string,
+    displayName: string
+  ) {
+    await this.afs.collection('joinReq').add({
+      teamId: teamId,
+      clubId: clubId,
+      userId: userId,
+      actualUserId: actualUserId,
+      userName: userName,
+      displayName: displayName,
+    });
+  }
+
+  /** write meet to collection 'meets'
+   * @param meet
+   * @param teamId
+   * @param clubId
+   * @returns void
+   * @throws error if team does not exist
+   * @throws error if club does not exist
+   * @throws error if meet is undefined
+   */
+  async writeMeet(meet: Meet, teamId: string, clubId: string) {
+    if (!meet) {
+      throw new Error('meet is undefined');
+    }
+    await this.afs
+      .collection(
+        this.getCollectionRefWithConverter(`clubs/${clubId}/teams/${teamId}/meets`, Meet.converter)
+      )
+      .doc(meet.uid)
+      .set(meet);
+  }
+  /** writes a mutation request to collection mutateReq inf firestore
+   * @param clubId
+   * @param teamId
+   * @param meetId
+   * @param userId
+   * @param status
+   */
+  async writeMutationRequest(
+    clubId: string,
+    teamId: string,
+    meetId: string,
+    userId: string,
+    status: 'accepted' | 'declined' | 'pending',
+    meet: Meet
+  ) {
+    await this.afs.collection('mutateReq').add({
+      clubId: clubId,
+      teamId: teamId,
+      meetId: meetId,
+      userId: userId,
+      status: status,
+    });
+    if (status == 'accepted') {
+      meet.acceptedUsers.push(userId);
+      const i = meet.declinedUsers.indexOf(userId);
+      if (i != -1) {
+        meet.declinedUsers.splice(i, 1);
+      }
+    }
+    if (status == 'declined') {
+      meet.declinedUsers.push(userId);
+      const i = meet.acceptedUsers.indexOf(userId);
+      if (i != -1) {
+        meet.acceptedUsers.splice(i, 1);
+      }
+    }
+    if (status == 'pending') {
+      const i = meet.acceptedUsers.indexOf(userId);
+      const j = meet.declinedUsers.indexOf(userId);
+      if (j != -1) {
+        meet.declinedUsers.splice(j, 1);
+      }
+      if (i != -1) {
+        meet.acceptedUsers.splice(i, 1);
+      }
+    }
+    return meet;
+  }
+
+  /** get team name string from local syncedClubs
+   * @param teamId
+   * @param clubId
+   * @returns team name string
+   * @throws error if team does not exist
+   * @throws error if club does not exist
+   */
+  getTeamName(teamId: string, clubId: string) {
+    return this.syncedClubs.get(clubId).clubData.teams.get(teamId).name;
+  }
   getDocumentRefWithConverterFromPath(path: string, converter: any) {
     return this.afs.firestore.doc(path).withConverter(converter);
   }

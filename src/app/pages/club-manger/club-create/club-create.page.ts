@@ -28,8 +28,6 @@ export class ClubCreatePage implements OnInit {
   }
 
   async createClub() {
-    console.log(this.clubCreateForm.value);
-
     await this.drs.createClub(
       new Club('', null, this.clubCreateForm.value.name, ''),
       this.licenseNumber

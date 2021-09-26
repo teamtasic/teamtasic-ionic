@@ -4,55 +4,14 @@ admin.initializeApp();
 
 const db = admin.firestore();
 
-export const deleteTeam = functions.firestore
-  .document('clubs/{clubId}/teams/{teamId}')
+export const deleteTeam = functions
+  .region('europe-west6')
+  .firestore.document('clubs/{clubId}/teams/{teamId}')
   .onDelete((change, context) => {
     const teamId: string = context.params.teamId;
     const clubId: string = context.params.clubId;
 
     return Promise.all([
-      new Promise<void>((resolve) => {
-        // get team data
-        var teamData: Object;
-
-        const teamRef = db
-          .collection('clubs')
-          .doc(clubId)
-          .collection('teams')
-          .doc(teamId)
-          .collection('teamData')
-          .doc('teamData');
-        teamRef.get().then((doc: any) => {
-          teamData = doc.data();
-          console.log('Team data: ', teamData);
-        });
-
-        // delete team from all users
-        const usersRef = db.collection('users');
-        usersRef.get().then((querySnapshot: any) => {
-          querySnapshot.forEach((doc: any) => {
-            const userData = doc.data();
-            let memberships: Object = userData.memberships;
-
-            delete (memberships as any)[teamId];
-
-            usersRef
-              .doc(doc.id)
-              .set(
-                {
-                  memberships: memberships,
-                },
-                { merge: true }
-              )
-              .then(() => {
-                console.log('Deleted team from user: ', doc.id);
-                resolve();
-              });
-
-            // delete all subcollections teamData and meets
-          });
-        });
-      }),
       db
         .collection('clubs')
         .doc(`${clubId}`)
@@ -78,4 +37,97 @@ export const deleteTeam = functions.firestore
           });
         }),
     ]);
+  });
+
+export const joinUserToTeam = functions
+  .region('europe-west6')
+  .firestore.document('joinReq/{joinReqId}')
+  .onCreate((snapshot, context) => {
+    const data = snapshot.data();
+    const teamId = data.teamId;
+    const userId = data.userId;
+    const clubId = data.clubId;
+    const userName = data.userName;
+    const displayName = data.displayName;
+    const actualUserId = data.actualUserId;
+
+    // apend entry to user documents membership array
+    return Promise.all([
+      db
+        .collection('users')
+        .doc(`${actualUserId}`)
+        .update({
+          memberships: admin.firestore.FieldValue.arrayUnion({
+            team: teamId,
+            club: clubId,
+            name: userName,
+            displayName: displayName,
+            userId: userId,
+            role: 'athlete',
+            type: 'team',
+          }),
+        }),
+      //snapshot.ref.delete(),
+    ]);
+  });
+
+export const setUserstatus = functions
+  .region('europe-west6')
+  .firestore.document('mutateReq/{reqId}')
+  .onCreate((snapshot, context) => {
+    const data = snapshot.data();
+    const clubId = data.clubId;
+    const teamId = data.teamId;
+    const meetId = data.meetId;
+    const userId = data.userId;
+    const status = data.status;
+
+    switch (status) {
+      case 'accepted':
+        return new Promise<void>((resolve, reject) => {
+          db
+            .collection('clubs')
+            .doc(`${clubId}`)
+            .collection('teams')
+            .doc(`${teamId}`)
+            .collection('meets')
+            .doc(`${meetId}`)
+            .update({
+              acceptedUsers: admin.firestore.FieldValue.arrayUnion(userId),
+              declinedUsers: admin.firestore.FieldValue.arrayRemove(userId),
+            }),
+            resolve();
+        });
+      case 'declined':
+        return new Promise<void>((resolve, reject) => {
+          db
+            .collection('clubs')
+            .doc(`${clubId}`)
+            .collection('teams')
+            .doc(`${teamId}`)
+            .collection('meets')
+            .doc(`${meetId}`)
+            .update({
+              acceptedUsers: admin.firestore.FieldValue.arrayRemove(userId),
+              declinedUsers: admin.firestore.FieldValue.arrayUnion(userId),
+            }),
+            resolve();
+        });
+      case 'pending':
+        return new Promise<void>((resolve, reject) => {
+          db
+            .collection('clubs')
+            .doc(`${clubId}`)
+            .collection('teams')
+            .doc(`${teamId}`)
+            .collection('meets')
+            .doc(`${meetId}`)
+            .update({
+              acceptedUsers: admin.firestore.FieldValue.arrayRemove(userId),
+              declinedUsers: admin.firestore.FieldValue.arrayRemove(userId),
+            }),
+            resolve();
+        });
+    }
+    return Promise.reject(new Error('Invalid status'));
   });

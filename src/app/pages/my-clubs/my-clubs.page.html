@@ -14,15 +14,15 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-item *ngIf="displayableClubs.keys.lenght == 0">
+  <ion-item *ngIf="displayableClubs.lenght == 0">
     <p>You currently do not hold administrative permissions for any clubs.</p>
   </ion-item>
   <ion-item
-    *ngFor="let club of displayableClubs | keyvalue"
-    [routerLink]="'/my-clubs/detail/'+club.key"
+    *ngFor="let club of displayableClubs"
+    [routerLink]="'/my-clubs/detail/'+club['club']"
     detail
   >
-    <ion-label>{{club.value}}</ion-label>
+    <ion-label>{{club['displayName']}}</ion-label>
   </ion-item>
 
   <ion-item button routerLink="/my-clubs/create-club" detail>

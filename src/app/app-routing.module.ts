@@ -17,27 +17,27 @@ const routes: Routes = [
     canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
-  {
-    path: 'switch-team',
-    loadChildren: () =>
-      import('./pages/switch-team/switch-team.module').then((m) => m.SwitchTeamPageModule),
-  },
-  {
-    path: 'join',
+  // {
+  //   path: 'switch-team',
+  //   loadChildren: () =>
+  //     import('./pages/switch-team/switch-team.module').then((m) => m.SwitchTeamPageModule),
+  // },
+  // {
+  //   path: 'join',
 
-    children: [
-      {
-        path: '',
-        loadChildren: () =>
-          import('./pages/join-team/join-team.module').then((m) => m.JoinTeamPageModule),
-      },
-      {
-        path: ':teamId',
-        loadChildren: () =>
-          import('./pages/join-team/join-team.module').then((m) => m.JoinTeamPageModule),
-      },
-    ],
-  },
+  //   children: [
+  //     {
+  //       path: '',
+  //       loadChildren: () =>
+  //         import('./pages/join-team/join-team.module').then((m) => m.JoinTeamPageModule),
+  //     },
+  //     {
+  //       path: ':teamId',
+  //       loadChildren: () =>
+  //         import('./pages/join-team/join-team.module').then((m) => m.JoinTeamPageModule),
+  //     },
+  //   ],
+  // },
   {
     path: 'reset',
     loadChildren: () =>

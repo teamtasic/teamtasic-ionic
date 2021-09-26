@@ -3,6 +3,15 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
 import { ActionSheetController, AlertController } from '@ionic/angular';
+import {
+  map,
+  distinctUntilChanged,
+  debounceTime,
+  tap,
+  switchMap,
+  catchError,
+} from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
 @Component({
   selector: 'app-club-edit-team',
   templateUrl: './club-edit-team.page.html',
@@ -27,13 +36,18 @@ export class ClubEditTeamPage implements OnInit {
 
   clubId: string;
   teamId: string;
+  index: number = 0;
 
   members: Object;
 
+  searchValue: Observable<any>;
+
   hasChanges: boolean;
 
+  userState: 'none' | 'loading' | 'verified' = 'none';
+
   ngOnInit() {
-    this.route.paramMap.subscribe((params) => {
+    this.route.paramMap.subscribe(async (params) => {
       this.clubId = params.get('clubId');
       this.teamId = params.get('teamId');
     });
@@ -58,6 +72,39 @@ export class ClubEditTeamPage implements OnInit {
     this.editGroup.valueChanges.subscribe((data) => {
       this.hasChanges = true;
     });
+
+    // check if user exists and set userState accordingly. If user does not exist, set userState to 'none', else to 'verified'.
+    // use debounceTime to prevent multiple requests being sent to the server.
+
+    this.addGroup.valueChanges
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        tap((data) => {
+          this.userState = 'loading';
+        }),
+        switchMap((data) => {
+          if (data.uid.length != 0) {
+            return this.drs.userExists(data.uid);
+          } else {
+            return new Promise<Boolean>((resolve) => {
+              resolve(false);
+            });
+          }
+        }),
+        tap((exists) => {
+          if (exists) {
+            this.userState = 'verified';
+          } else {
+            this.userState = 'none';
+          }
+        }),
+        catchError((err) => {
+          this.userState = 'none';
+          return throwError(err);
+        })
+      )
+      .subscribe();
   }
 
   async presentActionSheet(userId: string) {
@@ -161,11 +208,43 @@ export class ClubEditTeamPage implements OnInit {
   }
 
   async addMember() {
-    this.members[this.addGroup.value.uid] = {
-      name: this.addGroup.value.aname,
-      role: this.addGroup.value.asCoach ? 'trainer' : 'athlete',
-    };
-    this.hasChanges = true;
+    // check if user with uid exists with drs if data.uid is not empty
+    if (this.addGroup.value.uid) {
+      this.userState = 'loading';
+      this.drs.userExists(this.addGroup.value.uid).then((res) => {
+        this.userState = res ? 'verified' : 'none';
+      });
+      const origUserId = this.addGroup.value.uid;
+      // fix behavior with user already existing with same auth id
+      while (this.members[this.addGroup.value.uid]) {
+        this.addGroup.value.uid = this.addGroup.value.uid + '-x';
+      }
+
+      this.members[this.addGroup.value.uid] = {
+        name: this.addGroup.value.aname,
+        role: this.addGroup.value.asCoach ? 'trainer' : 'athlete',
+      };
+
+      this.drs.createJoinRequest(
+        this.teamId,
+        this.clubId,
+        this.addGroup.value.uid,
+        origUserId,
+        this.addGroup.value.aname,
+        this.editGroup.value.name
+      );
+      this.saveChanges();
+      this.addGroup = this.fb.group({
+        uid: [
+          '',
+          [Validators.required, Validators.minLength(6), Validators.pattern('/^[a-zA-Z0-9-_]+$/')],
+        ],
+        aname: ['', [Validators.required]],
+        asCoach: [false],
+      });
+    } else {
+      this.userState = 'none';
+    }
   }
 
   async saveChanges() {
@@ -180,6 +259,14 @@ export class ClubEditTeamPage implements OnInit {
       this.clubId,
       this.drs.syncedClubs.get(this.clubId).clubData.teams.get(this.teamId).teamData
     );
+    this.addGroup = this.fb.group({
+      uid: [
+        '',
+        [Validators.required, Validators.minLength(6), Validators.pattern('/^[a-zA-Z0-9-_]+$/')],
+      ],
+      aname: ['', [Validators.required]],
+      asCoach: [false],
+    });
   }
 
   async deleteTeam() {
@@ -194,6 +281,28 @@ export class ClubEditTeamPage implements OnInit {
   resetChanges() {
     console.log('reset');
     this.hasChanges = false;
-    this.ngOnInit();
+    this.editGroup = this.fb.group({
+      name: [
+        this.drs.syncedClubs.get(this.clubId).clubData.teams.get(this.teamId).name,
+        [Validators.required],
+      ],
+    });
+
+    this.addGroup = this.fb.group({
+      uid: [
+        '',
+        [Validators.required, Validators.minLength(6), Validators.pattern('/^[a-zA-Z0-9-_]+$/')],
+      ],
+      aname: ['', [Validators.required]],
+      asCoach: [false],
+    });
+
+    this.members = this.drs.syncedClubs
+      .get(this.clubId)
+      .clubData.teams.get(this.teamId).teamData.roles;
+
+    this.editGroup.valueChanges.subscribe((data) => {
+      this.hasChanges = true;
+    });
   }
 }

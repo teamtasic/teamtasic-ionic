@@ -31,26 +31,24 @@ export class ClubAddTeamPage implements OnInit {
 
   async createTeam() {
     let user = this.drs.currentUser.getValue();
-    const roles = {
-      [user.uid]: {
-        name: user.username,
-        role: 'owner',
-      },
-    };
+    const roles = {};
     const team = new Team('', undefined, this.teamName.value);
     const teamData = new TeamData(roles);
 
     team.uid = await (await this.drs.addTeam(team, this.clubId)).ref.id;
-    user.memberships[team.uid] = {
+
+    await this.drs.setTeamData(team.uid, this.clubId, teamData);
+
+    user.memberships.push({
       role: 'owner',
       displayName: team.name,
       name: user.username,
       club: this.clubId,
+      team: team.uid,
       type: 'team',
-    };
-    console.log(user);
+    });
+    console.log('user now is:          ', user);
 
-    await this.drs.setTeamData(team.uid, this.clubId, teamData);
     this.drs.currentUser.next(user);
     await this.drs.updateUser();
 

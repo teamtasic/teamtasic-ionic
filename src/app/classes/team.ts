@@ -1,4 +1,5 @@
 import { DocumentReference } from '@angular/fire/firestore';
+import { Meet } from './meet';
 
 export class Team {
   uid: string;
@@ -30,6 +31,7 @@ export class Team {
 export class TeamData {
   roles: Object;
 
+  meets: Meet[];
   constructor(roles: Object) {
     this.roles = roles;
   }

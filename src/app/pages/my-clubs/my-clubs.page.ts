@@ -14,18 +14,18 @@ export class MyClubsPage implements OnInit {
       this.router.navigate(['/login']);
     }
   }
-  displayableClubs: Map<string, string> = new Map();
+  displayableClubs: Object[] = [];
 
   ngOnInit() {
     this.drs.needsUpdateUserData.subscribe(() => {
       const memberships = this.drs.currentUser.getValue().memberships;
-      Object.keys(memberships).forEach((membership) => {
-        if (
-          memberships[membership].type === 'club' &&
-          (memberships[membership].role === 'owner' || memberships[membership].role === 'admin')
-        ) {
-          this.displayableClubs.set(membership, memberships[membership].displayName);
-        }
+      console.log(memberships);
+      // set displayable clubs to be the clubs the user is a member of with role 'admin' or role 'owner'
+      this.displayableClubs = memberships.filter((membership) => {
+        return (
+          (membership['role'] === 'admin' || membership['role'] === 'owner') &&
+          membership['type'] === 'club'
+        );
       });
     });
   }
