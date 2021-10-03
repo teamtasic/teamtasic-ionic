@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title> Calendar </ion-title>
-    <ion-buttons slot="end">
+    <ion-title> Kalender </ion-title>
+    <!-- <ion-buttons slot="end">
       <ion-button>
         <ion-icon name="list-outline"></ion-icon>
       </ion-button>
@@ -10,10 +10,10 @@
       <ion-button>
         <ion-icon name="layers-outline"></ion-icon>
       </ion-button>
-    </ion-buttons>
+    </ion-buttons> -->
   </ion-toolbar>
 
-  <ion-toolbar>
+  <!-- <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button
         >prev.
@@ -26,20 +26,17 @@
         <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-  </ion-toolbar>
+  </ion-toolbar> -->
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Calendar</ion-title>
+      <ion-title size="large">Kalender</ion-title>
     </ion-toolbar>
   </ion-header>
 
   <ion-item>
-    <!-- <ion-label
-      >{{getMembershipsDisplayText(selectableMemberships[this.selectedMembershipIndex])}}</ion-label
-    > -->
     <ion-select
       [(ngModel)]="selectedMembershipIndex"
       okText="Select"
@@ -65,7 +62,8 @@
       </ion-card-subtitle>
       <ion-card-title>{{meet.start.toLocaleDateString()}} </ion-card-title>
       <ion-card-subtitle>
-        {{meet.start.toLocaleTimeString()}} - {{meet.end.toLocaleTimeString()}}
+        {{meet.start.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}} -
+        {{meet.end.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}}
       </ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>

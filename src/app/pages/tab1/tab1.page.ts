@@ -10,7 +10,7 @@ export class Tab1Page {
   userHasJoinedTeam: boolean = true;
   hasTrainings: boolean = true;
 
-  constructor(private auth: AuthService, private drs: DataRepositoryService) {
+  constructor(private auth: AuthService, public drs: DataRepositoryService) {
     this.userHasJoinedTeam = this.drs.currentUser.getValue().memberships.length > 0;
   }
 }

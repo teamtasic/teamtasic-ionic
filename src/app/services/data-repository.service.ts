@@ -581,7 +581,7 @@ export class DataRepositoryService {
         this.getCollectionRefWithConverter(`clubs/${clubId}/teams/${teamId}/meets`, Meet.converter),
         (ref) =>
           ref
-            //.where('start', '>=', fb.default.firestore.Timestamp.fromDate(new Date(Date.now())))
+            .where('start', '>=', fb.default.firestore.Timestamp.now())
             .orderBy('start', 'asc')
             .startAt(start)
             .limit(limit)
@@ -678,14 +678,18 @@ export class DataRepositoryService {
       status: status,
     });
     if (status == 'accepted') {
-      meet.acceptedUsers.push(userId);
+      if (meet.acceptedUsers.indexOf(userId) == -1) {
+        meet.acceptedUsers.push(userId);
+      }
       const i = meet.declinedUsers.indexOf(userId);
       if (i != -1) {
         meet.declinedUsers.splice(i, 1);
       }
     }
     if (status == 'declined') {
-      meet.declinedUsers.push(userId);
+      if (meet.declinedUsers.indexOf(userId) == -1) {
+        meet.declinedUsers.push(userId);
+      }
       const i = meet.acceptedUsers.indexOf(userId);
       if (i != -1) {
         meet.acceptedUsers.splice(i, 1);
