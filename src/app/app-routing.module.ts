@@ -104,6 +104,11 @@ const routes: Routes = [
     ],
   },
   {
+    path: 'my-account',
+    loadChildren: () =>
+      import('./pages/my-account/my-account.module').then((m) => m.MyAccountPageModule),
+  },
+  {
     path: '',
     redirectTo: '/login',
     pathMatch: 'full',

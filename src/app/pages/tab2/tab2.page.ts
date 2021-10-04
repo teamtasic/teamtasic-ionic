@@ -14,7 +14,7 @@ import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 export class Tab2Page implements OnInit {
   statusColors = { accepted: 'success', declined: 'danger', pending: 'dark' };
 
-  showAddMeet: boolean = true;
+  hasTrainerPermission: boolean = false;
 
   showSelectPromt: boolean;
 
@@ -69,6 +69,7 @@ export class Tab2Page implements OnInit {
       9,
       selMembership.userId
     );
+    this.hasTrainerPermission = selMembership.role == 'trainer';
     this.buildDisplayStrings();
   }
 

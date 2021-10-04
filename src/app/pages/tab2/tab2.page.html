@@ -147,7 +147,7 @@
   </ion-text>
 
   <!-- FABs for coaches -->
-  <ion-fab vertical="bottom" horizontal="start" slot="fixed" *ngIf="showAddMeet">
+  <ion-fab vertical="bottom" horizontal="start" slot="fixed" *ngIf="hasTrainerPermission">
     <ion-fab-button color="primary" size="small" (click)="presentAddModal()">
       <ion-icon name="add-circle-outline"></ion-icon>
     </ion-fab-button>

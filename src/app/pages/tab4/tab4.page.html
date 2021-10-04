@@ -17,18 +17,22 @@
     <ion-item button routerLink="/my-clubs" routerLinkActive="active" detail>
       <ion-label>Manage my clubs</ion-label>
     </ion-item>
-    <ion-item button detail>
+    <ion-item button routerLink="/my-account" routerLinkActive="active" detail>
       <ion-label>Manage my account</ion-label>
     </ion-item>
-    <ion-item button detail>
-      <ion-label>Switch team</ion-label>
-    </ion-item>
-    <ion-list-header>
-      <ion-label>Danger zone</ion-label>
-    </ion-list-header>
-
-    <ion-button (click)="logout()" expand="block" color="danger"> log out </ion-button>
-
-    <ion-button (click)="logout()" expand="block" color="light"> delete account </ion-button>
   </ion-list>
+  <ion-list class="ion-margin-top ion-margin-bottom">
+    <ion-button (click)="logout()" expand="block" color="danger"> log out </ion-button>
+  </ion-list>
+  <ion-list class="ion-margin-top">
+    <ion-item-divider></ion-item-divider>
+    <ion-item>
+      <ion-label>Version</ion-label>
+      <ion-note slot="end">1.0.0</ion-note>
+    </ion-item>
+    <!-- <ion-item detail> Rechtliches </ion-item> -->
+  </ion-list>
+  <center>
+    <p>Jesse Born, Markus Born © 2021</p>
+  </center>
 </ion-content>
