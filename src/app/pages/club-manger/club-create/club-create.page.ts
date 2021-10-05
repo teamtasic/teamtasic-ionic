@@ -3,7 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Club } from 'src/app/classes/club';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
-import { Toast } from '@capacitor/toast';
+import { NotificationService } from 'src/app/services/notification-service.service';
+
 @Component({
   selector: 'app-club-create',
   templateUrl: './club-create.page.html',
@@ -13,7 +14,12 @@ export class ClubCreatePage implements OnInit {
   clubCreateForm: FormGroup;
   licenseTier: string = 'free';
 
-  constructor(public fb: FormBuilder, private drs: DataRepositoryService, private router: Router) {
+  constructor(
+    public fb: FormBuilder,
+    private drs: DataRepositoryService,
+    private router: Router,
+    private ns: NotificationService
+  ) {
     if (!this.drs.currentUser) {
       this.router.navigate(['/login']);
     }
@@ -36,11 +42,9 @@ export class ClubCreatePage implements OnInit {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       await this.drs.resync();
       this.router.navigate(['/my-clubs']);
+      this.ns.showToast('Club erfolgreich erstellt.');
     } catch (error) {
-      await Toast.show({
-        text: error.message,
-        position: 'bottom',
-      });
+      this.ns.showToast(`Fehler: ${error.message}`);
     }
   }
 
