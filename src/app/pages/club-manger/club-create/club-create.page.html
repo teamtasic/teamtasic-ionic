@@ -17,10 +17,7 @@
   <!-- Create club form -->
 
   <ion-item>
-    <p>
-      To create a new club fill out the information below and select a pricing tier.
-      <a routerLink="#learnMore">watch video...</a>
-    </p>
+    <p>Um einen neuen Club zu erstellen, fülle bitte die folgenden Felder aus.</p>
   </ion-item>
   <form [formGroup]="clubCreateForm">
     <ion-item>
@@ -34,6 +31,10 @@
         </ion-list-header>
 
         <ion-item>
+          <p>Free - Öffentlicher Test, &infin; Teams</p>
+          <ion-radio slot="start" value="free"></ion-radio>
+        </ion-item>
+        <!-- <ion-item>
           <p>Bare - 1 Team for 3 months, CHF 15.00</p>
           <ion-radio slot="start" value="bare"></ion-radio>
         </ion-item>
@@ -46,14 +47,13 @@
         <ion-item>
           <p>NOLIMIT - &infin; Teams for 12 Months, CHF 250.00</p>
           <ion-radio slot="start" value="nolimit"></ion-radio>
-        </ion-item>
+        </ion-item> -->
       </ion-radio-group>
     </ion-list>
 
     <ion-item>
       <p>
-        I confirm I read the TOS and consent to them. I understand that ordering this product
-        results in an invoice for <b>CHF 120.00</b> being sent to my registered email.
+        Ich habe die <a routerLink="/terms">Nutzungsbedingungen</a> gelesen und stimme diesen zu.
       </p>
       <ion-checkbox formControlName="tos" color="primary" slot="start"></ion-checkbox>
     </ion-item>
@@ -67,7 +67,7 @@
     <ion-row>
       <ion-col>
         <ion-button expand="block" (click)="createClub()" [disabled]="!clubCreateForm.valid">
-          create club and order license</ion-button
+          Club erstellen</ion-button
         >
       </ion-col>
     </ion-row>
