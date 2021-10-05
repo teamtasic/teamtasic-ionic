@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Club } from 'src/app/classes/club';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
-
+import { Toast } from '@capacitor/toast';
 @Component({
   selector: 'app-club-create',
   templateUrl: './club-create.page.html',
@@ -11,7 +11,7 @@ import { DataRepositoryService } from 'src/app/services/data-repository.service'
 })
 export class ClubCreatePage implements OnInit {
   clubCreateForm: FormGroup;
-  licenseTier: string = 'standard';
+  licenseTier: string = 'free';
 
   constructor(public fb: FormBuilder, private drs: DataRepositoryService, private router: Router) {
     if (!this.drs.currentUser) {
@@ -23,18 +23,25 @@ export class ClubCreatePage implements OnInit {
     this.clubCreateForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
       tos: [false, [Validators.requiredTrue]],
-      tier: ['standard', [Validators.required]],
+      tier: ['free', [Validators.required]],
     });
   }
 
   async createClub() {
-    await this.drs.createClub(
-      new Club('', null, this.clubCreateForm.value.name, ''),
-      this.licenseNumber
-    );
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    await this.drs.resync();
-    this.router.navigate(['/my-clubs']);
+    try {
+      await this.drs.createClub(
+        new Club('', null, this.clubCreateForm.value.name, ''),
+        this.licenseNumber
+      );
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await this.drs.resync();
+      this.router.navigate(['/my-clubs']);
+    } catch (error) {
+      await Toast.show({
+        text: error.message,
+        position: 'bottom',
+      });
+    }
   }
 
   get name() {
@@ -48,6 +55,7 @@ export class ClubCreatePage implements OnInit {
       ['bare', 0],
       ['standard', 1],
       ['nolimit', 2],
+      ['free', 3],
     ]);
     return _.get(this.license.value);
   }
