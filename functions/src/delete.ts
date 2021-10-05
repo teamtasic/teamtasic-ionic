@@ -1,10 +1,9 @@
 import * as functions from 'firebase-functions';
 const admin = require('firebase-admin');
-admin.initializeApp();
 
 const db = admin.firestore();
 
-export const deleteTeam = functions
+exports.deleteTeam = functions
   .region('europe-west6')
   .firestore.document('clubs/{clubId}/teams/{teamId}')
   .onDelete((change, context) => {

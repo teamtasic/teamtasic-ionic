@@ -634,6 +634,22 @@ export class DataRepositoryService {
       displayName: displayName,
     });
   }
+  /**
+   * writes a leave request to collection 'leaveReq'
+   * @param teamIdy
+   * @param clubId
+   * @param userId
+   * @param actualUserId
+   * @param userName
+   * @returns void
+   */
+  async createLeaveRequest(teamId: string, clubId: string, userId: string) {
+    await this.afs.collection('leaveReq').add({
+      teamId: teamId,
+      clubId: clubId,
+      userId: userId,
+    });
+  }
 
   /** write meet to collection 'meets'
    * @param meet

@@ -1,10 +1,9 @@
 import * as functions from 'firebase-functions';
 const admin = require('firebase-admin');
-admin.initializeApp();
 
 const db = admin.firestore();
 
-export const setUserstatus = functions
+exports.setUserstatus = functions
   .region('europe-west6')
   .firestore.document('mutateReq/{reqId}')
   .onCreate((snapshot, context) => {
