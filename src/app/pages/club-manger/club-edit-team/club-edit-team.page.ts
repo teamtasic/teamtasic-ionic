@@ -235,7 +235,8 @@ export class ClubEditTeamPage implements OnInit {
         this.addGroup.value.uid,
         origUserId,
         this.addGroup.value.aname,
-        this.editGroup.value.name
+        this.editGroup.value.name,
+        this.addGroup.value.asCoach ? 'trainer' : 'athlete'
       );
       this.saveChanges();
       this.addGroup = this.fb.group({
