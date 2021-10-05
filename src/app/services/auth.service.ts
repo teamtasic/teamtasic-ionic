@@ -17,13 +17,14 @@ export class AuthService {
         var user = userCredential.user;
         if (user) {
           this.drs.addUser(new AuthUserData(user.uid, null, username, email, []));
+          user.sendEmailVerification();
         }
 
         // alert succesfull signup
         const alert = await this.alertController.create({
-          header: 'Signup succesfull',
-          subHeader: 'You can now login',
-          buttons: ['Go to login'],
+          header: 'Erfloglreich registriert',
+          subHeader: 'Wir haben dir eine Email gesendet, überprüfe deinen SPAM-Ordner',
+          buttons: ['Zum login'],
         });
         await alert.present();
 
