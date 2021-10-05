@@ -615,6 +615,7 @@ export class DataRepositoryService {
    * @param userId
    * @param actualUserId
    * @param userName
+   * @param role
    * @returns void
    */
   async createJoinRequest(
@@ -623,7 +624,8 @@ export class DataRepositoryService {
     userId: string,
     actualUserId: string,
     userName: string,
-    displayName: string
+    displayName: string,
+    role: string
   ) {
     await this.afs.collection('joinReq').add({
       teamId: teamId,
@@ -632,6 +634,23 @@ export class DataRepositoryService {
       actualUserId: actualUserId,
       userName: userName,
       displayName: displayName,
+      role: role,
+    });
+  }
+  /**
+   * writes a leave request to collection 'leaveReq'
+   * @param teamIdy
+   * @param clubId
+   * @param userId
+   * @param actualUserId
+   * @param userName
+   * @returns void
+   */
+  async createLeaveRequest(teamId: string, clubId: string, userId: string) {
+    await this.afs.collection('leaveReq').add({
+      teamId: teamId,
+      clubId: clubId,
+      userId: userId,
     });
   }
 

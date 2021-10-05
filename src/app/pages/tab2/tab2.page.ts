@@ -79,10 +79,14 @@ export class Tab2Page implements OnInit {
     this.displayableMeets.forEach((meet: Meet) => {
       meet.signedInUserStrings = [];
       meet.acceptedUsers.forEach((user) => {
-        meet.signedInUserStrings.push(
+        if (
           this.drs.syncedClubs.get(selMembership.clubId).clubData.teams.get(selMembership.teamId)
-            .teamData.roles[user].name
-        );
+            .teamData.roles[user]
+        )
+          meet.signedInUserStrings.push(
+            this.drs.syncedClubs.get(selMembership.clubId).clubData.teams.get(selMembership.teamId)
+              .teamData.roles[user].name
+          );
       });
       meet.signedOutUserStrings = [];
       meet.declinedUsers.forEach((user) => {

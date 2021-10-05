@@ -42,6 +42,8 @@ export class ClubEditTeamPage implements OnInit {
 
   searchValue: Observable<any>;
 
+  membersToRemove: string[] = [];
+
   hasChanges: boolean;
 
   userState: 'none' | 'loading' | 'verified' = 'none';
@@ -50,6 +52,7 @@ export class ClubEditTeamPage implements OnInit {
     this.route.paramMap.subscribe(async (params) => {
       this.clubId = params.get('clubId');
       this.teamId = params.get('teamId');
+      this.membersToRemove = [];
     });
 
     this.editGroup = this.fb.group({
@@ -113,23 +116,23 @@ export class ClubEditTeamPage implements OnInit {
       header: this.members[userId].name,
       buttons: [
         {
-          text: 'Remove',
+          text: 'Entfernen',
           role: 'destructive',
           icon: 'trash',
           handler: this.removeMember.bind(this, userId),
         },
+        // {
+        //   text: 'Make trainer',
+        //   icon: 'person-add-outline',
+        //   handler: this.makeTrainer.bind(this, userId),
+        // },
+        // {
+        //   text: 'Make athlete',
+        //   icon: 'person-remove-outline',
+        //   handler: this.makeAthlete.bind(this, userId),
+        // },
         {
-          text: 'Make trainer',
-          icon: 'person-add-outline',
-          handler: this.makeTrainer.bind(this, userId),
-        },
-        {
-          text: 'Make athlete',
-          icon: 'person-remove-outline',
-          handler: this.makeAthlete.bind(this, userId),
-        },
-        {
-          text: 'Rename member',
+          text: 'Benutzer Umbenennen',
           icon: 'create-outline',
           handler: this.renameUser.bind(this, userId),
         },
@@ -153,6 +156,7 @@ export class ClubEditTeamPage implements OnInit {
     this.hasChanges = true;
     console.log('remove');
     if (this.members[userId].role != 'owner') {
+      this.membersToRemove.push(userId);
       delete this.members[userId];
     }
   }
@@ -231,7 +235,8 @@ export class ClubEditTeamPage implements OnInit {
         this.addGroup.value.uid,
         origUserId,
         this.addGroup.value.aname,
-        this.editGroup.value.name
+        this.editGroup.value.name,
+        this.addGroup.value.asCoach ? 'trainer' : 'athlete'
       );
       this.saveChanges();
       this.addGroup = this.fb.group({
@@ -252,6 +257,11 @@ export class ClubEditTeamPage implements OnInit {
       this.members;
     this.drs.syncedClubs.get(this.clubId).clubData.teams.get(this.teamId).name =
       this.editGroup.value.name;
+
+    this.membersToRemove.forEach((userId) => {
+      this.drs.createLeaveRequest(this.teamId, this.clubId, userId);
+    });
+
     this.hasChanges = false;
     await this.drs.updateTeam(this.teamId, this.clubId);
     await this.drs.setTeamData(
