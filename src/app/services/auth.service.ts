@@ -83,4 +83,8 @@ export class AuthService {
       }
     });
   }
+
+  async resetPassword(email: string) {
+    await this.fba.sendPasswordResetEmail(email);
+  }
 }
