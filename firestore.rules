@@ -1,43 +1,92 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
-    }
-    match /users/{userId} {
-    	allow read, create, update : if isOwner(userId)
-      allow delete : if false
-    }
-
-    match /clubs/{clubId} {
-    	allow read, write : if true;
-
-      match /clubData/clubData {
-      	allow read, write : if true;
-      }
-    }
-    match /memberships/{membershipId} {
-    	allow read : if true;
-      allow write : if isMembershipOwner();
-    }
-    /// Functions ///
+        /// Functions ///
 
 
     function isOwner(userId) {
-    	return request.auth.uid == userId
+      //return true;
+    	return request.auth.uid == userId;
     }
-    function isMembershipOwner(membershipId) {
-    	return incomingData().owner == request.auth.uid;
+    function isAuthenticated() {
+      return request.auth != null;
+      //return true;
     }
-    function getUserData(userId) {
-    	return get(/databases/$(database)/documents/users/$(userId))
+    function isClubOwner(clubId) {
+      let clubData = get(/databases/$(database)/documents/clubs/$(clubId)/clubData/clubData);
+      return clubData.roles[request.auth.uid].role == 'owner';
+      //return true;
     }
-    function existingData() {
-    	return resource.data
-    }
-    function incomingData() {
-    	return request.resource.data
+    function isTeamCoach(clubId, teamId) {
+      let teamData = get(/databases/$(database)/documents/clubs/$(clubId)/teams/$(teamId)/teamData/teamData);
+      return teamData.roles[request.auth.uid].role == 'trainer';
+      //return true;
     }
 
+    match /{document=**} {
+      allow read, write: if true;
+    }
+    /// User documents may only be written to by the user themselves and cloud functions.
+    /// Reading is allowed from any authenticated user.
+    /// deletion is stricly prohibited.
+
+    match /users/{userId} {
+      allow create : if true;
+    	allow update : if isOwner(userId);
+      allow read : if isAuthenticated();
+      allow delete : if false;
+    }
+
+    /// club documents can be created and read by anyone, that is authenticated.
+    /// club documents can be updated and delted by the club owner. (Users with the role of 'owner' in ./clubData/clubData)
+    match /clubs/{clubId} {
+      allow create, read : if isAuthenticated();
+      allow update, delete : if isClubOwner(clubId);
+
+      /// clubData documents can be created and read by anyone, that is authenticated.
+      /// clubData documents can be updated and delted by the club owner. (Users with the role of 'owner' in ./clubData/clubData)
+      match /clubData/{document=**} {
+        allow create, read : if isAuthenticated();
+        allow update, delete : if isClubOwner(clubId);
+      }
+
+      /// team documents can be read by anyone, that is authenticated.
+      /// team documents can be written to by the club owner. (Users with the role of 'owner' in ./clubData/clubData)
+      match /teams/{teamId} {
+        allow read : if isAuthenticated();
+        allow write : if isClubOwner(clubId);
+
+        /// teamData documents can be read by anyone, that is authenticated.
+        /// teamData documents can be written to by the club owner. (Users with the role of 'owner' in ../clubData/clubData)
+        match /teamData/{document=**}  {
+          allow read : if isAuthenticated();
+          allow write : if isClubOwner(clubId);
+        }
+        /// meet documents can be read by anyone, that is authenticated.
+        /// meet documents can be written to by the club owner or users with the role of 'trainer' in ../teamData/teamData
+        match /meets/{meetId} {
+          allow read : if isAuthenticated();
+          allow write : if isClubOwner(clubId) || isTeamCoach(clubId, teamId);
+        }
+      }
+    }
+
+    /// joinReq documents can be written by anyone, that is authenticated.
+    /// joinReq can't be read.
+    /// joinReq can't be deleted.
+    match /joinReq/{joinReqId} {
+      allow create : if isAuthenticated();
+      allow read, update, delete : if false;
+    }
+    /// same goes for leaveReq documents.
+    match /leaveReq/{leaveReqId} {
+      allow create : if isAuthenticated();
+      allow read, update, delete : if false;
+    }
+    /// and also mutateReq
+    match /mutateReq/{mutateReqId} {
+      allow create : if isAuthenticated();
+      allow read, update, delete : if false;
+    }
   }
 }
