@@ -5,6 +5,7 @@ import { AlertController } from '@ionic/angular';
 import { BehaviorSubject } from 'rxjs';
 import { AuthUserData } from '../classes/auth-user-data';
 import { DataRepositoryService } from './data-repository.service';
+import { NotificationService } from './notification-service.service';
 
 @Injectable({
   providedIn: 'root',
@@ -50,7 +51,7 @@ export class AuthService {
       })
       .catch((error) => {
         var errorCode = error.code;
-
+        this.ns.showToast(`Fehler: ${errorCode}`);
         console.error('[ 🔑 login ]', 'authentication failed:', error);
         return { state: false, error: errorCode };
       });
@@ -64,7 +65,8 @@ export class AuthService {
     private fba: AngularFireAuth,
     private drs: DataRepositoryService,
     public alertController: AlertController,
-    private ng: NgZone
+    private ng: NgZone,
+    public ns: NotificationService
   ) {
     this.fba.onAuthStateChanged(async (user) => {
       console.log('[ 🔑 AuthService ]', 'AuthStateChanged:', user);
