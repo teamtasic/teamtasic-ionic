@@ -36,115 +36,135 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-item>
-    <ion-select
-      [(ngModel)]="selectedMembershipIndex"
-      okText="Select"
-      cancelText="Cancel"
-      interface="action-sheet"
-      (ionChange)="onTeamSelect()"
-      #selector
-      class="selector"
-    >
-      <ion-select-option *ngFor="let team of selectableMemberships; index as i" [value]="i"
-        >{{team.displayString}}</ion-select-option
-      >
-    </ion-select>
-  </ion-item>
-  <!-- content start -->
-  <ion-card
-    *ngFor="let meet of ((!showSelectPromt && viewMode=='single') ? displayableMeets : []); let j = index"
-  >
-    <ion-card-header>
-      <ion-card-subtitle>{{meet.title}}</ion-card-subtitle>
-      <ion-card-subtitle>
-        <ion-badge> {{drs.getTeamName(meet.teamId, meet.clubId)}} </ion-badge>
-      </ion-card-subtitle>
-      <ion-card-title>{{meet.start.toLocaleDateString()}} </ion-card-title>
-      <ion-card-subtitle>
-        {{meet.start.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}} -
-        {{meet.end.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}}
-      </ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-list-header> Signed up </ion-list-header>
-      <ion-grid>
-        <ion-row>
-          <ion-col size-sm="4" size-lg="2" *ngFor="let user of meet.signedInUserStrings">
-            <center>
-              <ion-avatar>
-                <img [src]="'https://avatars.dicebear.com/api/initials/'+ user +'.svg'" />
-              </ion-avatar>
-              <p>Member Name</p>
-            </center>
-          </ion-col>
-          <ion-col *ngIf="meet.signedInUserStrings.length == 0">
-            <center>
-              <p>No users here</p>
-            </center>
-          </ion-col>
-          <!-- <ion-col size-sm="4" size-lg="2">
-            <center>
-              <ion-icon name="checkmark-done-circle-outline" size="large"></ion-icon><br />and 12
-              more
-            </center>
-          </ion-col> -->
-        </ion-row>
-      </ion-grid>
-      <ion-list-header> Signed out </ion-list-header>
-      <ion-grid>
-        <ion-row>
-          <ion-col size-sm="4" size-lg="2" *ngFor="let user of meet.signedOutUserStrings">
-            <center>
-              <ion-avatar>
-                <img [src]="'https://avatars.dicebear.com/api/initials/'+ user +'.svg'" />
-              </ion-avatar>
-              <p>Member Name</p>
-            </center>
-          </ion-col>
-          <ion-col *ngIf="meet.signedOutUserStrings.length == 0">
-            <center>
-              <p>No users here</p>
-            </center>
-          </ion-col>
-          <!-- <ion-col size-sm="4" size-lg="2">
-            <center>
-              <ion-icon name="checkmark-done-circle-outline" size="large"></ion-icon><br />and 12
-              more
-            </center>
-          </ion-col> -->
-        </ion-row>
-      </ion-grid>
-      <!-- status button -->
-      <ion-button
-        expand="block"
-        [color]="statusColors[meet.currentsUsersStatus.getValue().status]"
-        (click)="toggleUserStatus(j)"
-        >{{(meet.currentsUsersStatus | async).status}}</ion-button
-      >
-    </ion-card-content>
-  </ion-card>
+  <ion-list *ngIf="selectableMemberships.length == 0; else calendar">
+    <ion-row style="height: 1em"> </ion-row>
+    <ion-item>
+      <p>
+        Du bist monementan noch in keinem Team registriert. Erstelle einen neuen Verein oder teile
+        deinem Administrator deine Benutzer Id mit, damit dieser dich in deinem Team registrieren
+        kann.
+      </p>
+    </ion-item>
 
-  <!-- list view mode (opening popups)-->
-  <ion-list *ngIf="!showSelectPromt && viewMode=='list'">
-    <ion-item *ngFor="let meet of displayableMeets" detail>
-      <ion-label>
-        <p>{{meet.start}}</p>
-        <h2>{{meet.title}}</h2>
-      </ion-label>
-      <ion-badge slot="end"
-        >{{meet.acceptedUsers.length ? meet.acceptedUsers.length : 0 }} Members</ion-badge
-      >
+    <ion-row style="height: 1em"> </ion-row>
+
+    <ion-item detail button routerLink="/my-clubs" routerLinkActive="active">
+      <ion-label>Team erstellen</ion-label>
+    </ion-item>
+    <ion-item detail button routerLink="/my-account" routerLinkActive="active">
+      <ion-label>Teile deine Benutzer Id</ion-label>
     </ion-item>
   </ion-list>
+  <ng-template #calendar>
+    <ion-item>
+      <ion-select
+        [(ngModel)]="selectedMembershipIndex"
+        okText="Select"
+        cancelText="Cancel"
+        interface="action-sheet"
+        (ionChange)="onTeamSelect()"
+        #selector
+        class="selector"
+      >
+        <ion-select-option *ngFor="let team of selectableMemberships; index as i" [value]="i"
+          >{{team.displayString}}</ion-select-option
+        >
+      </ion-select>
+    </ion-item>
+    <!-- content start -->
+    <ion-card
+      *ngFor="let meet of ((!showSelectPromt && viewMode=='single') ? displayableMeets : []); let j = index"
+    >
+      <ion-card-header>
+        <ion-card-subtitle>{{meet.title}}</ion-card-subtitle>
+        <ion-card-subtitle>
+          <ion-badge> {{drs.getTeamName(meet.teamId, meet.clubId)}} </ion-badge>
+        </ion-card-subtitle>
+        <ion-card-title>{{meet.start.toLocaleDateString()}} </ion-card-title>
+        <ion-card-subtitle>
+          {{meet.start.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}} -
+          {{meet.end.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}}
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list-header> Signed up </ion-list-header>
+        <ion-grid>
+          <ion-row>
+            <ion-col size-sm="4" size-lg="2" *ngFor="let user of meet.signedInUserStrings">
+              <center>
+                <ion-avatar>
+                  <img [src]="'https://avatars.dicebear.com/api/initials/'+ user +'.svg'" />
+                </ion-avatar>
+                <p>Member Name</p>
+              </center>
+            </ion-col>
+            <ion-col *ngIf="meet.signedInUserStrings.length == 0">
+              <center>
+                <p>No users here</p>
+              </center>
+            </ion-col>
+            <!-- <ion-col size-sm="4" size-lg="2">
+            <center>
+              <ion-icon name="checkmark-done-circle-outline" size="large"></ion-icon><br />and 12
+              more
+            </center>
+          </ion-col> -->
+          </ion-row>
+        </ion-grid>
+        <ion-list-header> Signed out </ion-list-header>
+        <ion-grid>
+          <ion-row>
+            <ion-col size-sm="4" size-lg="2" *ngFor="let user of meet.signedOutUserStrings">
+              <center>
+                <ion-avatar>
+                  <img [src]="'https://avatars.dicebear.com/api/initials/'+ user +'.svg'" />
+                </ion-avatar>
+                <p>Member Name</p>
+              </center>
+            </ion-col>
+            <ion-col *ngIf="meet.signedOutUserStrings.length == 0">
+              <center>
+                <p>No users here</p>
+              </center>
+            </ion-col>
+            <!-- <ion-col size-sm="4" size-lg="2">
+            <center>
+              <ion-icon name="checkmark-done-circle-outline" size="large"></ion-icon><br />and 12
+              more
+            </center>
+          </ion-col> -->
+          </ion-row>
+        </ion-grid>
+        <!-- status button -->
+        <ion-button
+          expand="block"
+          [color]="statusColors[meet.currentsUsersStatus.getValue().status]"
+          (click)="toggleUserStatus(j)"
+          >{{(meet.currentsUsersStatus | async).status}}</ion-button
+        >
+      </ion-card-content>
+    </ion-card>
 
-  <!-- Text promting for selection of team -->
-  <ion-text *ngIf="showSelectPromt" color="medium">
-    <center>
-      <p><i> Please select a team </i></p>
-      <p><i> If you are unable to see a team, contact your administrator </i></p>
-    </center>
-  </ion-text>
+    <!-- list view mode (opening popups)-->
+    <ion-list *ngIf="!showSelectPromt && viewMode=='list'">
+      <ion-item *ngFor="let meet of displayableMeets" detail>
+        <ion-label>
+          <p>{{meet.start}}</p>
+          <h2>{{meet.title}}</h2>
+        </ion-label>
+        <ion-badge slot="end"
+          >{{meet.acceptedUsers.length ? meet.acceptedUsers.length : 0 }} Members</ion-badge
+        >
+      </ion-item>
+    </ion-list>
+    <!-- Text promting for selection of team -->
+    <ion-text *ngIf="showSelectPromt" color="medium">
+      <center>
+        <p><i> Please select a team </i></p>
+        <p><i> If you are unable to see a team, contact your administrator </i></p>
+      </center>
+    </ion-text>
+  </ng-template>
 
   <!-- FABs for coaches -->
   <ion-fab vertical="bottom" horizontal="start" slot="fixed" *ngIf="hasTrainerPermission">
