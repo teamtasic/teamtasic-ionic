@@ -87,7 +87,7 @@
         </ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
-        <ion-list-header> Signed up </ion-list-header>
+        <ion-list-header> Angemeldet </ion-list-header>
         <ion-grid>
           <ion-row>
             <ion-col size-sm="4" size-lg="2" *ngFor="let user of meet.signedInUserStrings">
@@ -95,7 +95,7 @@
                 <ion-avatar>
                   <img [src]="'https://avatars.dicebear.com/api/initials/'+ user +'.svg'" />
                 </ion-avatar>
-                <p>Member Name</p>
+                <p>{{user}}</p>
               </center>
             </ion-col>
             <ion-col *ngIf="meet.signedInUserStrings.length == 0">
@@ -111,7 +111,7 @@
           </ion-col> -->
           </ion-row>
         </ion-grid>
-        <ion-list-header> Signed out </ion-list-header>
+        <ion-list-header> Abgemeldet </ion-list-header>
         <ion-grid>
           <ion-row>
             <ion-col size-sm="4" size-lg="2" *ngFor="let user of meet.signedOutUserStrings">
@@ -119,12 +119,12 @@
                 <ion-avatar>
                   <img [src]="'https://avatars.dicebear.com/api/initials/'+ user +'.svg'" />
                 </ion-avatar>
-                <p>Member Name</p>
+                <p>{{user}}</p>
               </center>
             </ion-col>
             <ion-col *ngIf="meet.signedOutUserStrings.length == 0">
               <center>
-                <p>No users here</p>
+                <p>Keine Benutzer hier</p>
               </center>
             </ion-col>
             <!-- <ion-col size-sm="4" size-lg="2">
@@ -160,8 +160,8 @@
     <!-- Text promting for selection of team -->
     <ion-text *ngIf="showSelectPromt" color="medium">
       <center>
-        <p><i> Please select a team </i></p>
-        <p><i> If you are unable to see a team, contact your administrator </i></p>
+        <p><i> Bitte wähle ein Team aus. </i></p>
+        <p><i> Wenn du keine Teams siehst, bitte kontaktiere den Support. </i></p>
       </center>
     </ion-text>
   </ng-template>

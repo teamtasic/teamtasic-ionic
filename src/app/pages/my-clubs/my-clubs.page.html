@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title> my clubs </ion-title>
+    <ion-title> Meine Clubs </ion-title>
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
@@ -15,7 +15,7 @@
   </ion-header>
 
   <ion-item *ngIf="displayableClubs.lenght == 0">
-    <p>You currently do not hold administrative permissions for any clubs.</p>
+    <p>Du verwaltest momentan keine Clubs.</p>
   </ion-item>
   <ion-item
     *ngFor="let club of displayableClubs"
@@ -26,6 +26,6 @@
   </ion-item>
 
   <ion-item button routerLink="/my-clubs/create-club" detail>
-    <ion-label>Create new club</ion-label>
+    <ion-label>Neuen Club erstellen</ion-label>
   </ion-item>
 </ion-content>
