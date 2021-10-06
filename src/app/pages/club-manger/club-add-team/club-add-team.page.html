@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title> add team </ion-title>
+    <ion-title> Team hinzufügen </ion-title>
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
@@ -10,16 +10,15 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">add team</ion-title>
+      <ion-title size="large">Team hinzufügen</ion-title>
     </ion-toolbar>
   </ion-header>
 
   <!-- content start -->
   <ion-item>
     <p>
-      Um ein neues Team zu erstellen, fülle einen Namen aus. Anschliessnd erhältst du einen Link um
-      Teilnehmer hinzuzufügen.
-      <a routerLink="#learnMore">watch video...</a>
+      Um ein neues Team zu erstellen, fülle einen Namen aus. Anschliessend kannst du Mitglieder
+      anhand ihrer Benutzer-Id hinzufügen.
     </p>
   </ion-item>
   <!-- <ion-item>
@@ -31,7 +30,7 @@
     </ion-item>
     <ion-row>
       <ion-col>
-        <ion-button expand="block" (click)="createTeam()"> add team</ion-button>
+        <ion-button expand="block" (click)="createTeam()"> Team hinzufügen</ion-button>
       </ion-col>
     </ion-row>
   </form>

@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title> edit team </ion-title>
+    <ion-title> Team bearbeiten </ion-title>
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
@@ -10,12 +10,12 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">edit team</ion-title>
+      <ion-title size="large">Team bearbeiten</ion-title>
     </ion-toolbar>
   </ion-header>
 
   <ion-item *ngIf="hasChanges" color="danger">
-    <ion-label> unsaved changes </ion-label>
+    <ion-label> Nicht gespeicherte Änderungen </ion-label>
   </ion-item>
 
   <!-- content start -->
@@ -26,7 +26,7 @@
       <ion-input placeholder="Name" type="text" formControlName="name"></ion-input>
     </ion-item>
 
-    <ion-list-header> Members </ion-list-header>
+    <ion-list-header> Mitglieder </ion-list-header>
 
     <ion-item *ngFor="let member of members | keyvalue">
       <ion-label>
@@ -42,11 +42,11 @@
     </ion-item>
   </form>
 
-  <ion-list-header> Add member </ion-list-header>
+  <ion-list-header> Mitglied hinzufügen </ion-list-header>
   <!-- form for adding members -->
   <form [formGroup]="addGroup">
     <ion-item>
-      <ion-input placeholder="user id" type="text" formControlName="uid"></ion-input>
+      <ion-input placeholder="Benutzer-Id" type="text" formControlName="uid"></ion-input>
       <ion-spinner slot="end" *ngIf="userState == 'loading'"></ion-spinner>
 
       <ion-icon
@@ -61,35 +61,40 @@
     </ion-item>
     <ion-item>
       <ion-checkbox color="danger" formControlName="asCoach"></ion-checkbox>
-      <ion-label> as Coach? </ion-label>
+      <ion-label> Als Trainer? </ion-label>
     </ion-item>
     <ion-row>
       <ion-col>
-        <ion-button expand="block" (click)="addMember()" color="success"> add member </ion-button>
+        <ion-button expand="block" (click)="addMember()" color="success">
+          Mitglied hinzufügen
+        </ion-button>
       </ion-col>
     </ion-row>
   </form>
 
-  <ion-list-header> Save changes </ion-list-header>
+  <ion-list-header> Änderungen speichern </ion-list-header>
   <ion-item *ngIf="hasChanges" color="danger">
-    <ion-label> unsaved changes </ion-label>
+    <ion-label> Nicht gespeicherte Änderungen </ion-label>
   </ion-item>
   <ion-row>
     <ion-col>
-      <ion-button expand="block" (click)="saveChanges()"> save changes</ion-button>
+      <ion-button expand="block" (click)="saveChanges()"> Änderungen speichern</ion-button>
     </ion-col>
   </ion-row>
   <ion-row>
     <ion-col>
-      <ion-button color="secondary" expand="block" (click)="resetChanges()">
-        discard changes</ion-button
+      <ion-button color="medium" expand="block" (click)="resetChanges()">
+        Änderungen verwerfen</ion-button
       >
     </ion-col>
   </ion-row>
-  <ion-list-header> delete team </ion-list-header>
+  <ion-list-header> Team löschen </ion-list-header>
+  <ion-item class="ion-text-wrap"> </ion-item>
   <ion-row>
     <ion-col>
-      <ion-button color="danger" expand="block" (click)="deleteTeam()"> delete team</ion-button>
+      <ion-button color="danger" expand="block" (click)="deleteTeam()" disabled>
+        Team löschen</ion-button
+      >
     </ion-col>
   </ion-row>
 </ion-content>
