@@ -62,15 +62,17 @@ export class Tab2Page implements OnInit {
     console.log('onTeamSelect:', this.selectedMembershipIndex);
     // load meets for selected team
     const selMembership = this.selectableMemberships[this.selectedMembershipIndex];
-    this.displayableMeets = await this.drs.getMeets(
-      selMembership.teamId,
-      selMembership.clubId,
-      0,
-      9,
-      selMembership.userId
-    );
-    this.hasTrainerPermission = selMembership.role == 'trainer';
-    this.buildDisplayStrings();
+    if (selMembership) {
+      this.displayableMeets = await this.drs.getMeets(
+        selMembership.teamId,
+        selMembership.clubId,
+        0,
+        9,
+        selMembership.userId
+      );
+      this.hasTrainerPermission = selMembership.role == 'trainer';
+      this.buildDisplayStrings();
+    }
   }
 
   buildDisplayStrings() {

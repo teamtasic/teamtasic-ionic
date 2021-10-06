@@ -1,31 +1,41 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Settings</ion-title>
+    <ion-title>Einstellungen</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Settings</ion-title>
+      <ion-title size="large">Einstellungen</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-list>
     <ion-list-header>
-      <ion-label>Account & Clubs</ion-label>
+      <ion-label>Konto & Clubs</ion-label>
     </ion-list-header>
     <ion-item button routerLink="/my-clubs" routerLinkActive="active" detail>
-      <ion-label>Manage my clubs</ion-label>
+      <ion-label>Meine Clubs verwalten</ion-label>
     </ion-item>
     <ion-item button routerLink="/my-account" routerLinkActive="active" detail>
-      <ion-label>Manage my account</ion-label>
+      <ion-label>Mein Konto verwalten</ion-label>
+    </ion-item>
+    <ion-list-header>
+      <ion-label>Technischer Support</ion-label>
+    </ion-list-header>
+    <ion-item button routerLink="/faq" routerLinkActive="active" detail disabled>
+      <ion-label>FAQ</ion-label>
+      <ion-note slot="end">Work in Progress</ion-note>
+    </ion-item>
+    <ion-item button href="mailto:help@teamtasic.app" detail>
+      <ion-label>Kontakt</ion-label>
     </ion-item>
   </ion-list>
   <ion-list class="ion-margin-top ion-margin-bottom">
-    <ion-button (click)="logout()" expand="block" color="danger"> log out </ion-button>
+    <ion-button (click)="logout()" expand="block" color="danger"> Ausloggen </ion-button>
   </ion-list>
+  <ion-row style="height: 3em"> </ion-row>
   <ion-list class="ion-margin-top">
-    <ion-item-divider></ion-item-divider>
     <ion-item>
       <ion-label>Version</ion-label>
       <ion-note slot="end">1.0.0</ion-note>

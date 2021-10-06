@@ -15,7 +15,7 @@
   <!-- already registered -->
 
   <!-- pending trainings section -->
-  <ion-list *ngIf="userHasJoinedTeam">
+  <ion-list *ngIf="userHasJoinedTeam; else joinPrompt">
     <ion-card>
       <ion-card-header>
         <ion-card-subtitle>Du hast noch offene Trainings</ion-card-subtitle>
@@ -30,7 +30,7 @@
       </ion-card-content>
     </ion-card>
   </ion-list>
-  <ion-list *ngIf="userHasJoinedTeam">
+  <ion-list>
     <!-- whats new section -->
     <ion-card>
       <ion-card-header>
@@ -38,7 +38,7 @@
         <ion-card-title>Hoi, Hey, Tschau</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <p>Wir freuen uns darauf, endlich unseren Launch zu feiern!</p>
+        <p>Wir freuen uns darauf, endlich unsere Veröffentlichung zu feiern!</p>
         <p>Solltest du Anregungen oder wünsche haben, kannst du uns gerne eine Mail schreiben.</p>
         <p>Bei weiteren Fragen stehen wir natürlich auch gerne zur Verfügung.</p>
       </ion-card-content>
@@ -46,20 +46,25 @@
   </ion-list>
 
   <!-- regsiter new subuser -->
-  <ion-list *ngIf="!userHasJoinedTeam">
-    <ion-row style="height: 1em"> </ion-row>
-    <ion-item>
-      <p>
-        Du bist monementan noch in keinem Team registriert. Erstelle einen neuen Verein oder teile
-        deinem Administrator deine UID mit, damit dieser dich in deinem Team registrieren kann.
-        <ion-router-link href="">learn more...</ion-router-link>
-      </p>
-    </ion-item>
+  <ng-template #joinPrompt>
+    <ion-list>
+      <ion-row style="height: 1em"> </ion-row>
+      <ion-item>
+        <p>
+          Du bist monementan noch in keinem Team registriert. Erstelle einen neuen Verein oder teile
+          deinem Administrator deine Benutzer-Id mit, damit dieser dich in deinem Team registrieren
+          kann.
+        </p>
+      </ion-item>
 
-    <ion-row style="height: 1em"> </ion-row>
+      <ion-row style="height: 1em"> </ion-row>
 
-    <ion-item detail button routerLink="/my-clubs" routerLinkActive="active">
-      <ion-label>create team</ion-label>
-    </ion-item>
-  </ion-list>
+      <ion-item detail button routerLink="/my-clubs" routerLinkActive="active">
+        <ion-label>Team erstellen</ion-label>
+      </ion-item>
+      <ion-item detail button routerLink="/my-account" routerLinkActive="active">
+        <ion-label>Teile deine Benutzer-Id</ion-label>
+      </ion-item>
+    </ion-list>
+  </ng-template>
 </ion-content>
