@@ -12,6 +12,7 @@ import {
   catchError,
 } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
+import { NotificationService } from 'src/app/services/notification-service.service';
 @Component({
   selector: 'app-club-edit-team',
   templateUrl: './club-edit-team.page.html',
@@ -24,7 +25,8 @@ export class ClubEditTeamPage implements OnInit {
     private fb: FormBuilder,
     private drs: DataRepositoryService,
     public actionSheetController: ActionSheetController,
-    public alertController: AlertController
+    public alertController: AlertController,
+    public ns: NotificationService
   ) {
     if (this.drs.syncedClubs.size == 0) {
       this.router.navigate(['/login'], { replaceUrl: true });
@@ -250,6 +252,7 @@ export class ClubEditTeamPage implements OnInit {
     } else {
       this.userState = 'none';
     }
+    this.ns.showToast('Benutzer wurde hinzugefügt');
   }
 
   async saveChanges() {
@@ -277,6 +280,7 @@ export class ClubEditTeamPage implements OnInit {
       aname: ['', [Validators.required]],
       asCoach: [false],
     });
+    this.ns.showToast('Änderungen gespeichert');
   }
 
   async deleteTeam() {
@@ -286,6 +290,7 @@ export class ClubEditTeamPage implements OnInit {
     await this.drs.resync();
     this.drs.needsUpdateUserData.next(true);
     this.router.navigate(['/my-clubs/detail', this.clubId]);
+    this.ns.showToast('Team gelöscht');
   }
 
   resetChanges() {
