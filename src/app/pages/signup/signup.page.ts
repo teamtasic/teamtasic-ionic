@@ -18,15 +18,23 @@ export class SignupPage implements OnInit {
       name: ['', [Validators.required, Validators.minLength(3)]],
       // tos
       tos: [false, [Validators.requiredTrue]],
+      phoneNumber: ['', Validators.required],
+      address: ['', Validators.required],
+      zipcode: ['', Validators.required],
     });
-
-    //this.signupform.valueChanges.subscribe(console.log)
   }
 
   async signUp() {
     console.log(this.signupform.value);
 
-    await this.auth.createUser(this.email.value, this.password.value, this.name.value);
+    await this.auth.createUser(
+      this.email.value,
+      this.password.value,
+      this.name.value,
+      this.phoneNumber.value,
+      this.address.value,
+      this.zipcode.value
+    );
   }
 
   get email() {
@@ -37,5 +45,14 @@ export class SignupPage implements OnInit {
   }
   get name() {
     return this.signupform.get('name');
+  }
+  get phoneNumber() {
+    return this.signupform.get('phoneNumber');
+  }
+  get address() {
+    return this.signupform.get('address');
+  }
+  get zipcode() {
+    return this.signupform.get('zipcode');
   }
 }

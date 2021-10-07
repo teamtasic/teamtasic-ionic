@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "967538874315",
+    "project_id": "teamtasic-dev",
+    "storage_bucket": "teamtasic-dev.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:967538874315:android:2fbe6c63cd68a7dd01c84e",
+        "android_client_info": {
+          "package_name": "app.teamtasic.ionic.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "967538874315-nedu7luofvggq6f7uefh5n5376qm6f6q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWH5U0qsWdI33JNf31AWk85JmVN0pX-ac"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "967538874315-nedu7luofvggq6f7uefh5n5376qm6f6q.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "967538874315-398jbralidv0hcv96ou5ufikuae2c9vh.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "app.teamtasic.ionic.ios",
+                "app_store_id": "1588914453"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

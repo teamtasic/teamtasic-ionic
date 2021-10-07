@@ -16,42 +16,50 @@
 
   <!-- page start -->
   <form [formGroup]="signupform" (submit)="signUp()">
-
     <ion-item>
-      <ion-label>Displayname <ion-text color="danger">*</ion-text></ion-label>
+      <ion-label position="stacked">Benutzername <ion-text color="danger">*</ion-text></ion-label>
       <ion-input type="text" required formControlName="name"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label>Email <ion-text color="danger">*</ion-text></ion-label>
+      <ion-label position="stacked">Email <ion-text color="danger">*</ion-text></ion-label>
       <ion-input type="email" required formControlName="email"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label>Password <ion-text color="danger">*</ion-text></ion-label>
+      <ion-label position="stacked">Passwort <ion-text color="danger">*</ion-text></ion-label>
       <ion-input type="password" required formControlName="password"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Telefonnummer</ion-label>
+      <ion-input type="text" formControlName="phoneNumber" placeholder="Telefonnummer"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Adresse</ion-label>
+      <ion-input type="text" formControlName="address" placeholder="Adresse"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Postleitzahl, Stadt</ion-label>
+      <ion-input type="text" formControlName="zipcode" placeholder="Postleizahl, Stadt"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-checkbox formControlName="tos" slot="start"> </ion-checkbox>
+      <ion-label> Ich stimme den AGB zu. </ion-label>
     </ion-item>
 
     <ion-row>
       <ion-col>
-        <ion-checkbox  formControlName="tos">  </ion-checkbox>
-        <ion-label>
-          I agree to the <a href="#">terms and conditions</a>
-        </ion-label>
-
-      </ion-col>
-    </ion-row>
-
-        <ion-row>
-      <ion-col>
-        <ion-button type="submit" expand="block" [disabled]="signupform.invalid">sign up</ion-button>
+        <ion-button type="submit" expand="block" [disabled]="signupform.invalid"
+          >Registrieren</ion-button
+        >
       </ion-col>
     </ion-row>
   </form>
 </ion-content>
 <ion-footer>
-
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button> Help </ion-button>
+      <ion-button disabled> Help </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-footer>

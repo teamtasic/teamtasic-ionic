@@ -26,11 +26,15 @@
   </ion-item>
 
   <ion-list>
+    <ion-list-header>Benutzer-Id</ion-list-header>
     <ion-item>
-      <ion-label>User ID (zum kopieren klicken)</ion-label>
+      <ion-label>Benutzer-Id (zum kopieren klicken)</ion-label>
     </ion-item>
-    <ion-item button (click)="copyUidToClipboard()">
+    <ion-item button [detail]="false" (click)="copyUidToClipboard()">
       <ion-label color="primary">{{(drs.currentUser | async).uid}}</ion-label>
+      <ion-button slot="end" fill="clear" color="medium" (click)="shareUid()">
+        <ion-icon slot="icon-only" name="share-outline"></ion-icon>
+      </ion-button>
     </ion-item>
   </ion-list>
 
@@ -38,9 +42,39 @@
     <ion-list-header> Meine Daten </ion-list-header>
     <form [formGroup]="userData">
       <ion-item>
-        <ion-label position="stacked">Vorname</ion-label>
-        <ion-input type="text" formControlName="firstName" placeholder="Vorname"></ion-input>
+        <ion-label position="stacked">Benutzername</ion-label>
+        <ion-input type="text" formControlName="username" placeholder="Benutzername"></ion-input>
       </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Telefonnummer</ion-label>
+        <ion-input
+          type="text"
+          formControlName="phoneNumber"
+          placeholder="Telefonnummer"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Adresse</ion-label>
+        <ion-input type="text" formControlName="address" placeholder="Adresse"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Postleitzahl, Stadt</ion-label>
+        <ion-input
+          type="text"
+          formControlName="zipcode"
+          placeholder="Postleizahl, Stadt"
+        ></ion-input>
+      </ion-item>
+
+      <ion-row>
+        <ion-col>
+          <ion-button expand="block" (click)="saveUserData()" [disabled]="userData.invalid">
+            Änderungen speichern</ion-button
+          >
+        </ion-col>
+      </ion-row>
     </form>
     <ion-list-header> Sicherheit </ion-list-header>
     <ion-item detail>
@@ -54,3 +88,11 @@
     </ion-item>
   </ion-list>
 </ion-content>
+
+<!--
+  username: string;
+  //email: string;
+  phoneNumber: string;
+  //birthDate: string; n/a
+  address: string;
+  zipcode: string;-->

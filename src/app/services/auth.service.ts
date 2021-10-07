@@ -5,18 +5,28 @@ import { AlertController } from '@ionic/angular';
 import { BehaviorSubject } from 'rxjs';
 import { AuthUserData } from '../classes/auth-user-data';
 import { DataRepositoryService } from './data-repository.service';
+import { NotificationService } from './notification-service.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  async createUser(email: string, pw: string, username: string) {
+  async createUser(
+    email: string,
+    pw: string,
+    username: string,
+    phoneNumber: string,
+    address: string,
+    zip: string
+  ) {
     await this.fba
       .createUserWithEmailAndPassword(email, pw)
       .then(async (userCredential) => {
         var user = userCredential.user;
         if (user) {
-          this.drs.addUser(new AuthUserData(user.uid, null, username, email, []));
+          this.drs.addUser(
+            new AuthUserData(user.uid, null, username, email, [], phoneNumber, '', address, zip)
+          );
           user.sendEmailVerification();
         }
 
@@ -50,7 +60,7 @@ export class AuthService {
       })
       .catch((error) => {
         var errorCode = error.code;
-
+        this.ns.showToast(`Fehler: ${errorCode}`);
         console.error('[ 🔑 login ]', 'authentication failed:', error);
         return { state: false, error: errorCode };
       });
@@ -64,7 +74,8 @@ export class AuthService {
     private fba: AngularFireAuth,
     private drs: DataRepositoryService,
     public alertController: AlertController,
-    private ng: NgZone
+    private ng: NgZone,
+    public ns: NotificationService
   ) {
     this.fba.onAuthStateChanged(async (user) => {
       console.log('[ 🔑 AuthService ]', 'AuthStateChanged:', user);

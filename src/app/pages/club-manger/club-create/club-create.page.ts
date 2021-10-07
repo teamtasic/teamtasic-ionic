@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { LoadingController } from '@ionic/angular';
 import { Club } from 'src/app/classes/club';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
 import { NotificationService } from 'src/app/services/notification-service.service';
@@ -18,7 +19,8 @@ export class ClubCreatePage implements OnInit {
     public fb: FormBuilder,
     private drs: DataRepositoryService,
     private router: Router,
-    private ns: NotificationService
+    private ns: NotificationService,
+    public loadingController: LoadingController
   ) {
     if (!this.drs.currentUser) {
       this.router.navigate(['/login']);
@@ -34,6 +36,10 @@ export class ClubCreatePage implements OnInit {
   }
 
   async createClub() {
+    const loading = await this.loadingController.create({
+      message: 'Erstelle Club...',
+    });
+    await loading.present();
     try {
       await this.drs.createClub(
         new Club('', null, this.clubCreateForm.value.name, ''),
@@ -42,8 +48,10 @@ export class ClubCreatePage implements OnInit {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       await this.drs.resync();
       this.router.navigate(['/my-clubs']);
+      await loading.dismiss();
       this.ns.showToast('Club erfolgreich erstellt.');
     } catch (error) {
+      await loading.dismiss();
       this.ns.showToast(`Fehler: ${error.message}`);
     }
   }
