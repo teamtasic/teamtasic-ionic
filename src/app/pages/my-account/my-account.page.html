@@ -70,7 +70,9 @@
 
       <ion-row>
         <ion-col>
-          <ion-button expand="block" (click)="saveUserData()"> Änderungen speichern</ion-button>
+          <ion-button expand="block" (click)="saveUserData()" [disabled]="userData.invalid">
+            Änderungen speichern</ion-button
+          >
         </ion-col>
       </ion-row>
     </form>

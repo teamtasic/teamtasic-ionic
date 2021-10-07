@@ -11,13 +11,22 @@ import { NotificationService } from './notification-service.service';
   providedIn: 'root',
 })
 export class AuthService {
-  async createUser(email: string, pw: string, username: string) {
+  async createUser(
+    email: string,
+    pw: string,
+    username: string,
+    phoneNumber: string,
+    address: string,
+    zip: string
+  ) {
     await this.fba
       .createUserWithEmailAndPassword(email, pw)
       .then(async (userCredential) => {
         var user = userCredential.user;
         if (user) {
-          this.drs.addUser(new AuthUserData(user.uid, null, username, email, []));
+          this.drs.addUser(
+            new AuthUserData(user.uid, null, username, email, [], phoneNumber, '', address, zip)
+          );
           user.sendEmailVerification();
         }
 
