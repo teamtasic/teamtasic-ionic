@@ -77,13 +77,13 @@
       </ion-row>
     </form>
     <ion-list-header> Sicherheit </ion-list-header>
-    <ion-item detail>
+    <ion-item detail button (click)="changePassoword()">
       <ion-label>Passwort ändern</ion-label>
     </ion-item>
-    <ion-item detail>
+    <ion-item detail button (click)="changeEmail()">
       <ion-label>E-Mail ändern</ion-label>
     </ion-item>
-    <ion-item detail>
+    <ion-item detail button (click)="deleteAccount()" disabled>
       <ion-label>Account löschen</ion-label>
     </ion-item>
   </ion-list>

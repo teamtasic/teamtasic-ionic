@@ -99,4 +99,16 @@ export class AuthService {
   async resetPassword(email: string) {
     await this.fba.sendPasswordResetEmail(email);
   }
+  async updateEmail() {
+    const email = await this.ns.promptForNewEmail();
+    if (email) {
+      const user = await this.fba.currentUser;
+      try {
+        await user.updateEmail(email);
+        this.ns.showToast('Email wurde erfolgreich geändert');
+      } catch (error) {
+        this.ns.showToast(`Fehler: ${error.message}`);
+      }
+    }
+  }
 }

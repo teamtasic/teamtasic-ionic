@@ -76,6 +76,20 @@ export class MyAccountPage implements OnInit {
       console.warn(error);
     }
   }
+  async changePassword() {
+    await this.auth.resetPassword(this.drs.currentUser.getValue().email);
+    this.ns.showToast('Eine E-Mail mit einem Link wurde an deine E-Mail Adresse gesendet.');
+  }
+  async changeEmail() {
+    await this.auth.updateEmail();
+  }
+  async deleteAccount() {
+    // await this.auth.deleteAccount();
+    this.ns.showToast(
+      'Dein Account konnte nicht gelöscht werden. Bitte Verlasse zuerst alle Teams.'
+    );
+  }
+
   get username() {
     return this.userData.get('username');
   }
