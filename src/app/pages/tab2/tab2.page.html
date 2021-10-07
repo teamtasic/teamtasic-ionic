@@ -72,6 +72,19 @@
       </ion-select>
     </ion-item>
     <!-- content start -->
+
+    <ion-text
+      *ngIf="((!showSelectPromt && viewMode=='single') ? displayableMeets : []).length == 0"
+      color="medium"
+    >
+      <center>
+        <p><i> Noch keine Trainigs eingetragen. </i></p>
+        <p>
+          <i> Wenn du denkst es handelt sich um einen Fehler, kontaktiere deinen Administrator. </i>
+        </p>
+      </center>
+    </ion-text>
+
     <ion-card
       *ngFor="let meet of ((!showSelectPromt && viewMode=='single') ? displayableMeets : []); let j = index"
     >
