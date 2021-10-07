@@ -21,8 +21,8 @@ export class LoginPage implements OnInit {
 
   ngOnInit() {
     this.loginform = this.fb.group({
-      email: ['jesse.born@tt.ch', [Validators.required, Validators.email]],
-      password: ['testpw2021', [Validators.required, Validators.minLength(6)]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
     });
 
     this.loginform.valueChanges.subscribe(console.log);

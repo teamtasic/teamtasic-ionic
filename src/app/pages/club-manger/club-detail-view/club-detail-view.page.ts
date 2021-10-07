@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Club } from 'src/app/classes/club';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
+import { NotificationService } from 'src/app/services/notification-service.service';
 
 @Component({
   selector: 'app-club-detail-view',
@@ -14,7 +15,8 @@ export class ClubDetailViewPage implements OnInit {
     private drs: DataRepositoryService,
     private route: ActivatedRoute,
     private router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    public ns: NotificationService
   ) {
     if (!this.drs.currentUser) {
       this.router.navigate(['/login']);
@@ -53,7 +55,10 @@ export class ClubDetailViewPage implements OnInit {
     }
   }
 
-  reload() {
+  public reload() {
     this.club = this.drs.syncedClubs.get(this.clubId);
+  }
+  public saveClub() {
+    this.ns.showToast('Fehler beim speichern.');
   }
 }
