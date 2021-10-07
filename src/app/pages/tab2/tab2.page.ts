@@ -24,6 +24,12 @@ export class Tab2Page implements OnInit {
   viewMode: 'list' | 'single' = 'single';
   displayableMeets = [];
 
+  statusString = {
+    accepted: 'Angenommen',
+    declined: 'Abgelehnt',
+    pending: 'Ausstehend',
+  };
+
   @ViewChild('selector') selectRef: IonSelect;
   constructor(
     private modalController: ModalController,
