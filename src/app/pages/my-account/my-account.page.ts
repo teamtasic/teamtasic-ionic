@@ -59,6 +59,7 @@ export class MyAccountPage implements OnInit {
   async copyUidToClipboard() {
     try {
       await Clipboard.write({ string: this.drs.currentUser.getValue().uid });
+      this.ns.showToast('Benutzer Id wurde in die Zwischenablage kopiert.');
     } catch (error) {
       console.warn(error);
     }
