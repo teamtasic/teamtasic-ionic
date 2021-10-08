@@ -11,6 +11,8 @@ import { NotificationService } from './notification-service.service';
   providedIn: 'root',
 })
 export class AuthService {
+  currentlySigningUp: boolean = false;
+
   async createUser(
     email: string,
     pw: string,
@@ -19,6 +21,7 @@ export class AuthService {
     address: string,
     zip: string
   ) {
+    this.currentlySigningUp = true;
     await this.fba
       .createUserWithEmailAndPassword(email, pw)
       .then(async (userCredential) => {
@@ -29,6 +32,7 @@ export class AuthService {
           );
           user.sendEmailVerification();
         }
+        this.logout();
 
         // alert succesfull signup
         const alert = await this.alertController.create({
@@ -38,9 +42,10 @@ export class AuthService {
         });
         await alert.present();
 
-        await alert.onDidDismiss().then(() => {
-          this.router.navigateByUrl('/login', { replaceUrl: true });
-        });
+        await alert.onDidDismiss();
+
+        this.router.navigateByUrl('/login', { replaceUrl: true });
+        this.currentlySigningUp = false;
       })
       .catch((error) => {
         console.error('[ 🔑 createUser ]', 'createUser failed.');
@@ -78,20 +83,25 @@ export class AuthService {
     public ns: NotificationService
   ) {
     this.fba.onAuthStateChanged(async (user) => {
-      console.log('[ 🔑 AuthService ]', 'AuthStateChanged:', user);
-      if (user) {
-        let userData = await this.drs.getUserData(user.uid);
-        console.log('[ 🔑 login ]', 'Signed in succsessfully, preparing session kickstart');
-        console.log(userData as Object);
-        this.drs.currentUser.next(userData);
-        ng.run(() => {
-          this.router.navigateByUrl('/tabs');
-        });
-        await this.drs.kickstartPostLogin();
+      if (!this.currentlySigningUp) {
+        console.log('[ 🔑 AuthService ]', 'AuthStateChanged:', user);
+        if (user) {
+          let userData = await this.drs.getUserData(user.uid);
+          console.log('[ 🔑 login ]', 'Signed in succsessfully, preparing session kickstart');
+          console.log(userData as Object);
+          this.drs.currentUser.next(userData);
+          ng.run(() => {
+            this.router.navigateByUrl('/tabs');
+          });
+          await this.drs.kickstartPostLogin();
+        } else {
+          ng.run(() => {
+            this.router.navigateByUrl('/', { replaceUrl: true });
+          });
+        }
       } else {
-        ng.run(() => {
-          this.router.navigateByUrl('/', { replaceUrl: true });
-        });
+        console.warn('[ 🔑 login ]', 'Bailing out of AuthStateChange, Reason: Signing Up');
+        return;
       }
     });
   }

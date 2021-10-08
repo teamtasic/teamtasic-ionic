@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LoadingController, ModalController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
+import { SplashScreen } from '@capacitor/splash-screen';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +16,9 @@ export class LoginPage implements OnInit {
     public loadingController: LoadingController,
     public authService: AuthService,
     public fb: FormBuilder
-  ) {}
+  ) {
+    SplashScreen.hide();
+  }
 
   loginform: FormGroup;
 
@@ -25,7 +28,7 @@ export class LoginPage implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
 
-    this.loginform.valueChanges.subscribe(console.log);
+    //this.loginform.valueChanges.subscribe(console.log);
   }
 
   async login() {
