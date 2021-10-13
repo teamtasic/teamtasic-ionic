@@ -29,22 +29,24 @@
       <ion-input type="password" required formControlName="password"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label position="stacked">Telefonnummer</ion-label>
+      <ion-label position="stacked">Telefonnummer<ion-text color="danger">*</ion-text></ion-label>
       <ion-input type="text" formControlName="phoneNumber" placeholder="Telefonnummer"></ion-input>
     </ion-item>
 
     <ion-item>
-      <ion-label position="stacked">Adresse</ion-label>
+      <ion-label position="stacked">Adresse<ion-text color="danger">*</ion-text></ion-label>
       <ion-input type="text" formControlName="address" placeholder="Adresse"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label position="stacked">Postleitzahl, Stadt</ion-label>
+      <ion-label position="stacked"
+        >Postleitzahl, Stadt<ion-text color="danger">*</ion-text></ion-label
+      >
       <ion-input type="text" formControlName="zipcode" placeholder="Postleizahl, Stadt"></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-checkbox formControlName="tos" slot="start"> </ion-checkbox>
-      <ion-label> Ich stimme den AGB zu. </ion-label>
+      <ion-label> Ich stimme den AGB zu. <ion-text color="danger">*</ion-text></ion-label>
     </ion-item>
 
     <ion-row>
