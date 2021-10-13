@@ -66,15 +66,14 @@ export class DataRepositoryService {
     //   }
     // }
     for (let memershipdIndex in this.currentUser.getValue().memberships) {
-      if (this.currentUser.getValue().memberships[memershipdIndex]['type'] === 'club') {
-        let clubId = this.currentUser.getValue().memberships[memershipdIndex]['club'];
+      let clubId = this.currentUser.getValue().memberships[memershipdIndex]['club'];
+      if (!this.syncedClubs.has(clubId)) {
         let c = await this.getClub(clubId);
 
         c.clubData = await this.getClubData(clubId);
         this.syncedClubs.set(clubId, c);
       }
-    }
-    for (let memershipdIndex in this.currentUser.getValue().memberships) {
+
       if (this.currentUser.getValue().memberships[memershipdIndex]['type'] === 'team') {
         console.log('memberships found: ');
         let teamId = this.currentUser.getValue().memberships[memershipdIndex]['team'];

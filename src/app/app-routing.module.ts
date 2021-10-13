@@ -108,6 +108,11 @@ const routes: Routes = [
       import('./pages/my-account/my-account.module').then((m) => m.MyAccountPageModule),
   },
   {
+    path: 'privacy-policy',
+    loadChildren: () =>
+      import('./pages/privacy-policy/privacy-policy.module').then((m) => m.PrivacyPolicyPageModule),
+  },
+  {
     path: '',
     redirectTo: '/login',
     pathMatch: 'full',
