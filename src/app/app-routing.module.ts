@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { AuthGuard } from './guards/auth.guard';
 import { AutologinGuard } from './guards/autologin.guard';
 
@@ -109,13 +108,18 @@ const routes: Routes = [
       import('./pages/my-account/my-account.module').then((m) => m.MyAccountPageModule),
   },
   {
+    path: 'privacy-policy',
+    loadChildren: () =>
+      import('./pages/privacy-policy/privacy-policy.module').then((m) => m.PrivacyPolicyPageModule),
+  },
+  {
     path: '',
     redirectTo: '/login',
     pathMatch: 'full',
   },
   {
     path: '**',
-    component: PageNotFoundComponent,
+    redirectTo: '/login',
   },
 ];
 @NgModule({

@@ -4,7 +4,7 @@ import { MeetCreatePagePage } from '../meet-create-page/meet-create-page.page';
 import { ModalController } from '@ionic/angular';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Meet } from 'src/app/classes/meet';
+import { Meet, userMeetStatus } from 'src/app/classes/meet';
 import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 @Component({
   selector: 'app-tab2',
@@ -64,7 +64,7 @@ export class Tab2Page implements OnInit {
 
     this.onTeamSelect();
   }
-  async onTeamSelect() {
+  public async onTeamSelect() {
     console.log('onTeamSelect:', this.selectedMembershipIndex);
     // load meets for selected team
     const selMembership = this.selectableMemberships[this.selectedMembershipIndex];
@@ -81,7 +81,7 @@ export class Tab2Page implements OnInit {
     }
   }
 
-  buildDisplayStrings() {
+  public buildDisplayStrings() {
     const selMembership = this.selectableMemberships[this.selectedMembershipIndex];
     // set display strings
     this.displayableMeets.forEach((meet: Meet) => {
@@ -106,7 +106,7 @@ export class Tab2Page implements OnInit {
     });
   }
 
-  async presentAddModal() {
+  public async presentAddModal() {
     const modal = await this.modalController.create({
       component: MeetCreatePagePage,
       componentProps: {
@@ -117,7 +117,7 @@ export class Tab2Page implements OnInit {
     return await modal.present();
   }
 
-  async toggleUserStatus(index: number) {
+  public async toggleUserStatus(index: number) {
     this.displayableMeets[index].currentsUsersStatus.next(
       this.displayableMeets[index].currentsUsersStatus.getValue().cycleStatus()
     );
@@ -141,13 +141,13 @@ export class Tab2Page implements OnInit {
         });
     }
   }
-  async rebuildDisplayStrings(index: number) {
+  public async rebuildDisplayStrings(index: number) {
     this.displayableMeets[index].fixUserStatus(
       this.selectableMemberships[this.selectedMembershipIndex].userId
     );
     this.buildDisplayStrings();
   }
-  getMembershipsDisplayText(membership: selectableMembership) {
+  public getMembershipsDisplayText(membership: selectableMembership) {
     //this.drs.syncedClubs.get(membership.clubId).name;
 
     return `${

@@ -22,9 +22,7 @@
         <h2>{{chat.title}}</h2>
         <h3>{{chat.h3}}: {{chat.h2}}</h3>
       </ion-label>
-      <ion-badge *ngIf="chat.unreadCount != 0" slot="end"
-        >{{chat.unreadCount}}</ion-badge
-      >
+      <ion-badge *ngIf="chat.unreadCount != 0" slot="end">{{chat.unreadCount}}</ion-badge>
     </ion-item>
     <!--message end-->
   </ion-list>

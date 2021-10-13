@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { PageNotFoundComponent } from './page-not-found.component';
+import { PrivacyPolicyPage } from './privacy-policy.page';
 
-describe('PageNotFoundComponent', () => {
-  let component: PageNotFoundComponent;
-  let fixture: ComponentFixture<PageNotFoundComponent>;
+describe('PrivacyPolicyPage', () => {
+  let component: PrivacyPolicyPage;
+  let fixture: ComponentFixture<PrivacyPolicyPage>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ PageNotFoundComponent ],
+      declarations: [ PrivacyPolicyPage ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(PageNotFoundComponent);
+    fixture = TestBed.createComponent(PrivacyPolicyPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

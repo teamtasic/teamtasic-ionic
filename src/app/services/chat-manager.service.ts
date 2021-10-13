@@ -6,10 +6,8 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class ChatManagerService {
   private _chats: ChatData[] = [];
-  private observableChats: BehaviorSubject<ChatData[]> = new BehaviorSubject<
-    ChatData[]
-  >([]);
-  constructor(chats) {}
+  private observableChats: BehaviorSubject<ChatData[]> = new BehaviorSubject<ChatData[]>([]);
+  constructor() {}
 
   get chats() {
     return this.observableChats.asObservable();
