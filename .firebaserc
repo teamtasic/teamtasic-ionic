@@ -9,7 +9,7 @@
     }
   },
   "projects": {
-    "default": "teamtasic-dev",
+    "testing": "teamtasic-dev",
     "teamtasic-production": "teamtasic"
   }
 }
