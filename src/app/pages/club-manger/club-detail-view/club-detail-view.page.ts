@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { throwError } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 import { Club } from 'src/app/classes/club';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
 import { NotificationService } from 'src/app/services/notification-service.service';
@@ -24,12 +26,16 @@ export class ClubDetailViewPage implements OnInit {
   }
 
   editClub: FormGroup;
+  addAdminGroup: FormGroup = this.fb.group({
+    name: ['', [Validators.required]],
+    uid: ['', [Validators.required]],
+  });
 
   clubId: string;
   club: Club;
 
   admins: Object[] = [];
-
+  userState: 'none' | 'loading' | 'verified' = 'none';
   ngOnInit() {
     this.route.paramMap.subscribe((params) => {
       this.clubId = params.get('clubId');
@@ -53,6 +59,36 @@ export class ClubDetailViewPage implements OnInit {
         this.admins.push(this.club.clubData.users[member]);
       }
     }
+
+    this.addAdminGroup.valueChanges
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        tap((data) => {
+          this.userState = 'loading';
+        }),
+        switchMap((data) => {
+          if (data.uid.length != 0) {
+            return this.drs.userExists(data.uid);
+          } else {
+            return new Promise<Boolean>((resolve) => {
+              resolve(false);
+            });
+          }
+        }),
+        tap((exists) => {
+          if (exists) {
+            this.userState = 'verified';
+          } else {
+            this.userState = 'none';
+          }
+        }),
+        catchError((err) => {
+          this.userState = 'none';
+          return throwError(err);
+        })
+      )
+      .subscribe();
   }
 
   public reload() {
