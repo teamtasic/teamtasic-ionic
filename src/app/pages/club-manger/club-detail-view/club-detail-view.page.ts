@@ -97,4 +97,38 @@ export class ClubDetailViewPage implements OnInit {
   public saveClub() {
     this.ns.showToast('Fehler beim speichern.');
   }
+
+  public async addAdmin() {
+    /** :
+     *
+     * TODO: - check if user is already admin
+     * TODO: - write to clubData: Normal firestore update
+     * TODO: - write to userData: cloudFunction
+     */
+    if (this.addAdminGroup.valid) {
+      if (
+        this.drs.syncedClubs.get(this.clubId).clubData.users[this.addAdminGroup.value.uid] ===
+        'admin'
+      ) {
+        this.ns.showToast('Benutzer ist bereits Admin.');
+      }
+      if (
+        this.drs.syncedClubs.get(this.clubId).clubData.users[this.addAdminGroup.value.uid] ===
+        'owner'
+      ) {
+        this.ns.showToast('Benutzer ist bereits Besitzer.');
+      }
+      if (
+        this.drs.syncedClubs.get(this.clubId).clubData.users[this.addAdminGroup.value.uid] ===
+        undefined
+      ) {
+        this.drs
+          .addAdminToClub(this.clubId, this.addAdminGroup.value.uid, this.addAdminGroup.value.name)
+          .then(() => {
+            this.ns.showToast('Benutzer wurde hinzugefügt.');
+            this.admins.push(this.addAdminGroup.value);
+          });
+      }
+    }
+  }
 }

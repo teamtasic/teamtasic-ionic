@@ -227,7 +227,12 @@ export class DataRepositoryService {
     this.currentUser.next(user);
     this.updateUser();
   }
-  async writeClubData(clubData: ClubData) {
+  /**
+   *
+   * @param clubData
+   * @deprecated 1.0.1
+   */
+  async _writeClubData(clubData: ClubData) {
     const clubDataRef = this.afs.collection(
       this.getCollectionRefWithConverter(
         `clubs/${clubData.ref.parent.parent}/clubData/clubData`,
@@ -235,6 +240,29 @@ export class DataRepositoryService {
       )
     );
   }
+  /** writes club data by club object
+   * @param club
+   * @thorws error if club is undefined
+   * @throws error if club has no uid
+   * @throws error if clubData is undefined
+   * @since 1.0.1
+   */
+  async writeClubData(club: Club) {
+    if (!club) {
+      throw new Error('club is undefined');
+    }
+    if (!club.uid) {
+      throw new Error('club has no uid');
+    }
+    if (!club.clubData) {
+      throw new Error('clubData is undefined');
+    }
+    const clubDataRef = this.afs.collection(
+      this.getCollectionRefWithConverter(`clubs/${club.uid}/clubData`, ClubData.converter)
+    );
+    await clubDataRef.doc('clubData').set(club.clubData);
+  }
+
   async createClubData(club: Club, license: number) {
     const clubDataRef = this.afs
       .collection(
@@ -724,6 +752,55 @@ export class DataRepositoryService {
       }
     }
     return meet;
+  }
+  /** adds an admin to a club
+   * @param clubId
+   * @param userId
+   * @param userName
+   * @since 1.0.2
+   * @returns Pormise<void>
+   * @throws error if club does not exist
+   * @throws error if user does not exist
+   * @throws error if user is already an admin
+   */
+  async addAdminToClub(clubId: string, userId: string, userName: string) {
+    return await new Promise<void>((resolve, reject) => {
+      this.syncedClubs.get(clubId).clubData.users[userId] = {
+        userName: userName,
+        role: 'admin',
+      };
+      this.writeClubData(this.syncedClubs.get(clubId));
+
+      this.afs.collection('adminAddReq').add({
+        clubId: clubId,
+        userId: userId,
+        userName: userName,
+      });
+      resolve();
+    });
+  }
+  /** removes an admin from a club
+   * @param clubId
+   * @param userId
+   * @since 1.0.2
+   * @returns Pormise<void>
+   * @throws error if club does not exist
+   * @throws error if user does not exist
+   * @throws error if user is not an admin
+   */
+  async removeAdminFromClub(clubId: string, userId: string) {
+    return await new Promise<void>((resolve, reject) => {
+      if (this.syncedClubs.get(clubId).clubData.users[userId].role != 'admin') {
+        reject(new Error('user is not an admin'));
+      }
+      delete this.syncedClubs.get(clubId).clubData.users[userId];
+      this.writeClubData(this.syncedClubs.get(clubId));
+      this.afs.collection('adminRemoveReq').add({
+        clubId: clubId,
+        userId: userId,
+      });
+      resolve();
+    });
   }
 
   /** get team name string from local syncedClubs
