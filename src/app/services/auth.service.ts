@@ -87,8 +87,7 @@ export class AuthService {
         console.log('[ 🔑 AuthService ]', 'AuthStateChanged:', user);
         if (user) {
           let userData = await this.drs.getUserData(user.uid);
-          console.log('[ 🔑 login ]', 'Signed in succsessfully, preparing session kickstart');
-          console.log(userData as Object);
+          console.log('[ 🔑 login ]', 'Signed in succsessfully, starting session');
           this.drs.currentUser.next(userData);
           ng.run(() => {
             this.router.navigateByUrl('/tabs');
