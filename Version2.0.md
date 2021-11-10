@@ -75,6 +75,7 @@
     - ChatDetails
     - AddEvent
     - EditEvent
+    - EventDetails
   - Vereine
     - Meine Vereine
     - Verein erstellen
@@ -114,3 +115,52 @@
         "role": enum<role>
       }
       ```
+- 📦 `Clubs`:
+  ```JSON
+  {
+    "name": string,
+    "billingTier": enum<billingTier>,
+    "billingInformation": object
+  }
+  ```
+  - 📄 `ClubData/Members`
+    ```JSON
+    {
+      "members": [
+        {
+          "name": string,
+          "uid": userAccountId,
+          "role": enum<role>
+        }
+      ]
+    }
+    ```
+  - 📦 `Teams`:
+    ```JSON
+    {
+      "name": string,
+    }
+    ```
+    - 📄 `TeamData/Members`
+      ```JSON
+      {
+        "members": [
+          {
+            "name": string,
+            "uid": userAccountId,
+            "role": enum<role>
+          }
+        ]
+      }
+      ```
+    - 📦 `Messages`:
+      ```JSON
+      {
+        "type": "msg" | "event" | "announcment",
+        "content": string,
+        "ref": ?string,
+        "sender": string,
+        "timestamp": ISO8601TS
+      }
+      ```
+
