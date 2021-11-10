@@ -177,6 +177,7 @@
 
 
 ## andere (mehr oder weniger dumme ideen & gedanken):
-- 2\ `BehaviorSubject`s pro mit firestore synchronisirtem dokumt, um Biidirecktional schreiben und lesen zu können.
+- 2 `BehaviorSubject`s pro mit firestore synchronisirtem dokumt, um Biidirecktional schreiben und lesen zu können.
   - Eines fungiert als 'readBuffer' und hört auf änderungen in firestore
   - Das andere als 'writeBuffer' und schreibt bei emmission zu firestore
+- Kontaktbuch vorerst low-priority
