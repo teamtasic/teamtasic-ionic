@@ -763,7 +763,7 @@ export class DataRepositoryService {
    * @throws error if user does not exist
    * @throws error if user is already an admin
    */
-  async addAdminToClub(clubId: string, userId: string, userName: string) {
+  async addAdminToClub(clubId: string, userId: string, userName: string, displayName: string) {
     return await new Promise<void>((resolve, reject) => {
       this.syncedClubs.get(clubId).clubData.users[userId] = {
         userName: userName,
@@ -775,6 +775,7 @@ export class DataRepositoryService {
         clubId: clubId,
         userId: userId,
         userName: userName,
+        displayName: displayName,
       });
       resolve();
     });

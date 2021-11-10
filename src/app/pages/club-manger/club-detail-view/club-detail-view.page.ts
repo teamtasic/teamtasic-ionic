@@ -123,7 +123,12 @@ export class ClubDetailViewPage implements OnInit {
         undefined
       ) {
         this.drs
-          .addAdminToClub(this.clubId, this.addAdminGroup.value.uid, this.addAdminGroup.value.name)
+          .addAdminToClub(
+            this.clubId,
+            this.addAdminGroup.value.uid,
+            this.addAdminGroup.value.name,
+            this.club.name
+          )
           .then(() => {
             this.ns.showToast('Benutzer wurde hinzugefügt.');
             this.admins.push(this.addAdminGroup.value);

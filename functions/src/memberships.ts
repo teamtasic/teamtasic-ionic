@@ -1,4 +1,5 @@
 import * as functions from 'firebase-functions';
+
 const admin = require('firebase-admin');
 
 const db = admin.firestore();
@@ -81,6 +82,32 @@ exports.leaveUserFromTeam = functions
               });
           });
       }),
+      snapshot.ref.delete(),
+    ]);
+  });
+exports.addAdminToClub = functions
+  .region('europe-west6')
+  .firestore.document('addAdminReq/{addAdminReqId}')
+  .onCreate((snapshot, context) => {
+    const data = snapshot.data();
+    const clubId = data.clubId;
+    const userId = data.userId;
+    const displayName = data.displayName;
+
+    // apend entry to user documents membership array
+    return Promise.all([
+      db
+        .collection('users')
+        .doc(`${userId}`)
+        .update({
+          memberships: admin.firestore.FieldValue.arrayUnion({
+            club: clubId,
+            displayName: displayName,
+            userId: userId,
+            role: 'admin',
+            type: 'club',
+          }),
+        }),
       snapshot.ref.delete(),
     ]);
   });
