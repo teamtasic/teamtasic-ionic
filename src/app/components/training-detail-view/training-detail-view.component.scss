@@ -1,0 +1,11 @@
+.status-icon {
+  font-size: 96px;
+}
+.accepted {
+  --background: var(--ion-color-success);
+  --color: #fff;
+}
+.declined {
+  --background: var(--ion-color-danger);
+  --color: #fff;
+}
