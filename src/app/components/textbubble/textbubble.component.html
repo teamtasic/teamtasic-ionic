@@ -1,0 +1,22 @@
+<ion-grid class="msg-grid">
+  <ion-row>
+    <ion-col *ngIf="!sentByMe" size="2"> </ion-col>
+
+    <!-- <ion-avatar>
+        <img [src]="'https://avatars.dicebear.com/api/initials/' + 'Jesse Born' + '.svg'" />
+      </ion-avatar> -->
+    <ion-col>
+      <ion-card [ngClass]="{ sentByMe: !sentByMe, msg: true }">
+        <ion-card-header *ngIf="showSender">
+          <ion-card-subtitle [ngClass]="{ sentByMe: !sentByMe }"> {{ sender }} </ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <p>
+            {{ text }}
+          </p>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+    <ion-col *ngIf="sentByMe" size="2"></ion-col>
+  </ion-row>
+</ion-grid>
