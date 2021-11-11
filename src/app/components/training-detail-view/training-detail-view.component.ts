@@ -15,5 +15,17 @@ export class TrainingDetailViewComponent implements OnInit {
     this.modalController.dismiss();
   }
 
-  accepted: boolean = false;
+  status: 'accepted' | 'declined' | 'unknown' = 'unknown';
+  trainersOpen: boolean = false;
+  usersOpen: boolean = true;
+
+  change(event) {
+    this.status = event.detail.value;
+  }
+  toggleTrainers() {
+    this.trainersOpen = !this.trainersOpen;
+  }
+  toggleUsers() {
+    this.usersOpen = !this.usersOpen;
+  }
 }

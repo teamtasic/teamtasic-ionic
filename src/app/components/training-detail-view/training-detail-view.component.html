@@ -6,6 +6,7 @@
     <ion-buttons slot="start">
       <ion-button (click)="dismiss()">Abbrechen</ion-button>
     </ion-buttons>
+    <ion-title>01.12.2021</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="createMeet()" [disabled]="true">Speichern</ion-button>
     </ion-buttons>
@@ -15,7 +16,7 @@
   <ion-list>
     <!-- My status section start -->
 
-    <ion-card class="accepted" *ngIf="accepted">
+    <ion-card class="accepted" *ngIf="status == 'accepted'">
       <ion-grid>
         <ion-row>
           <ion-col size="5">
@@ -33,7 +34,7 @@
       </ion-grid>
     </ion-card>
 
-    <ion-card class="declined" *ngIf="!accepted">
+    <ion-card class="declined" *ngIf="status == 'declined'">
       <ion-grid>
         <ion-row>
           <ion-col size="5">
@@ -44,12 +45,123 @@
               <h5>Dein Status:</h5>
             </ion-text>
             <ion-text>
-              <h2>Abgehlehnt</h2>
+              <h2>Abgelehnt</h2>
+            </ion-text>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card>
+
+    <ion-card *ngIf="status == 'unknown'">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="5">
+            <ion-icon name="help-circle-outline" class="status-icon"></ion-icon>
+          </ion-col>
+          <ion-col size="7">
+            <ion-text>
+              <h5>Dein Status:</h5>
+            </ion-text>
+            <ion-text>
+              <h2>Unbekannt</h2>
             </ion-text>
           </ion-col>
         </ion-row>
       </ion-grid>
     </ion-card>
     <!-- my status section end -->
+    <!-- start change my status section -->
+    <ion-grid>
+      <ion-col>
+        <ion-segment [value]="status" (ionChange)="change($event)">
+          <ion-segment-button value="accepted">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+          </ion-segment-button>
+          <ion-segment-button value="declined">
+            <ion-icon name="close-circle-outline"></ion-icon>
+          </ion-segment-button>
+          <ion-segment-button value="unknown">
+            <ion-icon name="help-circle-outline"></ion-icon>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-col>
+    </ion-grid>
+    <!-- end change my status section -->
+
+    <!-- other users section -->
+
+    <ion-list-header>
+      <ion-label>Trainer</ion-label>
+      <ion-button (click)="toggleTrainers()">{{
+        trainersOpen ? 'Verstecken' : 'Zeigen'
+      }}</ion-button>
+    </ion-list-header>
+    <ion-list *ngIf="trainersOpen">
+      <ion-item>
+        <ion-avatar slot="start">
+          <img [src]="'https://avatars.dicebear.com/api/initials/' + 'Hans Zimmer' + '.svg'" />
+        </ion-avatar>
+        <ion-label>
+          <h2>Hans Zimmer</h2>
+          <p>
+            <ion-text color="primary">
+              <strong>Trainer</strong>
+            </ion-text>
+          </p>
+        </ion-label>
+        <ion-badge color="danger" slot="end">Kommt nicht</ion-badge>
+      </ion-item>
+      <ion-item>
+        <ion-avatar slot="start">
+          <img [src]="'https://avatars.dicebear.com/api/initials/' + 'Max Muster' + '.svg'" />
+        </ion-avatar>
+        <ion-label>
+          <h2>Max Muster</h2>
+          <p>
+            <ion-text color="primary">
+              <strong>Trainer</strong>
+            </ion-text>
+          </p>
+        </ion-label>
+        <ion-badge color="success" slot="end">Kommt</ion-badge>
+      </ion-item>
+    </ion-list>
+
+    <ion-list-header>
+      <ion-label>Athleten</ion-label>
+      <ion-button (click)="toggleUsers()">{{ usersOpen ? 'Verstecken' : 'Zeigen' }}</ion-button>
+    </ion-list-header>
+    <ion-list *ngIf="usersOpen">
+      <ion-item>
+        <ion-avatar slot="start">
+          <img [src]="'https://avatars.dicebear.com/api/initials/' + 'Hans Zimmer' + '.svg'" />
+        </ion-avatar>
+        <ion-label>
+          <h2>Hans Zimmer</h2>
+          <p>
+            <ion-text color="primary">
+              <strong>Athlet</strong>
+            </ion-text>
+          </p>
+        </ion-label>
+        <ion-badge color="danger" slot="end">Kommt nicht</ion-badge>
+      </ion-item>
+      <ion-item>
+        <ion-avatar slot="start">
+          <img [src]="'https://avatars.dicebear.com/api/initials/' + 'Max Muster' + '.svg'" />
+        </ion-avatar>
+        <ion-label>
+          <h2>Max Muster</h2>
+          <p>
+            <ion-text color="primary">
+              <strong>Athlet</strong>
+            </ion-text>
+          </p>
+        </ion-label>
+        <ion-badge color="success" slot="end">Kommt</ion-badge>
+      </ion-item>
+    </ion-list>
+
+    <!-- end other users section -->
   </ion-list>
 </ion-content>
