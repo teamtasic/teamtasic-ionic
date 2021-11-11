@@ -86,8 +86,11 @@
     - Email ändern
 
 ## Database:
+
 📦🪧📄
+
 - 📦 `AuthAccounts`:
+
   ```JSON
   {
     "username": string,
@@ -98,6 +101,7 @@
 
   }
   ```
+
   - 📦 `UserAccounts`:
     ```JSON
     {
@@ -115,6 +119,7 @@
         "role": enum<role>
       }
       ```
+
 - 📦 `Clubs`:
   ```JSON
   {
@@ -174,9 +179,20 @@
         "signedOutUsers": string[]
       }
       ```
-
+- 📦 `JoinCodes`:
+  ```JSON
+  {
+    "code": string,
+    "club": clubId,
+    "team": teamId,
+    "timestamp": ISO8601TS,
+    "valid": boolean,
+    "role": enum<role>
+  }
+  ```
 
 ## andere (mehr oder weniger dumme ideen & gedanken):
+
 - 2 `BehaviorSubject`s pro mit firestore synchronisirtem dokumt, um Biidirecktional schreiben und lesen zu können.
   - Eines fungiert als 'readBuffer' und hört auf änderungen in firestore
   - Das andere als 'writeBuffer' und schreibt bei emmission zu firestore

@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>chat</ion-title>
+    <ion-back-button slot="start"></ion-back-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <textbubble></textbubble>
+  <textbubble sentByMe="false" sender="sender"></textbubble>
+  <textbubble
+    sentByMe="false"
+    sender="sender"
+    text="Lorem ipsum, dolor sit amet consectetur adipisicing elit. Consequatur odio ea quibusdam voluptate debitis eum dolor perspiciatis cumque provident ad. Enim omnis aliquam, maiores eius quo quod? Totam laudantium quia voluptatibus autem obcaecati! Asperiores, alias!"
+  ></textbubble>
+  <textbubble sentByMe="false" [showSender]="true"></textbubble>
+  <textbubble sentByMe="false" [showSender]="false"></textbubble>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button>
+        <ion-icon name="send"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon name="add"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    {{msg.value?.lenght}}
+    <ion-textarea
+      #msg
+      enterkeyhint="send"
+      spellcheck="true"
+      autogrow="true"
+      rows="2"
+    ></ion-textarea>
+  </ion-toolbar>
+</ion-footer>
