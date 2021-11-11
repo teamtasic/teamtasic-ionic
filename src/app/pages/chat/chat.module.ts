@@ -8,9 +8,10 @@ import { ChatPageRoutingModule } from './chat-routing.module';
 
 import { ChatPage } from './chat.page';
 import { TextbubbleComponent } from 'src/app/components/textbubble/textbubble.component';
+import { TrainingbubbleComponent } from 'src/app/components/trainingbubble/trainingbubble.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, IonicModule, ChatPageRoutingModule],
-  declarations: [ChatPage, TextbubbleComponent],
+  declarations: [ChatPage, TextbubbleComponent, TrainingbubbleComponent],
 })
 export class ChatPageModule {}
