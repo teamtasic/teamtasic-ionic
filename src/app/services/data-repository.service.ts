@@ -207,6 +207,7 @@ export class DataRepositoryService {
             this._sessionUser.value[index] = sessionUsers[0];
           }
           console.log('[ SessionUsers valueChanged ]', sessionUsers);
+          this._sesseionUserUids.push(uid);
         },
         (error) => {
           console.log('[ SessionUsers error ]', error);
