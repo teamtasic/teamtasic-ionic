@@ -6,13 +6,11 @@ import { AngularFirestore, DocumentReference, DocumentSnapshot } from '@angular/
 import { BehaviorSubject, Observable } from 'rxjs';
 import { AuthUserData } from '../classes/auth-user-data';
 import { SessionUserData } from '../classes/session-user-data';
-
-import { UtilitysService } from './utilitys.service';
 @Injectable({
   providedIn: 'root',
 })
 export class DataRepositoryService {
-  constructor(private afs: AngularFirestore, private utils: UtilitysService) {}
+  constructor(private afs: AngularFirestore) {}
 
   /**
    *  Read behaviorsubs for incoming data from firestore
@@ -207,6 +205,95 @@ export class DataRepositoryService {
       });
     });
   }
+  // MARK: - Create
+  /**
+   * Creates a new club in firestore
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {Club} club
+   *
+   * @returns {Promise<void>}
+   */
+  async createClub(club: Club, uid: string) {
+    return await this.afs
+      .collection(this.CollectionWithConverter('clubs', Club.converter))
+      .add(club)
+      .then((ref) => {
+        this.syncClub(ref.id);
+      });
+  }
+  /**
+   * Creates a new team in firestore
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {Team} team
+   * @param {string} clubId
+   * @returns {Promise<void>}
+   */
+  async createTeam(team: Team, clubId: string) {
+    return await this.afs
+      .collection(this.CollectionWithConverter(`clubs/${clubId}/teams`, Team.converter))
+      .add(team)
+      .then((ref) => {
+        this.syncTeam(ref.id, clubId);
+      });
+  }
+  /**
+   * Creates a new meet in firestore
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {Meet} meet
+   * @param {string} clubId
+   * @param {string} teamId
+   * @returns {Promise<void>}
+   */
+  async createMeet(meet: Meet, clubId: string, teamId: string) {
+    return await this.afs
+      .collection(
+        this.CollectionWithConverter(`clubs/${clubId}/teams/${teamId}/meets`, Meet.converter)
+      )
+      .add(meet)
+      .then((ref) => {
+        this.syncMeet(ref.id, clubId, teamId);
+      });
+  }
+  /**
+   * Creates a new sessionUser in firestore
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {SessionUserData} sessionUser
+   * @param {string} uid
+   * @returns {Promise<void>}
+   *
+   */
+  async createSessionUser(sessionUser: SessionUserData, uid: string) {
+    sessionUser.owner = uid;
+    return await this.afs
+      .collection(this.CollectionWithConverter('sessionUsers', SessionUserData.converter))
+      .add(sessionUser)
+      .then((ref) => {
+        this.syncSessionUsers(uid);
+      });
+  }
+  /**
+   * Creates a new authUser in firestore
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {AuthUserData} authUser
+   * @returns {Promise<string>}
+   */
+  createAuthUser(authUser: AuthUserData) {
+    return new Promise<string>((resolve) => {
+      this.afs
+        .collection(this.CollectionWithConverter('authUsers', AuthUserData.converter))
+        .add(authUser)
+        .then((ref) => {
+          this.syncAuthUser(ref.id);
+          resolve(ref.id);
+        });
+    });
+  }
+  // MARK: - Update
 
   // HELPERS
   CollectionWithConverter(path: string, converter: any) {
