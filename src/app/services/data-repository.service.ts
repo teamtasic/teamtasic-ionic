@@ -200,6 +200,12 @@ export class DataRepositoryService {
           console.log('[ SessionUsers error ]', error);
         }
       );
+
+    return await new Promise<SessionUserData[]>((resolve) => {
+      this._sessionUser.toPromise().then((sessionUsers) => {
+        resolve(sessionUsers[this._sessionUserMap.get(uid)]);
+      });
+    });
   }
 
   // HELPERS
