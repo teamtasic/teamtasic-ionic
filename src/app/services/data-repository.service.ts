@@ -32,6 +32,12 @@ export class DataRepositoryService {
   private _sessionUserMap: Map<string, number> = new Map();
 
   /**
+   * UID storages for deciding if a new onSpnapshot listener should be added or not
+   * @since 2.0.0
+   */
+  private _sesseionUserUids: string[] = [];
+
+  /**
    *  Gets clubs from firestore
    *  Subscribes to valueChanges() of a club, and pushes the data to the _clubs BehaviorSubject and saves the index in the uid map
    *  @since 2.0.0
@@ -175,6 +181,14 @@ export class DataRepositoryService {
    * @returns {Promise<SessionUserData[]>}
    */
   async syncSessionUsers(uid: string) {
+    if (this._sesseionUserUids.includes(uid)) {
+      return await new Promise<SessionUserData[]>((resolve) => {
+        this._sessionUser.toPromise().then((sessionUsers) => {
+          resolve(sessionUsers[this._sessionUserMap.get(uid)]);
+        });
+      });
+    }
+
     let unsubscribe = this.afs
       .collection(this.CollectionWithConverter(`sessionUsers`, SessionUserData.converter))
       .ref.where('owner', '==', uid)
