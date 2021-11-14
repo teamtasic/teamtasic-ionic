@@ -187,38 +187,38 @@ export class DataRepositoryService {
           resolve(sessionUsers[this._sessionUserMap.get(uid)]);
         });
       });
-    }
-
-    let unsubscribe = this.afs
-      .collection(this.CollectionWithConverter(`sessionUsers`, SessionUserData.converter))
-      .ref.where('owner', '==', uid)
-      .onSnapshot(
-        (querySnapshot) => {
-          var sessionUsers: SessionUserData[][] = [[]];
-          querySnapshot.forEach((doc) => {
-            let data = doc.data() as SessionUserData;
-            sessionUsers[0].push(data);
-          });
-          if (this._sessionUserMap.get(uid) === undefined) {
-            this._sessionUser.next([...this._sessionUser.value, ...sessionUsers]);
-            this._sessionUserMap.set(uid, this._sessionUser.value.length - 1);
-          } else {
-            let index = this._sessionUserMap.get(uid);
-            this._sessionUser.value[index] = sessionUsers[0];
+    } else {
+      this._sesseionUserUids.push(uid);
+      let unsubscribe = this.afs
+        .collection(this.CollectionWithConverter(`sessionUsers`, SessionUserData.converter))
+        .ref.where('owner', '==', uid)
+        .onSnapshot(
+          (querySnapshot) => {
+            var sessionUsers: SessionUserData[][] = [[]];
+            querySnapshot.forEach((doc) => {
+              let data = doc.data() as SessionUserData;
+              sessionUsers[0].push(data);
+            });
+            if (this._sessionUserMap.get(uid) === undefined) {
+              this._sessionUser.next([...this._sessionUser.value, ...sessionUsers]);
+              this._sessionUserMap.set(uid, this._sessionUser.value.length - 1);
+            } else {
+              let index = this._sessionUserMap.get(uid);
+              this._sessionUser.value[index] = sessionUsers[0];
+            }
+            console.log('[ SessionUsers valueChanged ]', sessionUsers);
+          },
+          (error) => {
+            console.log('[ SessionUsers error ]', error);
           }
-          console.log('[ SessionUsers valueChanged ]', sessionUsers);
-          this._sesseionUserUids.push(uid);
-        },
-        (error) => {
-          console.log('[ SessionUsers error ]', error);
-        }
-      );
+        );
 
-    return await new Promise<SessionUserData[]>((resolve) => {
-      this._sessionUser.toPromise().then((sessionUsers) => {
-        resolve(sessionUsers[this._sessionUserMap.get(uid)]);
+      return await new Promise<SessionUserData[]>((resolve) => {
+        this._sessionUser.toPromise().then((sessionUsers) => {
+          resolve(sessionUsers[this._sessionUserMap.get(uid)]);
+        });
       });
-    });
+    }
   }
   // MARK: - Create
   /**
