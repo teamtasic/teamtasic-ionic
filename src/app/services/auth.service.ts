@@ -13,6 +13,7 @@ import { NotificationService } from './notification-service.service';
 export class AuthService {
   currentlySigningUp: boolean = false;
 
+  //! this errors out - error here - do not search for it
   async createUser(
     email: string,
     pw: string,
@@ -27,9 +28,9 @@ export class AuthService {
       .then(async (userCredential) => {
         var user = userCredential.user;
         if (user) {
-          this.drs.addUser(
-            new AuthUserData(user.uid, null, username, email, [], phoneNumber, '', address, zip)
-          );
+          // this.drs.addUser(
+          //   new AuthUserData(user.uid, null, username, email, [], phoneNumber, '', address, zip)
+          // );
           user.sendEmailVerification();
         }
         this.logout();
@@ -86,13 +87,13 @@ export class AuthService {
       if (!this.currentlySigningUp) {
         console.log('[ 🔑 AuthService ]', 'AuthStateChanged:', user);
         if (user) {
-          let userData = await this.drs.getUserData(user.uid);
+          //let userData = await this.drs.getUserData(user.uid);
           console.log('[ 🔑 login ]', 'Signed in succsessfully, starting session');
-          this.drs.currentUser.next(userData);
+          //this.drs.currentUser.next(userData);
           ng.run(() => {
             this.router.navigateByUrl('/tabs');
           });
-          await this.drs.kickstartPostLogin();
+          // await this.drs.kickstartPostLogin();
         } else {
           ng.run(() => {
             this.router.navigateByUrl('/', { replaceUrl: true });
@@ -108,6 +109,7 @@ export class AuthService {
   async resetPassword(email: string) {
     await this.fba.sendPasswordResetEmail(email);
   }
+
   async updateEmail() {
     const email = await this.ns.promptForNewEmail();
     if (email) {

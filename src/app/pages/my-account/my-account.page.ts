@@ -28,27 +28,28 @@ export class MyAccountPage implements OnInit {
   _userData: FormGroup = this.userData;
 
   ngOnInit() {
-    this.drs.currentUser.subscribe((user) => {
-      if (user) {
-        this.userData = this.fb.group({
-          username: [user.username, Validators.required],
-          phoneNumber: [user.phoneNumber, Validators.required],
-          address: [user.address, Validators.required],
-          zipcode: [user.zipcode, Validators.required],
-        });
-      }
-    });
+    // this.drs.currentUser.subscribe((user) => {
+    //   if (user) {
+    //     this.userData = this.fb.group({
+    //       username: [user.username, Validators.required],
+    //       phoneNumber: [user.phoneNumber, Validators.required],
+    //       address: [user.address, Validators.required],
+    //       zipcode: [user.zipcode, Validators.required],
+    //     });
+    //   }
+    // });
   }
   async saveUserData() {
-    let user = await this.drs.currentUser.getValue();
+    // let user = await this.drs.currentUser.getValue();
+    let user;
     if (user) {
       try {
         user.username = this.username.value;
         user.phoneNumber = this.phoneNumber.value;
         user.address = this.address.value;
         user.zipcode = this.zipcode.value;
-        this.drs.currentUser.next(user);
-        await this.drs.updateUser();
+        // this.drs.currentUser.next(user);
+        // await this.drs.updateUser();
         this.ns.showToast('Deine Daten wurden gespeichert.');
       } catch (error) {
         this.ns.showToast(`Fehler beim Speichern der Daten: ${error}`);
@@ -58,7 +59,7 @@ export class MyAccountPage implements OnInit {
 
   async copyUidToClipboard() {
     try {
-      await Clipboard.write({ string: this.drs.currentUser.getValue().uid });
+      // await Clipboard.write({ string: this.drs.currentUser.getValue().uid });
       this.ns.showToast('Benutzer Id wurde in die Zwischenablage kopiert.');
     } catch (error) {
       console.warn(error);
@@ -68,9 +69,9 @@ export class MyAccountPage implements OnInit {
     try {
       await Share.share({
         title: 'Meine Teamtasic User Id, füge mich deinem Team hinzu!',
-        text: `Füge mich deinem Team hinzu, meine Teamtasic User Id ist ${
-          this.drs.currentUser.getValue().uid
-        }`,
+        // text: `Füge mich deinem Team hinzu, meine Teamtasic User Id ist ${
+        //   this.drs.currentUser.getValue().uid
+        // }`,
         dialogTitle: 'Teile deine User Id mit deinem Administrator.',
       });
     } catch (error) {
@@ -78,7 +79,7 @@ export class MyAccountPage implements OnInit {
     }
   }
   async changePassword() {
-    await this.auth.resetPassword(this.drs.currentUser.getValue().email);
+    //await this.auth.resetPassword(this.drs.currentUser.getValue().email);
     this.ns.showToast('Eine E-Mail mit einem Link wurde an deine E-Mail Adresse gesendet.');
   }
   async changeEmail() {

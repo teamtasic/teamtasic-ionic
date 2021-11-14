@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { DataRepositoryService } from 'src/app/services/data-repository.service';
 
 @Component({
   selector: 'app-tab2',
@@ -14,7 +15,12 @@ export class Tab2Page implements OnInit {
     pending: 'Ausstehend',
   };
 
-  constructor() {}
+  constructor(private drs: DataRepositoryService) {}
 
-  ngOnInit() {}
+  async ngOnInit() {
+    this.drs.syncClub('xqf0GKc6NCz58KD1EV1A');
+    console.log(this.drs.syncTeam('5OmqMrc1UrR1pc627ced', 'x89IVPUQHI9hU8LoWH37'));
+    this.drs.syncSessionUsers('3Qux1Gaz3TVyHNjgDtA9lKghIAm1');
+    this.drs.syncSessionUsers('3Qux1Gaz3TVyHNjgDtA9lKghIAm1');
+  }
 }

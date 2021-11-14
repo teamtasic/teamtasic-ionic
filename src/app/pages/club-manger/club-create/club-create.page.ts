@@ -22,9 +22,9 @@ export class ClubCreatePage implements OnInit {
     private ns: NotificationService,
     public loadingController: LoadingController
   ) {
-    if (!this.drs.currentUser) {
-      this.router.navigate(['/login']);
-    }
+    // if (!this.drs.currentUser) {
+    //   this.router.navigate(['/login']);
+    // }
   }
 
   ngOnInit() {
@@ -41,12 +41,12 @@ export class ClubCreatePage implements OnInit {
     });
     await loading.present();
     try {
-      await this.drs.createClub(
-        new Club('', null, this.clubCreateForm.value.name, ''),
-        this.licenseNumber
-      );
+      // await this.drs.createClub(
+      //   new Club('', null, this.clubCreateForm.value.name, ''),
+      //   this.licenseNumber
+      // );
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      await this.drs.resync();
+      //await this.drs.resync();
       this.router.navigate(['/my-clubs']);
       await loading.dismiss();
       this.ns.showToast('Club erfolgreich erstellt.');
