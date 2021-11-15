@@ -3,18 +3,25 @@ import { Team } from './team';
 
 export class Club {
   uid: string;
-  ref: DocumentReference;
-  // fields for name and logo both string
-  name: string;
-  logo: string;
 
-  // non-constructor fields
-  clubData: ClubData;
-  // constructor for all fields
-  constructor(uid: string, ref: DocumentReference, name: string, logo: string) {
+  name: string;
+  names: Object;
+  admins: string[];
+  members: string[];
+
+  /**
+   * Object representing a club. This also holds the membership data of the teams corresponding to the club.
+   * @since 1.0.0
+   * @param uid - the uid of the club
+   * @param name - the name of the club
+   * @param users - the users of the club
+   */
+  constructor(uid: string, name: string, names: Object, admins: string[], members: string[]) {
     this.uid = uid;
     this.name = name;
-    this.logo = logo;
+    this.names = names;
+    this.admins = admins;
+    this.members = members;
   }
 
   // firestore data converter
@@ -22,39 +29,23 @@ export class Club {
     toFirestore: function (club: Club) {
       return {
         name: club.name,
-        logo: club.logo,
+        names: club.names,
+        admins: club.admins,
+        members: club.members,
       };
     },
     fromFirestore: function (snapshot: any) {
-      return new Club(snapshot.id, snapshot.ref, snapshot.data().name, snapshot.data().logo);
+      let data = snapshot.data();
+      return new Club(snapshot.id, data.name, data.names, data.admins, data.members);
     },
   };
 }
 
+/**
+ * @deprecated in 2.0.0
+ */
 export class ClubData {
-  uid: string;
-  ref: DocumentReference;
-  users: Object;
-  license: number;
-  teams: Map<string, Team> = new Map<string, Team>();
-
-  constructor(uid: string, ref: DocumentReference, roles: any, license: number) {
-    this.uid = uid;
-    this.ref = ref;
-    this.users = roles;
-    this.license = license;
+  constructor() {
+    throw new Error('This class is deprecated.');
   }
-
-  static converter = {
-    toFirestore: function (clubData: ClubData) {
-      return {
-        roles: clubData.users,
-        license: clubData.license,
-      };
-    },
-    fromFirestore: function (snapshot: any, options: any) {
-      const data = snapshot.data(options);
-      return new ClubData(snapshot.id, snapshot.ref, data.roles, data.license);
-    },
-  };
 }
