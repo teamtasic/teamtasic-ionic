@@ -19,10 +19,15 @@ export class MyClubsPage implements OnInit {
   displayableClubs: Object[] = [];
 
   ngOnInit() {
-    this.logic.adminData.clubs.forEach((clubId) => {
-      this.displayableClubs.push({
-        club: clubId,
-        displayName: this.drs.clubs.getValue().find((c) => c.uid === clubId).name,
+    this.drs.clubs.subscribe((clubs) => {
+      this.displayableClubs = [];
+      clubs.forEach((club) => {
+        if (club.admins.includes(this.drs.authUsers.value[0].uid)) {
+          this.displayableClubs.push({
+            displayName: club.name,
+            club: club.uid,
+          });
+        }
       });
     });
   }

@@ -168,34 +168,38 @@ export class DataRepositoryService {
    * @since 2.0.0
    * @memberof DataRepositoryService
    * @param {string} uid
-   * @returns {Promise<AuthUserData>}
+   * @returns {Promise<void>}
    *
    */
-  syncAuthUser(uid: string) {
+  async syncAuthUser(uid: string) {
     if (!this._authUserUids.includes(uid)) {
       this._authUserUids.push(uid);
-      this.afs
-        .collection(this.CollectionWithConverter('authUsers', AuthUserData.converter))
-        .doc<AuthUserData>(uid)
-        .valueChanges()
-        .subscribe((authUser) => {
-          if (authUser) {
-            console.log('[ AuthUser valueChanged ]', authUser);
-            const index = this._authUserMap.get(uid);
-            if (index !== undefined) {
-              this._authUser.value[index] = authUser;
-            } else {
-              this._authUser.next([...this._authUser.value, authUser]);
-              this._authUserMap.set(uid, this._authUser.value.length - 1);
+      await new Promise((resolve) => {
+        this.afs
+          .collection(this.CollectionWithConverter('authUsers', AuthUserData.converter))
+          .doc<AuthUserData>(uid)
+          .valueChanges()
+          .subscribe((authUser) => {
+            if (authUser) {
+              console.log('[ AuthUser valueChanged ]', authUser);
+              const index = this._authUserMap.get(uid);
+              if (index !== undefined) {
+                let old = this._authUser.value;
+                old[index] = authUser;
+                this._authUser.next(old);
+              } else {
+                let old = this._authUser.value;
+                old.push(authUser);
+                console.log(old);
+                this._authUser.next(old);
+                console.log(this._authUser.value);
+                this._authUserMap.set(uid, this._authUser.value.length - 1);
+              }
+              resolve(undefined);
             }
-          }
-        });
-    }
-    return new Promise<AuthUserData>((resolve) => {
-      this._authUser.toPromise().then((authUser) => {
-        resolve(authUser[this._authUserMap.get(uid)]);
+          });
       });
-    });
+    }
   }
 
   /**
@@ -255,7 +259,7 @@ export class DataRepositoryService {
    *
    * @returns {Promise<void>}
    */
-  async createClub(club: Club, uid: string) {
+  async createClub(club: Club) {
     return await this.afs
       .collection(this.CollectionWithConverter('clubs', Club.converter))
       .add(club)

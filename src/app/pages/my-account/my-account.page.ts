@@ -41,14 +41,14 @@ export class MyAccountPage implements OnInit {
     await modal.present();
   }
   async saveUserData() {
-    let user = this.logic.currentUser.getValue();
+    let user = this.drs.authUsers.value[0];
     if (user) {
       try {
         user.username = this.username.value;
         user.phoneNumber = this.phoneNumber.value;
         user.address = this.address.value;
         user.zipcode = this.zipcode.value;
-        await this.drs.updateAuthUser(user, this.logic.currentUser.getValue().uid);
+        await this.drs.updateAuthUser(user, this.drs.authUsers.value[0].uid);
         this.ns.showToast('Deine Daten wurden gespeichert.');
       } catch (error) {
         this.ns.showToast(`Fehler beim Speichern der Daten: ${error}`);
@@ -57,7 +57,7 @@ export class MyAccountPage implements OnInit {
   }
 
   async changePassword() {
-    await this.auth.resetPassword(this.logic.currentUser.getValue().email);
+    await this.auth.resetPassword(this.drs.authUsers.value[0].email);
     this.ns.showToast('Eine E-Mail mit einem Link wurde an deine E-Mail Adresse gesendet.');
   }
   async changeEmail() {

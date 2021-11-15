@@ -27,7 +27,7 @@ export class AuthService {
         if (user) {
           user.sendEmailVerification();
         }
-        let userData = new AuthUserData(username, email, phoneNumber, address, zip);
+        let userData = new AuthUserData('', username, email, phoneNumber, address, zip);
         await this.drs.createAuthUser(userData, user.uid);
         // alert succesfull signup
         const alert = await this.alertController.create({

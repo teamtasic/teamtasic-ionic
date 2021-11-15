@@ -9,28 +9,8 @@ import { DataRepositoryService } from './data-repository.service';
   providedIn: 'root',
 })
 export class LogicService {
-  constructor(private drs: DataRepositoryService) {
-    this.currentUser = this.drs.authUsers.pipe(
-      map((users) => {
-        if (this._userId != undefined) {
-          return users.find((user) => user.uid == this._userId);
-        }
-        return undefined;
-      })
-    ) as BehaviorSubject<AuthUserData>;
+  constructor(private drs: DataRepositoryService) {}
 
-    this.drs.sessionUsers.pipe(
-      map((users) => {
-        if (this._userId != undefined) {
-          return users.find((user) => user[0].owner == this._userId);
-        }
-        return undefined;
-      })
-    ) as BehaviorSubject<SessionUserData[]>;
-  }
-
-  public currentUser: BehaviorSubject<AuthUserData> = new BehaviorSubject(null);
-  public sessionUsers: BehaviorSubject<SessionUserData[]> = new BehaviorSubject([]);
   public adminData: AdminData = new AdminData([]);
 
   private _userId: string;
@@ -50,9 +30,11 @@ export class LogicService {
 
   async startSession() {
     console.log('[ 🏃🏻‍♂️ startSession ]');
-    this.drs.syncAuthUser(this._userId);
+    await this.drs.syncAuthUser(this._userId);
     this.drs.syncSessionUsers(this._userId);
+    console.log(this.drs.authUsers.value);
 
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     this.syncAdminSession();
 
     console.log('[ 🏃🏻‍♂️ startSession ]', 'done for user', this._userId);
