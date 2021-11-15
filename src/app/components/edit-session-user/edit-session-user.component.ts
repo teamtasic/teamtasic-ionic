@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-edit-session-user',
@@ -6,9 +7,13 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./edit-session-user.component.scss'],
 })
 export class EditSessionUserComponent implements OnInit {
+  @Input() sessionUserId: string;
 
-  constructor() { }
+  constructor(private modalController: ModalController) {}
 
   ngOnInit() {}
 
+  dismiss() {
+    this.modalController.dismiss();
+  }
 }
