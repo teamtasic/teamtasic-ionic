@@ -17,11 +17,5 @@ export class Tab2Page implements OnInit {
 
   constructor(private drs: DataRepositoryService) {}
 
-  async ngOnInit() {
-    this.drs.syncClub('xqf0GKc6NCz58KD1EV1A');
-    this.drs.syncClub('xqf0GKc6NCz58KD1EV1A');
-    console.log(this.drs.syncTeam('5OmqMrc1UrR1pc627ced', 'x89IVPUQHI9hU8LoWH37'));
-    this.drs.syncSessionUsers('3Qux1Gaz3TVyHNjgDtA9lKghIAm1');
-    this.drs.syncSessionUsers('3Qux1Gaz3TVyHNjgDtA9lKghIAm1');
-  }
+  async ngOnInit() {}
 }
