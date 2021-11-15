@@ -16,25 +16,28 @@
 
   <ion-item>
     <ion-label>
-      <h2>{{(drs.currentUser | async).username}}</h2>
+      <h2>{{(logic.currentUser | async).username}}</h2>
     </ion-label>
     <ion-avatar slot="start">
       <img
-        [src]="'https://avatars.dicebear.com/api/initials/'+ (drs.currentUser.getValue().username) +'.svg'"
+        [src]="'https://avatars.dicebear.com/api/initials/'+ (logic.currentUser | async).username + '.svg'"
       />
     </ion-avatar>
   </ion-item>
 
   <ion-list>
-    <ion-list-header>Benutzer-Id</ion-list-header>
+    <ion-list-header> Meine Zugänge </ion-list-header>
     <ion-item>
-      <ion-label>Benutzer-Id (zum kopieren klicken)</ion-label>
+      <ion-label class="ion-text-wrap">
+        Teamtasic unterstützt es, für einen Account mehrere Personen zu erfassen. (z.B. für Eltern
+        mehrere Kinder). Diese Personen können hier Verwaltet werden.
+      </ion-label>
     </ion-item>
-    <ion-item button [detail]="false" (click)="copyUidToClipboard()">
-      <ion-label color="primary">{{(drs.currentUser | async).uid}}</ion-label>
-      <ion-button slot="end" fill="clear" color="medium" (click)="shareUid()">
-        <ion-icon slot="icon-only" name="share-outline"></ion-icon>
-      </ion-button>
+
+    <ion-item button detail>
+      <ion-item>
+        <ion-label> Neuen Zugang erstellen </ion-label>
+      </ion-item>
     </ion-item>
   </ion-list>
 
@@ -88,11 +91,3 @@
     </ion-item>
   </ion-list>
 </ion-content>
-
-<!--
-  username: string;
-  //email: string;
-  phoneNumber: string;
-  //birthDate: string; n/a
-  address: string;
-  zipcode: string;-->

@@ -8,6 +8,7 @@ import { MyAccountPageRoutingModule } from './my-account-routing.module';
 
 import { MyAccountPage } from './my-account.page';
 import { Clipboard } from '@capacitor/clipboard';
+import { EditSessionUserComponent } from 'src/app/components/edit-session-user/edit-session-user.component';
 
 @NgModule({
   imports: [
@@ -18,6 +19,6 @@ import { Clipboard } from '@capacitor/clipboard';
     MyAccountPageRoutingModule,
   ],
   declarations: [MyAccountPage],
-  providers: [],
+  providers: [EditSessionUserComponent],
 })
 export class MyAccountPageModule {}
