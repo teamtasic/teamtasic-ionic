@@ -1,5 +1,3 @@
-import { DocumentReference } from '@angular/fire/firestore';
-
 export class AuthUserData {
   uid: string;
 
@@ -47,4 +45,14 @@ export class AuthUserData {
       };
     },
   };
+}
+
+export class AdminData {
+  clubs: string[];
+  teamsByClub: Map<string, string[]>;
+
+  constructor(clubs: string[], teamsByClub: Map<string, string[]> = new Map()) {
+    this.clubs = clubs;
+    this.teamsByClub = teamsByClub;
+  }
 }

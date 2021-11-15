@@ -2,7 +2,12 @@ import { Injectable } from '@angular/core';
 import { Team, TeamData } from '../classes/team';
 import { Club, ClubData } from '../classes/club';
 import { Meet, userMeetStatus } from '../classes/meet';
-import { AngularFirestore, DocumentReference, DocumentSnapshot } from '@angular/fire/firestore';
+import {
+  AngularFirestore,
+  DocumentReference,
+  DocumentSnapshot,
+  QuerySnapshot,
+} from '@angular/fire/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { AuthUserData } from '../classes/auth-user-data';
 import { SessionUserData } from '../classes/session-user-data';
@@ -564,6 +569,83 @@ export class DataRepositoryService {
         return teams.find((team: Team) => team.uid === teamId);
       })
     );
+  }
+
+  /**
+   * Get all clubs relevant for a admin
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} - adminId The id of the admin
+   * @returns {string[]} - The ids of the clubs
+   */
+  getClubsForAdmin(adminId: string): Promise<string[]> {
+    return new Promise((resolve, reject) => {
+      this.afs
+        .collection(this.CollectionWithConverter('clubs', Club.converter))
+        .ref.where('admins', 'array-contains', adminId)
+        .get()
+        .then((querySnapshot: QuerySnapshot<Club>) => {
+          console.log(querySnapshot);
+          resolve(querySnapshot.docs.map((doc: DocumentSnapshot<Club>) => doc.id));
+        });
+    });
+  }
+
+  /**
+   * Get all teams for a club (field 'owner')
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} clubId The id of the club
+   * @returns {string[]} The ids of the teams
+   *
+   */
+  async getTeamsForClub(clubId: string): Promise<string[]> {
+    return this.afs
+      .collection(this.CollectionWithConverter(`clubs/${clubId}/teams`, Team.converter))
+      .ref.get()
+      .then((querySnapshot: QuerySnapshot<Team>) => {
+        return querySnapshot.docs.map((doc: DocumentSnapshot<Team>) => doc.id);
+      });
+  }
+
+  /**
+   * Get all teams for a sessionUser Id using a collectionGroup query
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} sessionUserId The id of the sessionUser
+   * @returns {string[]} The ids of the teams
+   */
+  async getTeamsForSessionUser(sessionUserId: string): Promise<string[]> {
+    return new Promise((resolve, reject) => {
+      this.afs
+        .collectionGroup('teams', (ref) =>
+          ref.where('sessionUsers', 'array-contains', sessionUserId)
+        )
+        .get()
+        .toPromise()
+        .then((querySnapshot: QuerySnapshot<Team>) => {
+          resolve(querySnapshot.docs.map((doc: DocumentSnapshot<Team>) => doc.id));
+        });
+    });
+  }
+
+  /**
+   * Get all meets for a team
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} teamId The id of the team
+   * @param {string} clubId The id of the club the team belongs to
+   * @returns {string[]} The ids of the meets
+   */
+  async getMeetsForTeam(teamId: string, clubId: string): Promise<string[]> {
+    return this.afs
+      .collection(
+        this.CollectionWithConverter(`clubs/${clubId}/teams/${teamId}/meets`, Meet.converter)
+      )
+      .ref.get()
+      .then((querySnapshot: QuerySnapshot<Meet>) => {
+        return querySnapshot.docs.map((doc: DocumentSnapshot<Meet>) => doc.id);
+      });
   }
 
   // HELPERS

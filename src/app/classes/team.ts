@@ -1,7 +1,6 @@
-import { DocumentReference } from '@angular/fire/firestore';
 export class Team {
   uid: string;
-  owner: string;
+
   name: string;
 
   names: Object;
@@ -12,7 +11,7 @@ export class Team {
 
   constructor(
     uid: string,
-    owner: string,
+
     name: string,
     names: Object,
     users: string[],
@@ -21,7 +20,7 @@ export class Team {
     admins: string[]
   ) {
     this.uid = uid;
-    this.owner = owner;
+
     this.name = name;
     this.names = names;
     this.users = users;
@@ -35,7 +34,7 @@ export class Team {
       const data = snapshot.data(options);
       return new Team(
         snapshot.id,
-        data.owner,
+
         data.name,
         data.names,
         data.users,
@@ -47,7 +46,7 @@ export class Team {
     toFirestore: function (team: Team) {
       return {
         name: team.name,
-        owner: team.owner,
+
         names: team.names,
         users: team.users,
         trainers: team.trainers,

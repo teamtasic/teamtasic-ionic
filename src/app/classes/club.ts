@@ -1,6 +1,3 @@
-import { DocumentReference } from '@angular/fire/firestore';
-import { Team } from './team';
-
 export class Club {
   uid: string;
 

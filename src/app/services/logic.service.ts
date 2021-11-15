@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-import { AuthUserData } from '../classes/auth-user-data';
+import { AdminData, AuthUserData } from '../classes/auth-user-data';
 import { SessionUserData } from '../classes/session-user-data';
 import { DataRepositoryService } from './data-repository.service';
 
@@ -31,6 +31,8 @@ export class LogicService {
 
   public currentUser: BehaviorSubject<AuthUserData> = new BehaviorSubject(null);
   public sessionUsers: BehaviorSubject<SessionUserData[]> = new BehaviorSubject([]);
+  public adminData: AdminData = new AdminData([]);
+
   private _userId: string;
   get userId(): string {
     return this._userId;
@@ -46,11 +48,33 @@ export class LogicService {
     this._userId = undefined;
   }
 
-  startSession() {
+  async startSession() {
     console.log('[ 🏃🏻‍♂️ startSession ]');
     this.drs.syncAuthUser(this._userId);
     this.drs.syncSessionUsers(this._userId);
 
+    this.syncAdminSession();
+
     console.log('[ 🏃🏻‍♂️ startSession ]', 'done for user', this._userId);
+  }
+
+  async syncAdminSession() {
+    this.adminData = new AdminData([]);
+    this.drs.getClubsForAdmin(this._userId).then((clubs) => {
+      console.log('[ 🔄 syncAdminSession ]', 'clubs', clubs);
+      if (clubs) {
+        this.adminData = new AdminData(clubs);
+
+        clubs.forEach((club) => {
+          this.drs.syncClub(club);
+          this.drs.getTeamsForClub(club).then((teams) => {
+            this.adminData.teamsByClub.set(club, teams);
+            teams.forEach((team) => {
+              this.drs.syncTeam(team, club);
+            });
+          });
+        });
+      }
+    });
   }
 }
