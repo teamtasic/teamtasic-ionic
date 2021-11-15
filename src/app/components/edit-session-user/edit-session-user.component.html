@@ -1,0 +1,84 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title> Zugang bearbeiten </ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismiss()">Abbrechen</ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="createMeet()" [disabled]="true">Speichern</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list-header> Persönliche Daten </ion-list-header>
+  <form>
+    <!-- form for name,
+        email,
+        birthdate,
+        phoneNumber,
+        emergencyContact-->
+    <ion-item>
+      <ion-label position="stacked">
+        Name
+        <ion-text color="danger">*</ion-text>
+      </ion-label>
+      <ion-input type="text" placeholder="Name"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">
+        Email
+        <ion-text color="danger">*</ion-text>
+      </ion-label>
+      <ion-input type="text" placeholder="Email"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">
+        Geburtsdatum
+        <ion-text color="danger">*</ion-text>
+      </ion-label>
+      <ion-input type="text" placeholder="Geburtsdatum"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">
+        Telefonnummer
+        <ion-text color="danger">*</ion-text>
+      </ion-label>
+      <ion-input type="text" placeholder="Telefonnummer"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">
+        Notfallkontakt (Telefonnummer)
+        <ion-text color="danger">*</ion-text>
+      </ion-label>
+      <ion-input type="text" placeholder="Notfallkontakt"></ion-input>
+    </ion-item>
+
+    <ion-row>
+      <ion-col>
+        <ion-button expand="block"> Speichern </ion-button>
+      </ion-col>
+    </ion-row>
+  </form>
+
+  <ion-list-header> Mitgliedschaften </ion-list-header>
+  <ion-list>
+    <ion-item>
+      <ion-label> Team01 </ion-label>
+      <ion-button (click)="onClick()" slot="end" color="medium"> Edit </ion-button>
+    </ion-item>
+  </ion-list>
+  <form>
+    <ion-item>
+      <ion-label position="stacked">TeamId <ion-text color="danger">*</ion-text></ion-label>
+      <ion-input required formControlName="teamId" type="text"></ion-input>
+    </ion-item>
+    <ion-row>
+      <ion-col>
+        <ion-button expand="block" color="success"> Team beitreten </ion-button>
+      </ion-col>
+    </ion-row>
+  </form>
+</ion-content>
