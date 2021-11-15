@@ -6,6 +6,7 @@ import { AngularFirestore, DocumentReference, DocumentSnapshot } from '@angular/
 import { BehaviorSubject, Observable } from 'rxjs';
 import { AuthUserData } from '../classes/auth-user-data';
 import { SessionUserData } from '../classes/session-user-data';
+import { filter, map } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root',
 })
@@ -185,7 +186,11 @@ export class DataRepositoryService {
           }
         });
     }
-    return this._authUser.toPromise();
+    return new Promise<AuthUserData>((resolve) => {
+      this._authUser.toPromise().then((authUser) => {
+        resolve(authUser[this._authUserMap.get(uid)]);
+      });
+    });
   }
 
   /**
@@ -313,14 +318,15 @@ export class DataRepositoryService {
    * @param {AuthUserData} authUser
    * @returns {Promise<string>}
    */
-  createAuthUser(authUser: AuthUserData) {
+  createAuthUser(authUser: AuthUserData, uid: string) {
     return new Promise<string>((resolve) => {
       this.afs
         .collection(this.CollectionWithConverter('authUsers', AuthUserData.converter))
-        .add(authUser)
+        .doc(uid)
+        .set(authUser)
         .then((ref) => {
-          this.syncAuthUser(ref.id);
-          resolve(ref.id);
+          this.syncAuthUser(uid);
+          resolve(uid);
         });
     });
   }
@@ -489,6 +495,75 @@ export class DataRepositoryService {
       .collection(this.CollectionWithConverter('authUsers', AuthUserData.converter))
       .doc(authUserId)
       .delete();
+  }
+
+  // MARK: Getters
+
+  get clubs() {
+    return this._clubs;
+  }
+  get teams() {
+    return this._teams;
+  }
+  get meets() {
+    return this._meets;
+  }
+  get sessionUsers() {
+    return this._sessionUser;
+  }
+  get authUsers() {
+    return this._authUser;
+  }
+  set clubs(clubs: BehaviorSubject<Club[]>) {
+    throw new Error('You can not set clubs');
+  }
+  set teams(teams: BehaviorSubject<Team[]>) {
+    throw new Error('You can not set teams');
+  }
+  set meets(meets: BehaviorSubject<Meet[]>) {
+    throw new Error('You can not set meets');
+  }
+  set sessionUsers(sessionUsers: BehaviorSubject<SessionUserData[][]>) {
+    throw new Error('You can not set sessionUsers');
+  }
+  set authUsers(authUsers: BehaviorSubject<AuthUserData[]>) {
+    throw new Error('You can not set authUsers');
+  }
+
+  // MARK: Dynamic observers
+
+  /**
+   * Sync a club and subscribe to changes
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} clubId The id of the club to listen to
+   * @returns {Observable<Club>}
+   */
+  getClub(clubId: string) {
+    this.syncClub(clubId);
+    // pipe internal clubs to an observable containing the club of type Observable<Club>
+    return this._clubs.pipe(
+      map((clubs: Club[]) => {
+        return clubs.find((club: Club) => club.uid === clubId);
+      })
+    );
+  }
+  /**
+   * Sync a team and subscribe to changes
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} teamId The id of the team to listen to
+   * @param {string} clubId The id of the club the team belongs to
+   * @returns {Observable<Team>}
+   */
+  getTeam(teamId: string, clubId: string) {
+    this.syncTeam(teamId, clubId);
+    // pipe internal teams to an observable containing the team of type Observable<Team>
+    return this._teams.pipe(
+      map((teams: Team[]) => {
+        return teams.find((team: Team) => team.uid === teamId);
+      })
+    );
   }
 
   // HELPERS

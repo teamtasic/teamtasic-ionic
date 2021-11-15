@@ -5,15 +5,13 @@ import { AlertController } from '@ionic/angular';
 import { BehaviorSubject } from 'rxjs';
 import { AuthUserData } from '../classes/auth-user-data';
 import { DataRepositoryService } from './data-repository.service';
+import { LogicService } from './logic.service';
 import { NotificationService } from './notification-service.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  currentlySigningUp: boolean = false;
-
-  //! this errors out - error here - do not search for it
   async createUser(
     email: string,
     pw: string,
@@ -22,40 +20,31 @@ export class AuthService {
     address: string,
     zip: string
   ) {
-    this.currentlySigningUp = true;
     await this.fba
       .createUserWithEmailAndPassword(email, pw)
       .then(async (userCredential) => {
         var user = userCredential.user;
         if (user) {
-          // this.drs.addUser(
-          //   new AuthUserData(user.uid, null, username, email, [], phoneNumber, '', address, zip)
-          // );
           user.sendEmailVerification();
         }
-        this.logout();
-
+        let userData = new AuthUserData(username, email, phoneNumber, address, zip);
+        await this.drs.createAuthUser(userData, user.uid);
         // alert succesfull signup
         const alert = await this.alertController.create({
           header: 'Erfloglreich registriert',
           subHeader: 'Wir haben dir eine Email gesendet, überprüfe deinen SPAM-Ordner',
-          buttons: ['Zum login'],
+          buttons: ['Ok'],
         });
         await alert.present();
 
         await alert.onDidDismiss();
-
-        this.router.navigateByUrl('/login', { replaceUrl: true });
-        this.currentlySigningUp = false;
       })
       .catch((error) => {
-        console.error('[ 🔑 createUser ]', 'createUser failed.');
+        console.warn('[ 🔑 createUser ]', 'createUser failed.');
         return error;
       });
   }
-  timeout(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
+
   async login(user, pw) {
     console.log('[ 🔑 login ]', 'Signing in with email and password');
     this.fba
@@ -81,27 +70,22 @@ export class AuthService {
     private drs: DataRepositoryService,
     public alertController: AlertController,
     private ng: NgZone,
-    public ns: NotificationService
+    public ns: NotificationService,
+    private logic: LogicService
   ) {
     this.fba.onAuthStateChanged(async (user) => {
-      if (!this.currentlySigningUp) {
-        console.log('[ 🔑 AuthService ]', 'AuthStateChanged:', user);
-        if (user) {
-          //let userData = await this.drs.getUserData(user.uid);
-          console.log('[ 🔑 login ]', 'Signed in succsessfully, starting session');
-          //this.drs.currentUser.next(userData);
-          ng.run(() => {
-            this.router.navigateByUrl('/tabs');
-          });
-          // await this.drs.kickstartPostLogin();
-        } else {
-          ng.run(() => {
-            this.router.navigateByUrl('/', { replaceUrl: true });
-          });
-        }
+      console.log('[ 🔑 AuthService ]', 'AuthStateChanged:', user);
+      if (user) {
+        console.log('[ 🔑 login ]', 'Signed in succsessfully, starting session');
+        this.logic.userId = user.uid;
+        ng.run(() => {
+          this.router.navigateByUrl('/tabs/tab2');
+        });
+        await this.logic.startSession();
       } else {
-        console.warn('[ 🔑 login ]', 'Bailing out of AuthStateChange, Reason: Signing Up');
-        return;
+        ng.run(() => {
+          this.router.navigateByUrl('/', { replaceUrl: true });
+        });
       }
     });
   }
