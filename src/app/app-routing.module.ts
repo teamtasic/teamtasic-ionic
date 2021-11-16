@@ -54,6 +54,20 @@ const routes: Routes = [
                 (m) => m.ClubDetailViewPageModule
               ),
           },
+          {
+            path: 'add-team',
+            loadChildren: () =>
+              import('./pages/club-manger/club-add-team/club-add-team.module').then(
+                (m) => m.ClubAddTeamPageModule
+              ),
+          },
+          {
+            path: 'edit-team/:teamId',
+            loadChildren: () =>
+              import('./pages/club-manger/club-edit-team/club-edit-team.module').then(
+                (m) => m.ClubEditTeamPageModule
+              ),
+          },
         ],
       },
     ],
