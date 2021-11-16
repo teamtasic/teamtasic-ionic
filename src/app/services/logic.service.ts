@@ -49,12 +49,7 @@ export class LogicService {
 
         clubs.forEach((club) => {
           this.drs.syncClub(club);
-          this.drs.getTeamsForClub(club).then((teams) => {
-            this.adminData.teamsByClub.set(club, teams);
-            teams.forEach((team) => {
-              this.drs.syncTeam(team, club);
-            });
-          });
+          this.drs.getTeamsForClub(club);
         });
       }
     });

@@ -1,3 +1,5 @@
+import { DocumentSnapshot } from '@angular/fire/firestore';
+
 export class Team {
   uid: string;
 
@@ -8,6 +10,7 @@ export class Team {
   trainers: string[];
   headTrainers: string[];
   admins: string[];
+  owner: string;
 
   constructor(
     uid: string,
@@ -17,7 +20,8 @@ export class Team {
     users: string[],
     trainers: string[],
     headTrainers: string[],
-    admins: string[]
+    admins: string[],
+    owner?: string
   ) {
     this.uid = uid;
 
@@ -27,11 +31,12 @@ export class Team {
     this.trainers = trainers;
     this.headTrainers = headTrainers;
     this.admins = admins;
+    this.owner = owner;
   }
 
   static converter = {
-    fromFirestore: function (snapshot: any, options: any) {
-      const data = snapshot.data(options);
+    fromFirestore: function (snapshot: DocumentSnapshot<Team>) {
+      const data = snapshot.data();
       return new Team(
         snapshot.id,
 
@@ -40,7 +45,9 @@ export class Team {
         data.users,
         data.trainers,
         data.headTrainers,
-        data.admins
+        data.admins,
+        // local querys are kinda important tho
+        snapshot.ref.parent.parent.id
       );
     },
     toFirestore: function (team: Team) {

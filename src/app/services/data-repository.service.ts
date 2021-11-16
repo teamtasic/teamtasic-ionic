@@ -57,29 +57,27 @@ export class DataRepositoryService {
    *  @returns {Club}
    */
   async syncClub(uid: string) {
-    if (!this._clubsUids.includes(uid)) {
-      this._clubsUids.push(uid);
-      this.afs
-        .collection(this.CollectionWithConverter('clubs', Club.converter))
-        .doc<Club>(uid)
-        .valueChanges()
-        .subscribe((club) => {
-          if (club) {
-            console.log('[ Club valueChanged ]', club);
-            const index = this._clubsMap.get(uid);
-            if (index !== undefined) {
-              this._clubs.value[index] = club;
-            } else {
-              this._clubs.next([...this._clubs.value, club]);
-              this._clubsMap.set(uid, this._clubs.value.length - 1);
-            }
-          }
-        });
-    }
     return await new Promise<Club>((resolve) => {
-      this._clubs.toPromise().then((clubs) => {
-        resolve(clubs[this._clubsMap.get(uid)]);
-      });
+      if (!this._clubsUids.includes(uid)) {
+        this._clubsUids.push(uid);
+        this.afs
+          .collection(this.CollectionWithConverter('clubs', Club.converter))
+          .doc<Club>(uid)
+          .valueChanges()
+          .subscribe((club) => {
+            if (club) {
+              console.log('[ Club valueChanged ]', club);
+              const index = this._clubsMap.get(uid);
+              if (index !== undefined) {
+                this._clubs.value[index] = club;
+              } else {
+                this._clubs.next([...this._clubs.value, club]);
+                this._clubsMap.set(uid, this._clubs.value.length - 1);
+              }
+            }
+            resolve(club);
+          });
+      }
     });
   }
 
@@ -603,15 +601,42 @@ export class DataRepositoryService {
    * @returns {string[]} The ids of the teams
    *
    */
-  async getTeamsForClub(clubId: string): Promise<string[]> {
-    return this.afs
-      .collection(this.CollectionWithConverter(`clubs/${clubId}/teams`, Team.converter))
-      .ref.get()
-      .then((querySnapshot: QuerySnapshot<Team>) => {
-        return querySnapshot.docs.map((doc: DocumentSnapshot<Team>) => doc.id);
-      });
+  getTeamsForClub(clubId: string) {
+    return new Promise((resolve, reject) => {
+      this.afs
+        .collection(this.CollectionWithConverter(`clubs/${clubId}/teams`, Team.converter))
+        .valueChanges()
+        .subscribe((querySnapshot) => {
+          var res: Team[] = [];
+          querySnapshot.forEach((team: Team) => {
+            if (team) {
+              res.push(team);
+              console.log('[ Team valueChanged ]', team);
+              var key = `${clubId}:${team.uid}`;
+              const index = this._teamsMap.get(key);
+              if (index !== undefined) {
+                this._teams.value[index] = team;
+              } else {
+                this._teams.next([...this._teams.value, team]);
+                this._teamsMap.set(key, this._teams.value.length - 1);
+              }
+            }
+          });
+          resolve(res);
+        });
+    });
   }
-
+  // if(team) {
+  //   console.log('[ Team valueChanged ]', team);
+  //   var key = `${clubId}:${uid}`;
+  //   const index = this._teamsMap.get(key);
+  //   if (index !== undefined) {
+  //     this._teams.value[index] = team;
+  //   } else {
+  //     this._teams.next([...this._teams.value, team]);
+  //     this._teamsMap.set(key, this._teams.value.length - 1);
+  //   }
+  // }
   /**
    * Get all teams for a sessionUser Id using a collectionGroup query
    * @since 2.0.0
@@ -650,6 +675,25 @@ export class DataRepositoryService {
       .then((querySnapshot: QuerySnapshot<Meet>) => {
         return querySnapshot.docs.map((doc: DocumentSnapshot<Meet>) => doc.id);
       });
+  }
+
+  /**
+   * Check if a auth user exists
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} authUserId The id of the auth user
+   * @returns {boolean} True if the auth user exists
+   */
+  authUserExists(authUserId: string): Promise<boolean> {
+    return new Promise<boolean>((resolve) => {
+      this.afs
+        .collection(this.CollectionWithConverter('authUsers', AuthUserData.converter))
+        .ref.doc(authUserId)
+        .get()
+        .then((doc: DocumentSnapshot<AuthUserData>) => {
+          resolve(doc.exists);
+        });
+    });
   }
 
   // HELPERS
