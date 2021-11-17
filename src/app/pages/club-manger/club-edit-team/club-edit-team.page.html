@@ -14,10 +14,6 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-item *ngIf="hasChanges" color="danger">
-    <ion-label> Nicht gespeicherte Änderungen </ion-label>
-  </ion-item>
-
   <!-- content start -->
 
   <form [formGroup]="editGroup">
@@ -28,15 +24,15 @@
 
     <ion-list-header> Mitglieder </ion-list-header>
 
-    <ion-item *ngFor="let member of members | keyvalue">
+    <ion-item *ngFor="let member of team.users">
       <ion-label>
-        <h2>{{member.value['name']}}</h2>
-        <p>{{member.value['role']}}</p>
+        <h2>{{team.names[member]}}</h2>
+        <p>{{roleStrings[roles[member]]}}</p>
       </ion-label>
       <ion-avatar slot="start">
-        <img [src]="'https://avatars.dicebear.com/api/initials/'+ member.value.name +'.svg'" />
+        <img [src]="'https://avatars.dicebear.com/api/initials/'+ team.names[memeber] +'.svg'" />
       </ion-avatar>
-      <ion-button slot="end" fill="clear" color="medium" (click)="presentActionSheet(member.key)">
+      <ion-button slot="end" fill="clear" color="medium" (click)="presentActionSheet(member)">
         <ion-icon slot="icon-only" name="ellipsis-horizontal-circle-outline"></ion-icon>
       </ion-button>
     </ion-item>
@@ -44,54 +40,26 @@
 
   <ion-list-header> Mitglied hinzufügen </ion-list-header>
   <!-- form for adding members -->
-  <form [formGroup]="addGroup">
-    <ion-item>
-      <ion-input placeholder="Benutzer-Id" type="text" formControlName="uid"></ion-input>
-      <ion-spinner slot="end" *ngIf="userState == 'loading'"></ion-spinner>
-
-      <ion-icon
-        slot="end"
-        *ngIf="userState == 'verified'"
-        name="checkmark-circle-outline"
-      ></ion-icon>
-      <ion-icon
-        slot="end"
-        *ngIf="!(userState == 'verified')"
-        name="close-circle-outline"
-      ></ion-icon>
-    </ion-item>
-    <ion-item>
-      <ion-input placeholder="name" type="text" formControlName="aname"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-checkbox color="danger" formControlName="asCoach"></ion-checkbox>
-      <ion-label> Als Trainer? </ion-label>
-    </ion-item>
-    <ion-row>
-      <ion-col>
-        <ion-button expand="block" (click)="addMember()" color="success">
-          Mitglied hinzufügen
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </form>
-
-  <ion-list-header> Änderungen speichern </ion-list-header>
-  <ion-item *ngIf="hasChanges" color="danger">
-    <ion-label> Nicht gespeicherte Änderungen </ion-label>
+  <ion-item>
+    <ion-label class="ion-text-wrap">
+      <ion-text color="danger"> ACHTUNG! </ion-text>
+      Jeder mit dem Link kann deinem Team beitreten.
+    </ion-label>
   </ion-item>
   <ion-row>
     <ion-col>
-      <ion-button expand="block" (click)="saveChanges()"> Änderungen speichern</ion-button>
+      <ion-button expand="block" (click)="addMember()" color="primary">
+        Mitglied hinzufügen
+      </ion-button>
+      <ion-button expand="block" (click)="addTrainer()" color="secondary">
+        Trainer hinzufügen
+      </ion-button>
+      <ion-button expand="block" (click)="addHeadcoach()" color="dark">
+        Cheftrainer hinzufügen
+      </ion-button>
     </ion-col>
   </ion-row>
-  <!-- <ion-row>
-    <ion-col>
-      <ion-button color="medium" expand="block" (click)="resetChanges()">
-        Änderungen verwerfen</ion-button
-      >
-    </ion-col>
-  </ion-row> -->
+
   <ion-list-header> Team löschen </ion-list-header>
   <ion-item class="ion-text-wrap"> </ion-item>
   <ion-row>
