@@ -13,16 +13,6 @@ export class Meet {
   acceptedUsers: string[] = [];
   declinedUsers: string[] = [];
 
-  signedOutUserStrings = [];
-  signedInUserStrings = [];
-
-  //:: fields for local current users status management
-  currentsUsersStatus: BehaviorSubject<userMeetStatus> = new BehaviorSubject(
-    new userMeetStatus('pending')
-  );
-
-  hasChanges: boolean = false;
-
   constructor(
     uid: string,
     title: string,
@@ -43,24 +33,6 @@ export class Meet {
     this.teamId = teamId;
     this.acceptedUsers = acceptedUsers;
     this.declinedUsers = declinedUsers;
-
-    this.currentsUsersStatus.observers.length;
-  }
-  fixUserStatus(uid: string) {
-    console.log('fixUserStatus', this.acceptedUsers);
-    if (this.acceptedUsers.includes(uid)) {
-      console.log('fixUserStatus: acceptedUsers');
-      this.currentsUsersStatus.next(new userMeetStatus('accepted'));
-    } else if (this.declinedUsers.includes(uid)) {
-      console.log('fixUserStatus: declined');
-      this.currentsUsersStatus.next(new userMeetStatus('declined'));
-    } else {
-      console.log('fixUserStatus: pending');
-      this.currentsUsersStatus.next(new userMeetStatus('pending'));
-    }
-  }
-  cycleUsersStatus() {
-    this.currentsUsersStatus.next(this.currentsUsersStatus.getValue().cycleStatus());
   }
 
   get startTimestamp(): fb.default.firestore.Timestamp {
@@ -100,24 +72,4 @@ export class Meet {
       };
     },
   };
-}
-
-export class userMeetStatus {
-  uid: string;
-  status: 'accepted' | 'declined' | 'pending';
-
-  constructor(status: 'accepted' | 'declined' | 'pending') {
-    this.status = status;
-  }
-
-  cycleStatus() {
-    if (this.status === 'accepted') {
-      this.status = 'declined';
-    } else if (this.status === 'declined') {
-      this.status = 'pending';
-    } else {
-      this.status = 'accepted';
-    }
-    return this;
-  }
 }

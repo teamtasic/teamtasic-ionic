@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Team, TeamData } from '../classes/team';
 import { Club, ClubData } from '../classes/club';
-import { Meet, userMeetStatus } from '../classes/meet';
+import { Meet } from '../classes/meet';
 import {
   AngularFirestore,
   DocumentReference,

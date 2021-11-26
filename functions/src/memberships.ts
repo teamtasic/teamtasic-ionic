@@ -1,5 +1,4 @@
 import * as functions from 'firebase-functions';
-
 const admin = require('firebase-admin');
 
 const db = admin.firestore();
@@ -111,3 +110,74 @@ exports.addAdminToClub = functions
       snapshot.ref.delete(),
     ]);
   });
+/**
+ * @since 2.0.0
+ *
+ * @param {string} userId
+ * @param {string} clubId
+ * @param {string} role
+ * @param {string} displayName
+ * @returns {Promise<void>}
+ *
+ * @memberof Functions
+ * CF to update the status of a auth/session user in a team and corresp. Club
+ */
+exports.memberOperation = functions.https.onRequest(async (req, res) => {
+  const body = req.body;
+
+  // Data about the user getting added
+  const userId = body.userId;
+  const role = body.role;
+  const clubId = body.clubId;
+  const teamId = body.teamId;
+  const remove = body.remove == 1 ? true : false;
+
+  // get user name form firestore (collection: 'sessionUsers')
+  const user = await db.collection('sessionUsers').doc(userId).get();
+
+  // if any of the fields are empty, return error
+  if (userId == '' || role == '' || clubId == '' || teamId == '') {
+    res.status(510).send('Missing fields');
+    return;
+  }
+
+  // update club document
+  await db
+    .collection('clubs')
+    .doc(clubId)
+    .update({
+      members: !remove
+        ? admin.firestore.FieldValue.arrayUnion(userId)
+        : admin.firestore.FieldValue.arrayRemove(userId),
+      admins:
+        role != 'admin' && !remove
+          ? admin.firestore.FieldValue.arrayRemove(userId)
+          : admin.firestore.FieldValue.arrayUnion(userId),
+      names: {
+        [userId]: user.data().displayName,
+      },
+    });
+
+  // update team document
+  await db.doc(`clubs/${clubId}/teams/${teamId}`).update({
+    users: !remove
+      ? admin.firestore.FieldValue.arrayUnion(userId)
+      : admin.firestore.FieldValue.arrayRemove(userId),
+    trainers:
+      role != 'trainer' && !remove
+        ? admin.firestore.FieldValue.arrayRemove(userId)
+        : admin.firestore.FieldValue.arrayUnion(userId),
+    headTrainers:
+      role != 'headTrainer' && !remove
+        ? admin.firestore.FieldValue.arrayRemove(userId)
+        : admin.firestore.FieldValue.arrayUnion(userId),
+    admins:
+      role != 'admin' && !remove
+        ? admin.firestore.FieldValue.arrayRemove(userId)
+        : admin.firestore.FieldValue.arrayUnion(userId),
+    names: {
+      [userId]: user.data().displayName,
+    },
+  });
+  res.status(200).send('ok');
+});
