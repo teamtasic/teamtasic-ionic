@@ -48,7 +48,12 @@
       <ion-checkbox formControlName="tos" slot="start"> </ion-checkbox>
       <ion-label> Ich stimme den AGB zu. <ion-text color="danger">*</ion-text></ion-label>
     </ion-item>
-
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title> Um einem Team beizuterten, </ion-card-title>
+      </ion-card-header>
+      <ion-card-content> erstelle in den Einstellungen zuerst einen Benutzer. </ion-card-content>
+    </ion-card>
     <ion-row>
       <ion-col>
         <ion-button type="submit" expand="block" [disabled]="signupform.invalid"

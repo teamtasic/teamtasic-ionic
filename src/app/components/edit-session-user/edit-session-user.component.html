@@ -7,7 +7,7 @@
       <ion-button (click)="dismiss()">Abbrechen</ion-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button (click)="createMeet()" [disabled]="true">Speichern</ion-button>
+      <ion-button (click)="saveAndDismiss()" [disabled]="dataFrom.invalid">Speichern</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -15,46 +15,41 @@
 <ion-content>
   <ion-list>
     <ion-list-header> Persönliche Daten </ion-list-header>
-    <form>
-      <!-- form for name,
-        email,
-        birthdate,
-        phoneNumber,
-        emergencyContact-->
+    <form [formGroup]="dataFrom">
       <ion-item>
         <ion-label position="stacked">
           Name
           <ion-text color="danger">*</ion-text>
         </ion-label>
-        <ion-input type="text" placeholder="Name"></ion-input>
+        <ion-input type="text" placeholder="Name" formControlName="name"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">
           Email
           <ion-text color="danger">*</ion-text>
         </ion-label>
-        <ion-input type="text" placeholder="Email"></ion-input>
+        <ion-input type="text" placeholder="Email" formControlName="email"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">
           Geburtsdatum
           <ion-text color="danger">*</ion-text>
         </ion-label>
-        <ion-input type="text" placeholder="Geburtsdatum"></ion-input>
+        <ion-input type="text" placeholder="Geburtsdatum" formControlName="birthdate"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">
           Telefonnummer
           <ion-text color="danger">*</ion-text>
         </ion-label>
-        <ion-input type="text" placeholder="Telefonnummer"></ion-input>
+        <ion-input type="text" placeholder="Telefonnummer" formControlName="phone"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">
           Notfallkontakt (Telefonnummer)
           <ion-text color="danger">*</ion-text>
         </ion-label>
-        <ion-input type="text" placeholder="Notfallkontakt"></ion-input>
+        <ion-input type="text" placeholder="Notfallkontakt" formControlName="emergency"></ion-input>
       </ion-item>
     </form>
 
@@ -65,10 +60,10 @@
       <ion-button (click)="onClick()" slot="end" color="medium"> Edit </ion-button>
     </ion-item>
 
-    <form>
+    <form [formGroup]="joinForm">
       <ion-item>
-        <ion-label position="stacked">TeamId <ion-text color="danger">*</ion-text></ion-label>
-        <ion-input required formControlName="teamId" type="text"></ion-input>
+        <ion-label position="stacked">TeamCode <ion-text color="danger">*</ion-text></ion-label>
+        <ion-input required formControlName="code" type="text"></ion-input>
         <ion-button slot="end" color="success"> Team beitreten </ion-button>
       </ion-item>
     </form>

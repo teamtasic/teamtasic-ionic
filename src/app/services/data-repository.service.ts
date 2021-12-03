@@ -305,17 +305,17 @@ export class DataRepositoryService {
    * @since 2.0.0
    * @memberof DataRepositoryService
    * @param {SessionUserData} sessionUser
-   * @param {string} uid
+   * @param {string} ownerUid
    * @returns {Promise<void>}
    *
    */
-  async createSessionUser(sessionUser: SessionUserData, uid: string) {
-    sessionUser.owner = uid;
+  async createSessionUser(sessionUser: SessionUserData, ownerUid: string) {
+    sessionUser.owner = ownerUid;
     return await this.afs
       .collection(this.CollectionWithConverter('sessionUsers', SessionUserData.converter))
       .add(sessionUser)
       .then((ref) => {
-        this.syncSessionUsers(uid);
+        this.syncSessionUsers(ownerUid);
       });
   }
   /**
@@ -407,7 +407,7 @@ export class DataRepositoryService {
     return await this.afs
       .collection(this.CollectionWithConverter('sessionUsers', SessionUserData.converter))
       .doc(sessionUserId)
-      .update(sessionUser)
+      .set(sessionUser)
       .then(() => {
         this.syncSessionUsers(uid);
       });
@@ -424,7 +424,7 @@ export class DataRepositoryService {
     return await this.afs
       .collection(this.CollectionWithConverter('authUsers', AuthUserData.converter))
       .doc(authUserId)
-      .update(authUser)
+      .set(authUser)
       .then(() => {
         this.syncAuthUser(authUserId);
       });

@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { DataRepositoryService } from 'src/app/services/data-repository.service';
-import { Clipboard } from '@capacitor/clipboard';
-import { Share } from '@capacitor/share';
-import { AuthService } from 'src/app/services/auth.service';
-import { NotificationService } from 'src/app/services/notification-service.service';
-import { LogicService } from 'src/app/services/logic.service';
-import { ModalController, PopoverController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
+import { SessionUserData } from 'src/app/classes/session-user-data';
 import { EditSessionUserComponent } from 'src/app/components/edit-session-user/edit-session-user.component';
+import { AuthService } from 'src/app/services/auth.service';
+import { DataRepositoryService } from 'src/app/services/data-repository.service';
+import { LogicService } from 'src/app/services/logic.service';
+import { NotificationService } from 'src/app/services/notification-service.service';
 
 @Component({
   selector: 'app-my-account',
@@ -30,15 +29,19 @@ export class MyAccountPage implements OnInit {
     address: ['', Validators.required],
     zipcode: ['', Validators.required],
   });
-  _userData: FormGroup = this.userData;
-
   async ngOnInit() {
-    const modal = await this.modalController.create({
-      component: EditSessionUserComponent,
-      swipeToClose: true,
+    let user = this.drs.authUsers.value[0];
+    this.userData = this.fb.group({
+      username: [user.username, Validators.required],
+      phoneNumber: [user.phoneNumber, Validators.required],
+      address: [user.address, Validators.required],
+      zipcode: [user.zipcode, Validators.required],
     });
 
-    await modal.present();
+    this.drs.syncSessionUsers(this.drs.authUsers.value[0].uid);
+    this.drs.sessionUsers.subscribe((users) => {
+      console.log(users);
+    });
   }
   async saveUserData() {
     let user = this.drs.authUsers.value[0];
@@ -79,5 +82,28 @@ export class MyAccountPage implements OnInit {
   }
   get zipcode() {
     return this.userData.get('zipcode');
+  }
+
+  // UI Actions
+  async openSessenEditorNew() {
+    const modal = await this.modalController.create({
+      component: EditSessionUserComponent,
+      swipeToClose: true,
+      componentProps: {
+        newSession: true,
+      },
+    });
+    await modal.present();
+  }
+
+  async openSessionEditor(session: SessionUserData) {
+    const modal = await this.modalController.create({
+      component: EditSessionUserComponent,
+      swipeToClose: true,
+      componentProps: {
+        session: session,
+      },
+    });
+    await modal.present();
   }
 }

@@ -7,14 +7,10 @@ const routes: Routes = [
   {
     path: 'login',
     loadChildren: () => import('./pages/login/login.module').then((m) => m.LoginPageModule),
-    canLoad: [AutologinGuard],
-    canActivate: [AutologinGuard],
   },
   {
     path: 'tabs',
     loadChildren: () => import('./pages/tabs/tabs.module').then((m) => m.TabsPageModule),
-    canLoad: [AuthGuard],
-    canActivate: [AuthGuard],
   },
   {
     path: 'reset',
@@ -81,6 +77,11 @@ const routes: Routes = [
     path: 'privacy-policy',
     loadChildren: () =>
       import('./pages/privacy-policy/privacy-policy.module').then((m) => m.PrivacyPolicyPageModule),
+  },
+  {
+    path: 'signup-and-join',
+    redirectTo: '/login',
+    pathMatch: 'full',
   },
   {
     path: '',

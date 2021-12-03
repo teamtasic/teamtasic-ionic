@@ -18,7 +18,7 @@ import { EditSessionUserComponent } from 'src/app/components/edit-session-user/e
     IonicModule,
     MyAccountPageRoutingModule,
   ],
-  declarations: [MyAccountPage],
-  providers: [EditSessionUserComponent],
+  declarations: [MyAccountPage, EditSessionUserComponent],
+  providers: [],
 })
 export class MyAccountPageModule {}
