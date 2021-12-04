@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Team, TeamData } from '../classes/team';
-import { Club, ClubData } from '../classes/club';
+import { Team } from '../classes/team';
+import { Club } from '../classes/club';
 import { Meet } from '../classes/meet';
 import {
   AngularFirestore,
@@ -10,7 +10,7 @@ import {
 } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { AuthUserData } from '../classes/auth-user-data';
-import { SessionUserData } from '../classes/session-user-data';
+import { SessionUserData, sessionMembership } from '../classes/session-user-data';
 import { filter, map } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root',
@@ -27,7 +27,6 @@ export class DataRepositoryService {
   private _meets: BehaviorSubject<Meet[]> = new BehaviorSubject([]);
   private _authUser: BehaviorSubject<AuthUserData[]> = new BehaviorSubject([]);
   private _sessionUser: BehaviorSubject<SessionUserData[][]> = new BehaviorSubject([]);
-
   /** UID-Maps for keeping track of the indexes in the array
    *  @since 2.0.0
    */
@@ -248,6 +247,48 @@ export class DataRepositoryService {
       });
     }
   }
+  /** get all sessionMembership s for a sessionuser
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} sessionUserId
+   * @return {Promise<sessionMembership[]>}
+   */
+  async syncSessionMemberships(sessionUserId: string) {
+    return await new Promise<sessionMembership[]>((resolve) => {
+      let query = this.afs.collectionGroup<Object>('teams', (ref) =>
+        ref.where('users', 'array-contains', sessionUserId)
+      );
+      query
+        .get()
+        .toPromise()
+        .then((sessionMemberships) => {
+          let rval = [];
+          sessionMemberships.forEach((doc) => {
+            let membership: sessionMembership;
+            let team = doc.data() as Team;
+            console.log('Found Membership in Team: ', team);
+            membership.userId = sessionUserId;
+            membership.clubId = doc.ref.parent.parent.id;
+            membership.teamId = doc.ref.id;
+            if (team.users.includes(sessionUserId)) {
+              membership.role = 'member';
+            }
+            if (team.trainers.includes(sessionUserId)) {
+              membership.role = 'coach';
+            }
+            if (team.headTrainers.includes(sessionUserId)) {
+              membership.role = 'headcoach';
+            }
+            if (team.admins.includes(sessionUserId)) {
+              membership.role = 'admin';
+            }
+            rval.push(membership);
+          });
+          resolve(rval);
+        });
+    });
+  }
+
   // MARK: - Create
   /**
    * Creates a new club in firestore

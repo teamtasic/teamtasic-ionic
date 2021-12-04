@@ -21,20 +21,69 @@ export class MembershipsService {
    * @memberof MembershipsService
    * @returns {Promise<string>} The link uid
    */
-  createJoinLink(role: string, clubId: string, teamId?: string) {
+  createJoinCode(
+    role: 'admin' | 'headcoach' | 'coach' | 'member',
+    clubId: string,
+    teamId?: string
+  ) {
     return new Promise<string>(async (resolve, reject) => {
-      const ref = await this.afs.collection('joinLinks').add({
+      const ref = await this.afs.collection('joinCodes').add({
         role: role,
         clubId: clubId,
-        teamId: teamId,
+        teamId: teamId || '',
       });
 
       resolve(ref.id);
     });
   }
-  invalidateJoinLink(linkId: string) {}
-  joinUsingLink(linkId: string) {
-    return new Promise<void>((resolve, reject) => {});
+  joinUsingCode(code: string, userId: string, name: string) {
+    return new Promise<void>(async (resolve, reject) => {
+      this.afs
+        .collection('joinCodes')
+        .doc(code)
+        .get()
+        .toPromise()
+        .then(async (doc) => {
+          if (doc.exists) {
+            const data = doc.data();
+            const role: 'admin' | 'headcoach' | 'coach' | 'member' = data['role'];
+            const clubId = data['clubId'];
+            const teamId = data['teamId'];
+
+            this.drs
+              .getClub(clubId)
+              .toPromise()
+              .then((club) => {
+                if (role === 'admin') {
+                  club.admins.push(userId);
+                }
+                club.names[userId] = name;
+                this.drs.updateClub(club, clubId);
+              });
+            if (role != 'admin') {
+              this.drs
+                .getTeam(teamId, clubId)
+                .toPromise()
+                .then((team) => {
+                  if (role == 'headcoach') {
+                    team.headTrainers.push(userId);
+                  }
+                  if (role == 'coach' || role == 'headcoach') {
+                    team.trainers.push(userId);
+                  }
+                  if (role == 'member' || role == 'coach' || role == 'headcoach') {
+                    team.users.push(userId);
+                  }
+                  team.names[userId] = name;
+
+                  this.drs.updateTeam(team, clubId, teamId);
+                });
+            }
+          } else {
+            reject('Invalid code');
+          }
+        });
+    });
   }
   leaveFromTeam(userId: string, teamId: string, clubId: string) {}
 }

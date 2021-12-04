@@ -52,3 +52,10 @@ export class SessionUserData {
     },
   };
 }
+
+export interface sessionMembership {
+  teamId: string;
+  clubId: string;
+  userId: string;
+  role: 'admin' | 'headcoach' | 'coach' | 'member';
+}
