@@ -46,8 +46,13 @@ export class ChatPage implements OnInit, AfterViewInit {
     });
 
     this.drs.syncMeetsForTeam(this.teamId, this.clubId).subscribe((meets) => {
-      console.log(meets);
-      this.meets = meets;
+      console.log(meets, 'sorting...');
+      let m = meets;
+      m.sort((a, b) => {
+        return (a.start as any) - (b.start as any);
+      });
+      console.log(m);
+      this.meets = m;
     });
   }
   ngAfterViewInit() {

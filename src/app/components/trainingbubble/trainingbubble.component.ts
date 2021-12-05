@@ -10,6 +10,10 @@ import { TrainingDetailViewComponent } from '../training-detail-view/training-de
 })
 export class TrainingbubbleComponent implements OnInit {
   @Input() meet: Meet;
+  @Input() sessionId: string;
+  @Input() teamId: string;
+  @Input() clubId: string;
+
   constructor(private modalController: ModalController) {}
 
   ngOnInit() {}
