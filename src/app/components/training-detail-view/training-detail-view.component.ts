@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
+import { Meet } from 'src/app/classes/meet';
 
 @Component({
   selector: 'app-training-detail-view',
@@ -9,8 +10,10 @@ import { ModalController } from '@ionic/angular';
 export class TrainingDetailViewComponent implements OnInit {
   constructor(private modalController: ModalController) {}
 
-  @Input() meetId: string;
+  @Input() meet: Meet;
   @Input() sessionId: string;
+  @Input() teamId: string;
+  @Input() clubId: string;
 
   ngOnInit() {}
 

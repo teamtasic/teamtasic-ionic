@@ -23,6 +23,9 @@ export class TrainingbubbleComponent implements OnInit {
       component: TrainingDetailViewComponent,
       componentProps: {
         meet: this.meet,
+        sessionId: this.sessionId,
+        teamId: this.teamId,
+        clubId: this.clubId,
       },
     });
 
