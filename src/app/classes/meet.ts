@@ -47,7 +47,7 @@ export class Meet {
     fromFirestore: function (snapshot: any, options: any) {
       const data = snapshot.data(options);
       return new Meet(
-        data.uid,
+        snapshot.ref.id,
         data.title,
         (data.start as fb.default.firestore.Timestamp).toDate(),
         (data.end as fb.default.firestore.Timestamp).toDate(),
