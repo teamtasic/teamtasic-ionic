@@ -29,7 +29,7 @@
   <ion-list *ngIf="memberships.length != 0; else noTeams">
     <ion-item
       *ngFor="let membership of memberships"
-      [routerLink]="'/tabs/tab2/chat/' + selectedSessionId + '/' + membership.teamId"
+      [routerLink]="'/tabs/tab2/chat/' + selectedSessionId + '/' + membership.clubId +'/' + membership.teamId"
       routerLinkActive="active"
     >
       <ion-label>

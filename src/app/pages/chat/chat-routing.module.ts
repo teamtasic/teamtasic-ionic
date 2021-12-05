@@ -6,8 +6,12 @@ import { ChatPage } from './chat.page';
 const routes: Routes = [
   {
     path: '',
-    component: ChatPage
-  }
+    component: ChatPage,
+  },
+  {
+    path: ':sessionId/:clubId/:teamId',
+    component: ChatPage,
+  },
 ];
 
 @NgModule({
