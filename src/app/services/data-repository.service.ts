@@ -749,6 +749,42 @@ export class DataRepositoryService {
     });
   }
 
+  /** checks if a joinCode exists for a team, and returns the code
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} teamId The id of the team
+   * @param {string} clubId The id of the club the team belongs to
+   * @param {string} role The role of the joinCode
+   * @returns {string} The joinCode
+   * @throws {Error} If the joinCode does not exist
+   */
+  getJoinCodeForTeam(
+    teamId: string,
+    clubId: string,
+    role: 'admin' | 'headcoach' | 'coach' | 'member'
+  ): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      this.afs
+        .collection('joinCodes')
+        .ref.where('teamId', '==', teamId)
+        .where('clubId', '==', clubId)
+        .where('role', '==', role)
+        .limit(1)
+        .get()
+        .then((querySnapshot: QuerySnapshot<Object>) => {
+          if (querySnapshot.docs.length == 1) {
+            console.log('[ JoinCode ]', querySnapshot.docs[0].data(), querySnapshot.docs[0].id);
+            resolve(querySnapshot.docs[0].id);
+          } else {
+            reject(new Error(`Join code for team ${teamId} not found`));
+          }
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  }
+
   // HELPERS
   CollectionWithConverter(path: string, converter: any) {
     return this.afs.firestore.collection(path).withConverter(converter);
