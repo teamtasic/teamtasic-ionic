@@ -57,5 +57,6 @@ export interface sessionMembership {
   teamId: string;
   clubId: string;
   userId: string;
+  displayName: string;
   role: 'admin' | 'headcoach' | 'coach' | 'member';
 }

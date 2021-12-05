@@ -49,7 +49,7 @@ export class MembershipsService {
             const role: 'admin' | 'headcoach' | 'coach' | 'member' = data['role'];
             const clubId = data['clubId'];
             const teamId = data['teamId'];
-
+            console.log('Code resolved to: ', role, clubId, teamId);
             this.drs
               .getClub(clubId)
               .toPromise()
@@ -61,23 +61,28 @@ export class MembershipsService {
                 this.drs.updateClub(club, clubId);
               });
             if (role != 'admin') {
-              this.drs
-                .getTeam(teamId, clubId)
-                .toPromise()
-                .then((team) => {
-                  if (role == 'headcoach') {
-                    team.headTrainers.push(userId);
-                  }
-                  if (role == 'coach' || role == 'headcoach') {
-                    team.trainers.push(userId);
-                  }
-                  if (role == 'member' || role == 'coach' || role == 'headcoach') {
-                    team.users.push(userId);
-                  }
-                  team.names[userId] = name;
-
-                  this.drs.updateTeam(team, clubId, teamId);
-                });
+              this.drs.getTeam(teamId, clubId).then((team) => {
+                console.log(team);
+                if (role == 'headcoach' && team.headTrainers.indexOf(userId) == -1) {
+                  team.headTrainers.push(userId);
+                }
+                if (
+                  (role == 'coach' || role == 'headcoach') &&
+                  team.trainers.indexOf(userId) == -1
+                ) {
+                  team.trainers.push(userId);
+                }
+                if (
+                  (role == 'member' || role == 'coach' || role == 'headcoach') &&
+                  team.users.indexOf(userId) == -1
+                ) {
+                  team.users.push(userId);
+                }
+                team.names[userId] = name;
+                console.log('Team with new user: ', team);
+                this.drs.updateTeam(team, clubId, teamId);
+                resolve(undefined);
+              });
             }
           } else {
             reject('Invalid code');
@@ -85,7 +90,31 @@ export class MembershipsService {
         });
     });
   }
-  leaveFromTeam(userId: string, teamId: string, clubId: string) {}
+  leaveFromTeam(userId: string, teamId: string, clubId: string) {
+    return new Promise<void>((resolve, reject) => {
+      this.drs.getTeam(teamId, clubId).then((team) => {
+        console.log(team);
+
+        const i_head = team.headTrainers.indexOf(userId);
+        const i_trainer = team.trainers.indexOf(userId);
+        const i_user = team.users.indexOf(userId);
+        if (i_head != -1) {
+          team.headTrainers.splice(i_head, 1);
+        }
+        if (i_trainer != -1) {
+          team.trainers.splice(i_trainer, 1);
+        }
+        if (i_user != -1) {
+          team.users.splice(i_user, 1);
+        }
+
+        delete team.names[userId];
+        console.log('Team with new user: ', team);
+        this.drs.updateTeam(team, clubId, teamId);
+        resolve(undefined);
+      });
+    });
+  }
 }
 
 /** Join link foramt

@@ -1,8 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
-import { SessionUserData } from 'src/app/classes/session-user-data';
+import { sessionMembership, SessionUserData } from 'src/app/classes/session-user-data';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
+import { MembershipsService } from 'src/app/services/memberships.service';
 import { NotificationService } from 'src/app/services/notification-service.service';
 
 @Component({
@@ -23,17 +24,20 @@ export class EditSessionUserComponent implements OnInit {
   });
 
   joinForm: FormGroup = this.fb.group({
-    code: [''],
+    code: ['', [Validators.required, Validators.minLength(10)]],
   });
+
+  memberships: sessionMembership[] = [];
 
   constructor(
     private modalController: ModalController,
     public drs: DataRepositoryService,
+    public mss: MembershipsService,
     private fb: FormBuilder,
-    private notification: NotificationService
+    private ns: NotificationService
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     console.log(this.session, this.newSession);
     if (this.newSession) {
       this.session = new SessionUserData('', this.drs.authUsers.value[0].uid, '', '', '', '', '');
@@ -47,6 +51,10 @@ export class EditSessionUserComponent implements OnInit {
       });
       console.log(this.dataFrom);
     }
+    this.init();
+  }
+  async init() {
+    this.memberships = await this.drs.syncSessionMemberships(this.session.uid);
   }
   saveAndDismiss() {
     try {
@@ -75,14 +83,36 @@ export class EditSessionUserComponent implements OnInit {
       }
       this.dismiss();
     } catch (error) {
-      this.notification.showToast(error.message);
+      this.ns.showToast(error.message);
     }
   }
   dismiss() {
     this.modalController.dismiss();
   }
   //MARK JOIN TEAM LEAVE TEAM
-  joinTeam() {}
+  async joinTeam() {
+    const code = this.joinForm.value.code;
+    this.joinForm.reset();
+    this.mss
+      .joinUsingCode(code, this.session.uid, this.session.name)
+      .then(() => {
+        this.ns.showToast('Team beigetreten');
+        this.init();
+      })
+      .catch((error) => {
+        this.ns.showToast(error.message);
+      });
+  }
 
-  leaveTeam() {}
+  leaveTeam(membership: sessionMembership) {
+    this.mss
+      .leaveFromTeam(this.session.uid, membership.teamId, membership.clubId)
+      .then(() => {
+        this.ns.showToast('Team verlassen');
+        this.init();
+      })
+      .catch((error) => {
+        this.ns.showToast(error.message);
+      });
+  }
 }

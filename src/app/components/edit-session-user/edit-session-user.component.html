@@ -53,19 +53,49 @@
       </ion-item>
     </form>
 
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-text color="danger">
+            Das Beitreten und verlassen von Teams wird sofort gespeichert.
+          </ion-text>
+        </ion-card-title>
+        <ion-card-content>
+          Um ein Team zu verlassen, klicken Sie auf das entsprechende Symbol. Um ein Team zu
+          betreten benutze bitte den Code den du von deinem Administrator erhältst.
+        </ion-card-content>
+      </ion-card-header>
+    </ion-card>
+
     <ion-list-header> Mitgliedschaften </ion-list-header>
 
-    <ion-item>
-      <ion-label> Team01 </ion-label>
-      <ion-button (click)="onClick()" slot="end" color="medium"> Edit </ion-button>
+    <ion-item *ngFor="let membership of memberships">
+      <ion-label> {{ membership.displayName }} </ion-label>
+      <ion-button (click)="leaveTeam(membership)" slot="end" color="warning">
+        Verlassen
+      </ion-button>
     </ion-item>
 
     <form [formGroup]="joinForm">
       <ion-item>
         <ion-label position="stacked">TeamCode <ion-text color="danger">*</ion-text></ion-label>
         <ion-input required formControlName="code" type="text"></ion-input>
-        <ion-button slot="end" color="success"> Team beitreten </ion-button>
+        <ion-button slot="end" color="success" [disabled]="joinForm.invalid" (click)="joinTeam()">
+          Team beitreten
+        </ion-button>
       </ion-item>
     </form>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-text color="primary"> Etwas nicht geklappt? </ion-text>
+        </ion-card-title>
+        <ion-card-content>
+          Überprüfe ob du den kompletten Code eingegeben hast. (Besonders 0 und O, l & I). Kopiere
+          den Code idealerweise.
+        </ion-card-content>
+      </ion-card-header>
+    </ion-card>
   </ion-list>
 </ion-content>

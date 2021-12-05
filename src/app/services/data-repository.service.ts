@@ -262,14 +262,19 @@ export class DataRepositoryService {
         .get()
         .toPromise()
         .then((sessionMemberships) => {
+          console.log('[ SessionMemberships valueChanged ]', sessionMemberships);
           let rval = [];
           sessionMemberships.forEach((doc) => {
-            let membership: sessionMembership;
             let team = doc.data() as Team;
+            let membership: sessionMembership = {
+              userId: sessionUserId,
+              clubId: doc.ref.parent.parent.id,
+              teamId: doc.ref.id,
+              displayName: team.name,
+              role: 'member',
+            };
             console.log('Found Membership in Team: ', team);
-            membership.userId = sessionUserId;
-            membership.clubId = doc.ref.parent.parent.id;
-            membership.teamId = doc.ref.id;
+
             if (team.users.includes(sessionUserId)) {
               membership.role = 'member';
             }
@@ -409,7 +414,7 @@ export class DataRepositoryService {
     return await this.afs
       .collection(this.CollectionWithConverter(`clubs/${clubId}/teams`, Team.converter))
       .doc(teamId)
-      .update(team)
+      .set(team)
       .then(() => {
         this.syncTeam(teamId, clubId);
       });
@@ -602,16 +607,23 @@ export class DataRepositoryService {
    * @memberof DataRepositoryService
    * @param {string} teamId The id of the team to listen to
    * @param {string} clubId The id of the club the team belongs to
-   * @returns {Observable<Team>}
+   * @returns {Promise<Team>}
    */
   getTeam(teamId: string, clubId: string) {
-    this.syncTeam(teamId, clubId);
-    // pipe internal teams to an observable containing the team of type Observable<Team>
-    return this._teams.pipe(
-      map((teams: Team[]) => {
-        return teams.find((team: Team) => team.uid === teamId);
-      })
-    );
+    return new Promise<Team>((resolve, reject) => {
+      this.afs
+        .collection(this.CollectionWithConverter(`clubs/${clubId}/teams`, Team.converter))
+        .doc<Team>(teamId)
+        .get()
+        .toPromise()
+        .then((doc: any) => {
+          if (doc.exists) {
+            resolve(doc.data() as Team);
+          } else {
+            reject(new Error('Team does not exist'));
+          }
+        });
+    });
   }
 
   /**
