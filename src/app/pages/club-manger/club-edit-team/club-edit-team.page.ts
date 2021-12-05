@@ -16,6 +16,8 @@ import { NotificationService } from 'src/app/services/notification-service.servi
 import { Team } from 'src/app/classes/team';
 
 import { Clipboard } from '@capacitor/clipboard';
+import { LoadingController } from '@ionic/angular';
+import { MembershipsService } from 'src/app/services/memberships.service';
 @Component({
   selector: 'app-club-edit-team',
   templateUrl: './club-edit-team.page.html',
@@ -29,7 +31,9 @@ export class ClubEditTeamPage implements OnInit {
     private drs: DataRepositoryService,
     public actionSheetController: ActionSheetController,
     public alertController: AlertController,
-    public ns: NotificationService
+    public ns: NotificationService,
+    public mms: MembershipsService,
+    public loadingController: LoadingController
   ) {}
 
   editGroup: FormGroup;
@@ -60,6 +64,7 @@ export class ClubEditTeamPage implements OnInit {
     });
   }
   async teamChanged(team: Team) {
+    this.roles = {};
     team.users.forEach((userId) => {
       this.roles[userId] = 'athlete';
     });
@@ -116,6 +121,57 @@ export class ClubEditTeamPage implements OnInit {
     } catch (e) {
       this.ns.showToast('Fehler beim Erstellen des Codes');
       console.warn(e);
+    }
+  }
+
+  async presentActionSheet(userId: string) {
+    const actionSheet = await this.actionSheetController.create({
+      header: this.team.names[userId].name,
+      buttons: [
+        {
+          text: 'Entfernen',
+          role: 'destructive',
+          icon: 'trash',
+          handler: this.removeMember.bind(this, userId),
+        },
+
+        {
+          text: 'Cancel',
+          icon: 'close',
+          role: 'cancel',
+          handler: () => {},
+        },
+      ],
+    });
+    await actionSheet.present();
+    await actionSheet.onDidDismiss();
+  }
+
+  async removeMember(userId: string) {
+    console.log('remove', userId);
+    if (this.team.admins.indexOf(userId) == -1) {
+      this.mms
+        .leaveFromTeam(userId, this.teamId, this.clubId)
+        .then(async () => {
+          const loading = await this.loadingController.create({
+            message: 'Please wait...',
+            duration: 200,
+          });
+          await loading.present();
+          await loading.onDidDismiss();
+          this.team = this.drs.teams.value.find((t) => t.uid == this.teamId);
+          this.teamChanged(this.team);
+
+          this.ns.showToast('Mitglied entfernt');
+        })
+        .catch((e) => {
+          this.ns.showToast('Fehler beim Entfernen des Mitglieds');
+          console.warn(e);
+        });
+    } else {
+      this.ns.showToast(
+        'Du kannst keine Admins entfernen. (Momentan. Bitte kontaktiere den Support)'
+      );
     }
   }
 }
