@@ -1,5 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Observable } from 'rxjs';
+import { sessionMembership, SessionUserData } from 'src/app/classes/session-user-data';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
+import { MembershipsService } from 'src/app/services/memberships.service';
 
 @Component({
   selector: 'app-tab2',
@@ -7,15 +10,22 @@ import { DataRepositoryService } from 'src/app/services/data-repository.service'
   styleUrls: ['tab2.page.scss'],
 })
 export class Tab2Page implements OnInit {
-  statusColors = { accepted: 'success', declined: 'danger', pending: 'dark' };
+  constructor(private drs: DataRepositoryService, private mms: MembershipsService) {}
 
-  statusString = {
-    accepted: 'Angenommen',
-    declined: 'Abgelehnt',
-    pending: 'Ausstehend',
-  };
+  selectedSessionId: string;
 
-  constructor(private drs: DataRepositoryService) {}
+  memberships: sessionMembership[] = [];
 
-  async ngOnInit() {}
+  async sessionChanged(event: any) {
+    this.selectedSessionId = event.detail.value;
+
+    this.memberships = await this.drs.syncSessionMemberships(this.selectedSessionId);
+  }
+  ngOnInit() {
+    this.drs.authUsers.subscribe(async (users) => {
+      if (users.length > 0) {
+        this.drs.syncSessionUsers(users[0].uid);
+      }
+    });
+  }
 }

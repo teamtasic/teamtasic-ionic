@@ -4,9 +4,16 @@
   </ion-toolbar>
 
   <ion-toolbar>
-    <ion-select interface="popover" placeholder="Benutzer auswählen">
-      <ion-select-option value="f">Jesse Born</ion-select-option>
-      <ion-select-option value="m">Jessen Born</ion-select-option>
+    <ion-select
+      interface="action-sheet"
+      placeholder="Benutzer bitte auswählen"
+      (ionChange)="sessionChanged($event)"
+    >
+      <ion-select-option
+        *ngFor="let sessionUser of (drs.sessionUsers | async)[0]"
+        [value]="sessionUser.uid"
+        >{{sessionUser.name}}</ion-select-option
+      >
     </ion-select>
   </ion-toolbar>
 </ion-header>
@@ -19,22 +26,18 @@
     </ion-text>
   </ng-template>
 
-  <ion-list *ngIf="true; else noTeams">
-    <ion-item>
+  <ion-list *ngIf="memberships.length != 0; else noTeams">
+    <ion-item
+      *ngFor="let membership of memberships"
+      [routerLink]="'/tabs/tab2/chat/' + selectedSessionId + '/' + membership.teamId"
+      routerLinkActive="active"
+    >
       <ion-label>
-        <h2>Renngruppe 3</h2>
+        <h2>{{membership.displayName}}</h2>
       </ion-label>
-      <ion-avatar slot="start"> </ion-avatar>
-    </ion-item>
-
-    <ion-item routerLink="/tabs/tab2/chat" routerLinkActive="active">
       <ion-avatar slot="start">
-        <img [src]="'https://avatars.dicebear.com/api/initials/'+ 'Renngruppe 3' +'.svg'" />
+        <img [src]="'https://avatars.dicebear.com/api/initials/'+ membership.displayName +'.svg'" />
       </ion-avatar>
-      <ion-label>
-        <h2>Renngruppe 3</h2>
-        <p>Jesse: kndksfsdnf</p>
-      </ion-label>
     </ion-item>
   </ion-list>
 </ion-content>
