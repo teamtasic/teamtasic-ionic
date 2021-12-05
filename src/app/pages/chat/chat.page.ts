@@ -43,7 +43,6 @@ export class ChatPage implements OnInit, AfterViewInit {
       this.teamId = params.get('teamId');
       this.clubId = params.get('clubId');
       this.sessionId = params.get('sessionId');
-      console.log(this.teamId, this.clubId, this.sessionId);
     });
 
     this.drs.syncMeetsForTeam(this.teamId, this.clubId).subscribe((meets) => {

@@ -12,12 +12,7 @@ export class TrainingbubbleComponent implements OnInit {
   @Input() meet: Meet;
   constructor(private modalController: ModalController) {}
 
-  ngOnInit() {
-    console.log(
-      '----------------------------------------------------------------------------------------------------',
-      this.meet
-    );
-  }
+  ngOnInit() {}
 
   async presentModal() {
     const modal = await this.modalController.create({
