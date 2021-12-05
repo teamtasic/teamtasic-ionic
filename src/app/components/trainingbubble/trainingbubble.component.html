@@ -6,17 +6,19 @@
     <ion-col size="12" class="ion-align-self-center">
       <ion-card>
         <ion-card-header>
-          <ion-card-subtitle> 12.11.2021 10:00 - 12.00 </ion-card-subtitle>
-          <ion-card-title> Training </ion-card-title>
+          <ion-card-subtitle>
+            {{ meet.start.toLocaleString() }} - {{ meet.end.toLocaleTimeString() }}
+          </ion-card-subtitle>
+          <ion-card-title> {{ meet.title }} </ion-card-title>
         </ion-card-header>
         <ion-card-content>
           <ion-grid>
             <ion-row>
               <ion-col>
-                <ion-button expand="block">Details</ion-button>
+                <ion-button expand="block" (click)="presentModal()">Details</ion-button>
               </ion-col>
             </ion-row>
-            <ion-row>
+            <!-- <ion-row>
               <ion-col>
                 <p class="ion-text-center">
                   <ion-chip color="success">
@@ -25,7 +27,7 @@
                   </ion-chip>
                 </p>
               </ion-col>
-            </ion-row>
+            </ion-row> -->
           </ion-grid>
         </ion-card-content>
       </ion-card>

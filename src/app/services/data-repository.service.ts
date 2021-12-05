@@ -729,6 +729,20 @@ export class DataRepositoryService {
         return querySnapshot.docs.map((doc: DocumentSnapshot<Meet>) => doc.id);
       });
   }
+  /** Gets an behavior subject of all meets for a team
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} teamId The id of the team
+   * @param {string} clubId The id of the club the team belongs to
+   * @returns {Meet[]} The ids of the meets
+   */
+  syncMeetsForTeam(teamId: string, clubId: string): Observable<Meet[]> {
+    return this.afs
+      .collection<Meet>(
+        this.CollectionWithConverter(`clubs/${clubId}/teams/${teamId}/meets`, Meet.converter)
+      )
+      .valueChanges();
+  }
 
   /**
    * Check if a auth user exists

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 
 @Component({
@@ -8,6 +8,9 @@ import { ModalController } from '@ionic/angular';
 })
 export class TrainingDetailViewComponent implements OnInit {
   constructor(private modalController: ModalController) {}
+
+  @Input() meetId: string;
+  @Input() sessionId: string;
 
   ngOnInit() {}
 

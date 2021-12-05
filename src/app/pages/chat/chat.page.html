@@ -6,19 +6,17 @@
 </ion-header>
 
 <ion-content>
-  <textbubble></textbubble>
-  <textbubble sentByMe="false" sender="sender"></textbubble>
-  <textbubble
-    sentByMe="false"
-    sender="sender"
-    text="Lorem ipsum, dolor sit amet consectetur adipisicing elit. Consequatur odio ea quibusdam voluptate debitis eum dolor perspiciatis cumque provident ad. Enim omnis aliquam, maiores eius quo quod? Totam laudantium quia voluptatibus autem obcaecati! Asperiores, alias!"
-  ></textbubble>
-  <textbubble sentByMe="false" [showSender]="true"></textbubble>
-  <textbubble sentByMe="false" [showSender]="false"></textbubble>
-  <trainingbubble></trainingbubble>
+  <trainingbubble *ngFor="let meet of meets" [meet]="meet"></trainingbubble>
+
+  <ion-fab vertical="bottom" horizontal="start" slot="fixed">
+    <ion-fab-button (click)="addTraining()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
 
-<ion-footer>
+<!-- Chat footer/toolbar removed in 2.0.0-->
+<!-- <ion-footer>
   <ion-toolbar>
     <ion-buttons slot="end">
       <ion-button>
@@ -39,4 +37,4 @@
       rows="2"
     ></ion-textarea>
   </ion-toolbar>
-</ion-footer>
+</ion-footer> -->
