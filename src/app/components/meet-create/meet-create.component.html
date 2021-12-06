@@ -1,13 +1,15 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Create Event</ion-title>
+    <ion-title>Training erstellen</ion-title>
   </ion-toolbar>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="dismiss()">Cancel</ion-button>
+      <ion-button (click)="dismiss()">Abbrechen</ion-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button (click)="createMeet()" [disabled]="meetCreateGroup.invalid">Add Event</ion-button>
+      <ion-button (click)="createMeet()" [disabled]="meetCreateGroup.invalid"
+        >Training hinzufügen</ion-button
+      >
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -16,37 +18,39 @@
   <ion-list>
     <form [formGroup]="meetCreateGroup">
       <ion-item>
-        <ion-input placeholder="Title" formControlName="meetName"></ion-input>
+        <ion-input placeholder="Titel" formControlName="meetName"></ion-input>
       </ion-item>
       <ion-item>
-        <ion-input placeholder="Location" formControlName="meetLocation"></ion-input>
+        <ion-input placeholder="Treffpunk" formControlName="meetLocation"></ion-input>
       </ion-item>
       <ion-item-divider></ion-item-divider>
       <ion-item>
-        <ion-label> Date </ion-label>
+        <ion-label> Datum </ion-label>
         <ion-datetime
-          placeholder="Select Date"
+          placeholder="Datum auswählen"
           max="2100"
           [min]="today"
           formControlName="meetDate"
         ></ion-datetime>
       </ion-item>
       <ion-item>
-        <ion-label>Starts</ion-label>
+        <ion-label>Start</ion-label>
         <ion-datetime
-          placeholder="Select Time"
+          placeholder="Zeit auswählen"
           display-format="HH:mm"
           picker-format="HH:mm"
           formControlName="meetTime"
+          minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
         ></ion-datetime>
       </ion-item>
       <ion-item>
-        <ion-label>Ends</ion-label>
+        <ion-label>Ende</ion-label>
         <ion-datetime
-          placeholder="Select Time"
+          placeholder="Zeit auswählen"
           display-format="HH:mm"
           picker-format="HH:mm"
           formControlName="meetEndTime"
+          minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
         ></ion-datetime>
       </ion-item>
     </form>

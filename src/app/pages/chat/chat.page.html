@@ -6,6 +6,12 @@
 </ion-header>
 
 <ion-content>
+  <ion-text *ngIf="meets.length == 0" class="ion-text-center" color="medium">
+    <p>
+      <i> Es sind noch keine Trainings eingetragen. </i>
+    </p>
+  </ion-text>
+
   <trainingbubble
     *ngFor="let meet of meets"
     [meet]="meet"
@@ -14,7 +20,12 @@
     [clubId]="clubId"
   ></trainingbubble>
 
-  <ion-fab vertical="bottom" horizontal="start" slot="fixed">
+  <ion-fab
+    vertical="bottom"
+    horizontal="start"
+    slot="fixed"
+    *ngIf="team.headTrainers.includes(sessionId)"
+  >
     <ion-fab-button (click)="addTraining()">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>

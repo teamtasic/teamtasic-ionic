@@ -10,7 +10,7 @@ import { MembershipsService } from 'src/app/services/memberships.service';
   styleUrls: ['tab2.page.scss'],
 })
 export class Tab2Page implements OnInit {
-  constructor(private drs: DataRepositoryService, private mms: MembershipsService) {}
+  constructor(public drs: DataRepositoryService, private mms: MembershipsService) {}
 
   selectedSessionId: string;
 

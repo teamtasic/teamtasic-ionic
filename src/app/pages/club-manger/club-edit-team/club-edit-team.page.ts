@@ -44,6 +44,10 @@ export class ClubEditTeamPage implements OnInit {
 
   team: Team;
   roles: Object = {};
+
+  membercode: string = '';
+  trainercode: string = '';
+  headtrainercode: string = '';
   ngOnInit() {
     this.route.paramMap.subscribe(async (params) => {
       this.clubId = params.get('clubId');
@@ -78,6 +82,9 @@ export class ClubEditTeamPage implements OnInit {
       this.roles[userId] = 'admin';
     });
     console.log(this.roles);
+    this.membercode = await this.drs.getJoinCodeForTeam(this.teamId, this.clubId, 'member');
+    this.trainercode = await this.drs.getJoinCodeForTeam(this.teamId, this.clubId, 'coach');
+    this.headtrainercode = await this.drs.getJoinCodeForTeam(this.teamId, this.clubId, 'headcoach');
   }
 
   roleStrings = {
@@ -89,9 +96,8 @@ export class ClubEditTeamPage implements OnInit {
 
   async addMember() {
     try {
-      const code = await this.drs.getJoinCodeForTeam(this.teamId, this.clubId, 'member');
       await Clipboard.write({
-        string: code,
+        string: this.membercode,
       });
       this.ns.showToast('Code in die Zwischenablage kopiert');
     } catch (e) {
@@ -101,9 +107,8 @@ export class ClubEditTeamPage implements OnInit {
   }
   async addTrainer() {
     try {
-      const code = await this.drs.getJoinCodeForTeam(this.teamId, this.clubId, 'coach');
       await Clipboard.write({
-        string: code,
+        string: this.trainercode,
       });
       this.ns.showToast('Code in die Zwischenablage kopiert');
     } catch (e) {
@@ -113,9 +118,8 @@ export class ClubEditTeamPage implements OnInit {
   }
   async addHeadcoach() {
     try {
-      const code = await this.drs.getJoinCodeForTeam(this.teamId, this.clubId, 'headcoach');
       await Clipboard.write({
-        string: code,
+        string: this.headtrainercode,
       });
       this.ns.showToast('Code in die Zwischenablage kopiert');
     } catch (e) {

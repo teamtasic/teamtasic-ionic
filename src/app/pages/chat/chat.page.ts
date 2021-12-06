@@ -11,6 +11,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
 import { Meet } from 'src/app/classes/meet';
+import { Team } from 'src/app/classes/team';
 import { MeetCreateComponent } from 'src/app/components/meet-create/meet-create.component';
 import { TrainingDetailViewComponent } from 'src/app/components/training-detail-view/training-detail-view.component';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
@@ -28,6 +29,7 @@ export class ChatPage implements OnInit, AfterViewInit {
   sessionId: string;
 
   meets: Meet[] = [];
+  team: Team;
 
   @ViewChild(IonContent) content: IonContent;
 
@@ -43,6 +45,11 @@ export class ChatPage implements OnInit, AfterViewInit {
       this.teamId = params.get('teamId');
       this.clubId = params.get('clubId');
       this.sessionId = params.get('sessionId');
+    });
+
+    this.drs.syncTeam(this.teamId, this.clubId);
+    this.drs.teams.subscribe((teams) => {
+      this.team = teams.find((t) => t.uid === this.teamId);
     });
 
     this.drs.syncMeetsForTeam(this.teamId, this.clubId).subscribe((meets) => {
