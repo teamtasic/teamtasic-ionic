@@ -12,6 +12,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { AuthUserData } from '../classes/auth-user-data';
 import { SessionUserData, sessionMembership } from '../classes/session-user-data';
 import { filter, map } from 'rxjs/operators';
+import * as fb from 'firebase';
 @Injectable({
   providedIn: 'root',
 })
@@ -435,9 +436,40 @@ export class DataRepositoryService {
         this.CollectionWithConverter(`clubs/${clubId}/teams/${teamId}/meets`, Meet.converter)
       )
       .doc(meetId)
-      .update(meet)
+      .set(meet)
       .then(() => {
         this.syncMeet(meetId, clubId, teamId);
+      });
+  }
+  /** update meet status in firestore
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} clubId
+   * @param {string} teamId
+   * @param {string} meetId
+   * @param {string} status
+   * @param {string} sessionId
+   * @returns {Promise<void>}
+   */
+  async updateMeetStatus(
+    clubId: string,
+    teamId: string,
+    meetId: string,
+    status: 'accepted' | 'declined' | 'unknown',
+    sessionId: string
+  ) {
+    this.afs
+      .collection(`clubs/${clubId}/teams/${teamId}/meets/`)
+      .doc(meetId)
+      .update({
+        acceptedUsers:
+          status == 'accepted'
+            ? fb.default.firestore.FieldValue.arrayUnion(sessionId)
+            : fb.default.firestore.FieldValue.arrayRemove(sessionId),
+        declinedUsers:
+          status == 'declined'
+            ? fb.default.firestore.FieldValue.arrayUnion(sessionId)
+            : fb.default.firestore.FieldValue.arrayRemove(sessionId),
       });
   }
   /**
