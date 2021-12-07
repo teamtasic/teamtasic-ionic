@@ -8,9 +8,10 @@ import {
   ViewChildren,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
 import { Meet } from 'src/app/classes/meet';
+import { sessionMembership } from 'src/app/classes/session-user-data';
 import { Team } from 'src/app/classes/team';
 import { MeetCreateComponent } from 'src/app/components/meet-create/meet-create.component';
 import { TrainingDetailViewComponent } from 'src/app/components/training-detail-view/training-detail-view.component';
@@ -31,13 +32,17 @@ export class ChatPage implements OnInit, AfterViewInit {
   meets: Meet[] = [];
   team: Team;
 
+  selectedSessionId: string;
+  memberships: sessionMembership[] = [];
+
   @ViewChild(IonContent) content: IonContent;
 
   constructor(
     public modalController: ModalController,
     private fb: FormBuilder,
     public drs: DataRepositoryService,
-    public activatedRoute: ActivatedRoute
+    public activatedRoute: ActivatedRoute,
+    public router: Router
   ) {}
 
   ngOnInit() {
@@ -61,6 +66,12 @@ export class ChatPage implements OnInit, AfterViewInit {
       console.log(m);
       this.meets = m;
     });
+
+    this.drs.authUsers.subscribe(async (users) => {
+      if (users.length > 0) {
+        this.drs.syncSessionUsers(users[0].uid);
+      }
+    });
   }
   ngAfterViewInit() {
     this.content.scrollToBottom(300);
@@ -75,5 +86,10 @@ export class ChatPage implements OnInit, AfterViewInit {
       },
     });
     await modal.present();
+  }
+
+  async sessionChanged(event: any) {
+    this.selectedSessionId = event.detail.value;
+    this.memberships = await this.drs.syncSessionMemberships(this.selectedSessionId);
   }
 }
