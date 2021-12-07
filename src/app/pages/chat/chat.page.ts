@@ -63,7 +63,10 @@ export class ChatPage implements OnInit, AfterViewInit {
       m.sort((a, b) => {
         return (a.start as any) - (b.start as any);
       });
-      console.log(m);
+      // filter out meets starting in the past
+      m = m.filter((meet) => {
+        return (meet.start as any) > Date.now();
+      });
       this.meets = m;
     });
 
