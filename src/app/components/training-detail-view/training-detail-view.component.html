@@ -208,4 +208,12 @@
 
     <!-- end other users section -->
   </ion-list>
+  <ion-list-header>
+    <ion-label>Training bearbeiten</ion-label>
+  </ion-list-header>
+  <ion-row *ngIf="team.headTrainers.includes(sessionId)">
+    <ion-col>
+      <ion-button (click)="delete()" expand="block" color="danger">Löschen</ion-button>
+    </ion-col>
+  </ion-row>
 </ion-content>

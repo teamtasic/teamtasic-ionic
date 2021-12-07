@@ -1,8 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { Meet } from 'src/app/classes/meet';
 import { Team } from 'src/app/classes/team';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
+import { NotificationService } from 'src/app/services/notification-service.service';
 
 @Component({
   selector: 'app-training-detail-view',
@@ -10,7 +11,12 @@ import { DataRepositoryService } from 'src/app/services/data-repository.service'
   styleUrls: ['./training-detail-view.component.scss'],
 })
 export class TrainingDetailViewComponent implements OnInit {
-  constructor(private modalController: ModalController, public drs: DataRepositoryService) {}
+  constructor(
+    private modalController: ModalController,
+    public drs: DataRepositoryService,
+    private alertController: AlertController,
+    private ns: NotificationService
+  ) {}
 
   @Input() sessionId: string;
   @Input() teamId: string;
@@ -105,6 +111,31 @@ export class TrainingDetailViewComponent implements OnInit {
       this.sessionId
     );
     this.modalController.dismiss();
+  }
+  async delete() {
+    const alert = await this.alertController.create({
+      header: 'Confirm!',
+      message: 'Message <strong>text</strong>!!!',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('Confirm Cancel: blah');
+          },
+        },
+        {
+          text: 'Delete',
+          cssClass: 'secondary',
+          handler: () => {
+            this.drs.deleteMeet(this.clubId, this.teamId, this.meet.uid);
+            this.ns.showToast('Training gelöscht');
+            this.modalController.dismiss();
+          },
+        },
+      ],
+    });
+    await alert.present();
   }
 
   status: 'accepted' | 'declined' | 'unknown' = 'unknown';
