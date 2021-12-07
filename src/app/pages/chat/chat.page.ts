@@ -35,6 +35,8 @@ export class ChatPage implements OnInit, AfterViewInit {
   selectedSessionId: string;
   memberships: sessionMembership[] = [];
 
+  sessionUserString: string;
+
   @ViewChild(IonContent) content: IonContent;
 
   constructor(
@@ -72,8 +74,12 @@ export class ChatPage implements OnInit, AfterViewInit {
 
     this.drs.authUsers.subscribe(async (users) => {
       if (users.length > 0) {
-        this.drs.syncSessionUsers(users[0].uid);
+        const sessions = await this.drs.syncSessionUsers(users[0].uid);
       }
+    });
+    this.drs.sessionUsers.subscribe((sessionUsers) => {
+      console.log(sessionUsers, 'sessions');
+      this.sessionUserString = sessionUsers[0].find((s) => s.uid === this.sessionId).name;
     });
   }
   ngAfterViewInit() {
@@ -89,10 +95,5 @@ export class ChatPage implements OnInit, AfterViewInit {
       },
     });
     await modal.present();
-  }
-
-  async sessionChanged(event: any) {
-    this.selectedSessionId = event.detail.value;
-    this.memberships = await this.drs.syncSessionMemberships(this.selectedSessionId);
   }
 }
