@@ -7,36 +7,11 @@ const routes: Routes = [
   {
     path: 'login',
     loadChildren: () => import('./pages/login/login.module').then((m) => m.LoginPageModule),
-    canLoad: [AutologinGuard],
-    canActivate: [AutologinGuard],
   },
   {
     path: 'tabs',
     loadChildren: () => import('./pages/tabs/tabs.module').then((m) => m.TabsPageModule),
-    canLoad: [AuthGuard],
-    canActivate: [AuthGuard],
   },
-  // {
-  //   path: 'switch-team',
-  //   loadChildren: () =>
-  //     import('./pages/switch-team/switch-team.module').then((m) => m.SwitchTeamPageModule),
-  // },
-  // {
-  //   path: 'join',
-
-  //   children: [
-  //     {
-  //       path: '',
-  //       loadChildren: () =>
-  //         import('./pages/join-team/join-team.module').then((m) => m.JoinTeamPageModule),
-  //     },
-  //     {
-  //       path: ':teamId',
-  //       loadChildren: () =>
-  //         import('./pages/join-team/join-team.module').then((m) => m.JoinTeamPageModule),
-  //     },
-  //   ],
-  // },
   {
     path: 'reset',
     loadChildren: () =>
@@ -45,11 +20,6 @@ const routes: Routes = [
   {
     path: 'signup',
     loadChildren: () => import('./pages/signup/signup.module').then((m) => m.SignupPageModule),
-  },
-  {
-    path: 'chat-view/:id',
-    loadChildren: () =>
-      import('./pages/chat-view/chat-view.module').then((m) => m.ChatViewPageModule),
   },
   {
     path: 'my-clubs',
@@ -94,10 +64,6 @@ const routes: Routes = [
                 (m) => m.ClubEditTeamPageModule
               ),
           },
-          {
-            path: 'edit-team',
-            redirectTo: 'edit-team/0',
-          },
         ],
       },
     ],
@@ -111,6 +77,11 @@ const routes: Routes = [
     path: 'privacy-policy',
     loadChildren: () =>
       import('./pages/privacy-policy/privacy-policy.module').then((m) => m.PrivacyPolicyPageModule),
+  },
+  {
+    path: 'signup-and-join',
+    redirectTo: '/login',
+    pathMatch: 'full',
   },
   {
     path: '',

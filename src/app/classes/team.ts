@@ -1,50 +1,71 @@
-import { DocumentReference } from '@angular/fire/firestore';
-import { Meet } from './meet';
+import { DocumentSnapshot } from '@angular/fire/firestore';
 
 export class Team {
   uid: string;
-  ref: DocumentReference;
+
   name: string;
 
-  // non-constructor fields
-  teamData: TeamData;
+  names: Object;
+  users: string[];
+  trainers: string[];
+  headTrainers: string[];
+  admins: string[];
+  owner: string;
 
-  constructor(uid: string, ref: DocumentReference, name: string) {
+  constructor(
+    uid: string,
+
+    name: string,
+    names: Object,
+    users: string[],
+    trainers: string[],
+    headTrainers: string[],
+    admins: string[],
+    owner?: string
+  ) {
     this.uid = uid;
-    this.ref = ref;
+
     this.name = name;
+    this.names = names;
+    this.users = users;
+    this.trainers = trainers;
+    this.headTrainers = headTrainers;
+    this.admins = admins;
+    this.owner = owner;
   }
 
   static converter = {
-    fromFirestore: function (snapshot: any, options: any) {
-      const data = snapshot.data(options);
-      return new Team(snapshot.id, snapshot.ref, data.name);
+    fromFirestore: function (snapshot: DocumentSnapshot<Team>) {
+      const data = snapshot.data();
+      return new Team(
+        snapshot.id,
+
+        data.name,
+        data.names,
+        data.users,
+        data.trainers,
+        data.headTrainers,
+        data.admins,
+        // local querys are kinda important tho
+        snapshot.ref.parent.parent.id
+      );
     },
     toFirestore: function (team: Team) {
       return {
         name: team.name,
+
+        names: team.names,
+        users: team.users,
+        trainers: team.trainers,
+        headTrainers: team.headTrainers,
+        admins: team.admins,
       };
     },
   };
 }
 
 export class TeamData {
-  roles: Object;
-
-  meets: Meet[];
-  constructor(roles: Object) {
-    this.roles = roles;
+  constructor() {
+    throw new Error('TeamData is depreceated');
   }
-
-  static converter = {
-    fromFirestore: function (snapshot: any, options: any) {
-      const data = snapshot.data(options);
-      return new TeamData(data.roles);
-    },
-    toFirestore: function (team: TeamData) {
-      return {
-        roles: team.roles,
-      };
-    },
-  };
 }

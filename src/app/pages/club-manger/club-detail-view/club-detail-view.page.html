@@ -4,11 +4,6 @@
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-buttons slot="end">
-      <ion-button (click)="reload()">
-        <ion-icon slot="icon-only" name="reload"></ion-icon>
-      </ion-button>
-    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -18,55 +13,72 @@
       <ion-title size="large">Club verwalten</ion-title>
     </ion-toolbar>
   </ion-header>
-  <form [formGroup]="editClub">
-    <ion-list>
-      <ion-list-header> Name & Kontakt </ion-list-header>
+  <ion-list>
+    <ion-list-header> Name & Kontakt </ion-list-header>
 
-      <ion-item>
-        <ion-label position="floating">Name</ion-label>
-        <ion-input type="text" formControlName="name"></ion-input>
-      </ion-item>
+    <ion-item>
+      <ion-label> {{club ? club.name: 'club'}} </ion-label>
+    </ion-item>
 
-      <ion-list-header> Teams </ion-list-header>
+    <ion-list-header> Teams </ion-list-header>
 
-      <ion-item
-        *ngFor="let team of club.clubData.teams | keyvalue"
-        [routerLink]="'edit-team/'+team.key"
-        detail
-      >
-        <ion-label>{{team.value.name}}</ion-label>
-      </ion-item>
-      <ion-item routerLink="add-team" detail>
-        <ion-label> Team erstellen </ion-label>
-      </ion-item>
+    <ion-item *ngFor="let team of teams" detail [routerLink]="'./edit-team/'+ team.uid">
+      <ion-label> {{team.name}} </ion-label>
+    </ion-item>
+    <ion-item routerLink="add-team" detail>
+      <ion-label> Team erstellen </ion-label>
+    </ion-item>
 
-      <ion-list-header> Rechte </ion-list-header>
+    <ion-list-header> Rechte </ion-list-header>
 
-      <ion-item *ngFor="let admin of admins">
-        <ion-label>
-          <h2>{{admin['name']}}</h2>
-          <p>{{admin['role']}}</p>
-        </ion-label>
-        <ion-avatar slot="start">
-          <img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y" />
-        </ion-avatar>
-        <ion-button slot="end" fill="clear" color="dark">
-          <ion-icon slot="icon-only" name="ellipsis-vertical-outline"></ion-icon>
-        </ion-button>
-      </ion-item>
+    <ion-item *ngFor="let admin of club.admins">
+      <ion-label>
+        <h2>{{club.names[admin]}}</h2>
+        <p>Admin - Alle Rechte</p>
+      </ion-label>
+      <ion-avatar slot="start">
+        <img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y" />
+      </ion-avatar>
+      <ion-button slot="end" fill="clear" color="dark">
+        <ion-icon slot="icon-only" name="ellipsis-vertical-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
 
-      <!-- <ion-list-header> Abrechnung </ion-list-header>
+    <!-- <ion-list-header> Abrechnung </ion-list-header>
       <ion-item>
         <ion-note slot="end">N/A</ion-note>
       </ion-item> -->
-    </ion-list>
+  </ion-list>
+  <!--
+  <ion-row>
+    <ion-col>
+      <ion-button expand="block" (click)="saveClub()"> Änderungen speichern </ion-button>
+    </ion-col>
+  </ion-row> -->
+
+  <ion-list>
+    <ion-list-header>Admin hinzufügen</ion-list-header>
+    <ion-item>
+      <ion-label class="ion-text-wrap">
+        <ion-text color="danger">ACHTUNG!</ion-text> Jeder mit diesem Link kann diesen Club
+        verwalten. Dieser Link unterscheidet sich von jenem für Mitglieder!
+      </ion-label>
+    </ion-item>
     <ion-row>
       <ion-col>
-        <ion-button expand="block" (click)="saveClub()"> Änderungen speichern </ion-button>
+        <ion-button color="tertiary" expand="block" (click)="addAdmin()">
+          Link kopieren
+        </ion-button>
       </ion-col>
     </ion-row>
-  </form>
+  </ion-list>
 
+  <ion-item>
+    <ion-label class="ion-text-wrap">
+      <ion-text color="danger">ACHTUNG!</ion-text> Das Löschen eines Clubs kann nicht rückgängig
+      gemacht werden. (Auch nicht von unserem Support)
+    </ion-label>
+  </ion-item>
   <ion-row>
     <ion-col>
       <ion-button color="danger" expand="block" disabled> Club löschen </ion-button>

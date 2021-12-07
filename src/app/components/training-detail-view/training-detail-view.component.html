@@ -1,0 +1,211 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ meet.start.toLocaleDateString() }} </ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismiss()">Abbrechen</ion-button>
+    </ion-buttons>
+    <ion-title>{{ meet.title }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="save()">Speichern</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-list>
+    <ion-item>
+      <ion-note slot="start">Zeit:</ion-note>
+
+      <ion-label>
+        {{ meet.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }} -
+        {{ meet.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-note slot="start">Treffpunkt:</ion-note>
+
+      <ion-label>
+        {{ meet.meetpoint }}
+      </ion-label>
+    </ion-item>
+
+    <!-- My status section start -->
+
+    <ion-card class="accepted" *ngIf="status == 'accepted'">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="5">
+            <ion-icon name="checkmark-circle-outline" class="status-icon"></ion-icon>
+          </ion-col>
+          <ion-col size="7">
+            <ion-text>
+              <h5>Dein Status:</h5>
+            </ion-text>
+            <ion-text>
+              <h2>Angenommen</h2>
+            </ion-text>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card>
+
+    <ion-card class="declined" *ngIf="status == 'declined'">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="5">
+            <ion-icon name="close-circle-outline" class="status-icon"></ion-icon>
+          </ion-col>
+          <ion-col size="7">
+            <ion-text>
+              <h5>Dein Status:</h5>
+            </ion-text>
+            <ion-text>
+              <h2>Abgelehnt</h2>
+            </ion-text>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card>
+
+    <ion-card *ngIf="status == 'unknown'">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="5">
+            <ion-icon name="help-circle-outline" class="status-icon"></ion-icon>
+          </ion-col>
+          <ion-col size="7">
+            <ion-text>
+              <h5>Dein Status:</h5>
+            </ion-text>
+            <ion-text>
+              <h2>Unbekannt</h2>
+            </ion-text>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card>
+    <!-- my status section end -->
+    <!-- start change my status section -->
+    <ion-grid>
+      <ion-col>
+        <ion-segment [value]="status" (ionChange)="change($event)">
+          <ion-segment-button value="accepted">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+          </ion-segment-button>
+          <ion-segment-button value="declined">
+            <ion-icon name="close-circle-outline"></ion-icon>
+          </ion-segment-button>
+          <ion-segment-button value="unknown">
+            <ion-icon name="help-circle-outline"></ion-icon>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-col>
+    </ion-grid>
+    <!-- end change my status section -->
+
+    <!-- other users section -->
+
+    <ion-list-header>
+      <ion-label>Trainer</ion-label>
+      <ion-button (click)="toggleTrainers()">{{
+        trainersOpen ? 'Verstecken' : 'Zeigen'
+      }}</ion-button>
+    </ion-list-header>
+    <ion-list *ngIf="trainersOpen">
+      <ion-item *ngFor="let cath of trainers_accepted">
+        <ion-avatar slot="start">
+          <img [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'" />
+        </ion-avatar>
+        <ion-label>
+          <h2>{{ team.names[cath] }}</h2>
+          <p>
+            <ion-text color="primary">
+              <strong>Trainer</strong>
+            </ion-text>
+          </p>
+        </ion-label>
+        <ion-badge color="success" slot="end">Kommt</ion-badge>
+      </ion-item>
+      <ion-item *ngFor="let cath of trainers_declined">
+        <ion-avatar slot="start">
+          <img [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'" />
+        </ion-avatar>
+        <ion-label>
+          <h2>{{ team.names[cath] }}</h2>
+          <p>
+            <ion-text color="primary">
+              <strong>Trainer</strong>
+            </ion-text>
+          </p>
+        </ion-label>
+        <ion-badge color="danger" slot="end">Kommt nicht</ion-badge>
+      </ion-item>
+      <ion-item *ngFor="let cath of trainers_else">
+        <ion-avatar slot="start">
+          <img [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'" />
+        </ion-avatar>
+        <ion-label>
+          <h2>{{ team.names[cath] }}</h2>
+          <p>
+            <ion-text color="primary">
+              <strong>Trainer</strong>
+            </ion-text>
+          </p>
+        </ion-label>
+        <ion-badge color="medium" slot="end">Unbekannt</ion-badge>
+      </ion-item>
+    </ion-list>
+
+    <ion-list-header>
+      <ion-label>Athleten</ion-label>
+      <ion-button (click)="toggleUsers()">{{ usersOpen ? 'Verstecken' : 'Zeigen' }}</ion-button>
+    </ion-list-header>
+    <ion-list *ngIf="usersOpen">
+      <ion-item *ngFor="let cath of members_accepted">
+        <ion-avatar slot="start">
+          <img [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'" />
+        </ion-avatar>
+        <ion-label>
+          <h2>{{ team.names[cath] }}</h2>
+          <p>
+            <ion-text color="primary">
+              <strong>Athlet</strong>
+            </ion-text>
+          </p>
+        </ion-label>
+        <ion-badge color="success" slot="end">Kommt</ion-badge>
+      </ion-item>
+      <ion-item *ngFor="let cath of members_declined">
+        <ion-avatar slot="start">
+          <img [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'" />
+        </ion-avatar>
+        <ion-label>
+          <h2>{{ team.names[cath] }}</h2>
+          <p>
+            <ion-text color="primary">
+              <strong>Athlet</strong>
+            </ion-text>
+          </p>
+        </ion-label>
+        <ion-badge color="danger" slot="end">Kommt nicht</ion-badge>
+      </ion-item>
+      <ion-item *ngFor="let cath of members_else">
+        <ion-avatar slot="start">
+          <img [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'" />
+        </ion-avatar>
+        <ion-label>
+          <h2>{{ team.names[cath] }}</h2>
+          <p>
+            <ion-text color="primary">
+              <strong>Athlet</strong>
+            </ion-text>
+          </p>
+        </ion-label>
+        <ion-badge color="medium" slot="end">Unbekannt</ion-badge>
+      </ion-item>
+    </ion-list>
+
+    <!-- end other users section -->
+  </ion-list>
+</ion-content>

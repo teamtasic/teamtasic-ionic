@@ -1,0 +1,38 @@
+<ion-grid>
+  <ion-row>
+    <!-- <ion-avatar>
+        <img [src]="'https://avatars.dicebear.com/api/initials/' + 'Jesse Born' + '.svg'" />
+      </ion-avatar> -->
+    <ion-col size="12" class="ion-align-self-center">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-subtitle>
+            {{ meet.start.toLocaleString() }} - {{ meet.end.toLocaleTimeString() }}
+          </ion-card-subtitle>
+          <ion-card-title> {{ meet.title }} </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-grid>
+            <ion-row>
+              <ion-col>
+                <ion-button expand="block" (click)="presentModal()" [color]="buttonColor"
+                  >Details</ion-button
+                >
+              </ion-col>
+            </ion-row>
+            <!-- <ion-row>
+              <ion-col>
+                <p class="ion-text-center">
+                  <ion-chip color="success">
+                    <ion-icon name="checkmark"></ion-icon>
+                    <ion-label>Ich komme</ion-label>
+                  </ion-chip>
+                </p>
+              </ion-col>
+            </ion-row> -->
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+  </ion-row>
+</ion-grid>

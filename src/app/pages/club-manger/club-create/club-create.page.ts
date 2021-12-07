@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
 import { Club } from 'src/app/classes/club';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
+import { LogicService } from 'src/app/services/logic.service';
 import { NotificationService } from 'src/app/services/notification-service.service';
 
 @Component({
@@ -20,11 +21,12 @@ export class ClubCreatePage implements OnInit {
     private drs: DataRepositoryService,
     private router: Router,
     private ns: NotificationService,
-    public loadingController: LoadingController
+    public loadingController: LoadingController,
+    public logic: LogicService
   ) {
-    if (!this.drs.currentUser) {
-      this.router.navigate(['/login']);
-    }
+    // if (!this.drs.currentUser) {
+    //   this.router.navigate(['/login']);
+    // }
   }
 
   ngOnInit() {
@@ -41,12 +43,16 @@ export class ClubCreatePage implements OnInit {
     });
     await loading.present();
     try {
-      await this.drs.createClub(
-        new Club('', null, this.clubCreateForm.value.name, ''),
-        this.licenseNumber
+      const club = new Club(
+        '',
+        this.clubCreateForm.get('name').value,
+        { [this.drs.authUsers.value[0].uid]: this.drs.authUsers.value[0].username },
+        [this.drs.authUsers.value[0].uid],
+        [this.drs.authUsers.value[0].uid]
       );
+      this.drs.createClub(club);
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      await this.drs.resync();
+      this.logic.syncAdminSession();
       this.router.navigate(['/my-clubs']);
       await loading.dismiss();
       this.ns.showToast('Club erfolgreich erstellt.');

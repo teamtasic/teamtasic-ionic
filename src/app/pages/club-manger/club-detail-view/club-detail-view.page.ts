@@ -1,8 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { throwError } from 'rxjs';
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  retry,
+  switchMap,
+  take,
+  tap,
+} from 'rxjs/operators';
 import { Club } from 'src/app/classes/club';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
+import { LogicService } from 'src/app/services/logic.service';
 import { NotificationService } from 'src/app/services/notification-service.service';
 
 @Component({
@@ -16,49 +28,40 @@ export class ClubDetailViewPage implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private fb: FormBuilder,
-    public ns: NotificationService
-  ) {
-    if (!this.drs.currentUser) {
-      this.router.navigate(['/login']);
-    }
-  }
+    public ns: NotificationService,
+    public logic: LogicService
+  ) {}
 
-  editClub: FormGroup;
+  editClub: FormGroup = this.fb.group({
+    name: ['', Validators.required],
+  });
+  addAdminGroup: FormGroup = this.fb.group({
+    uid: ['', [Validators.required]],
+  });
 
   clubId: string;
-  club: Club;
-
-  admins: Object[] = [];
+  club: Club = new Club('', '', {}, [], []);
+  teams = [];
 
   ngOnInit() {
-    this.route.paramMap.subscribe((params) => {
-      this.clubId = params.get('clubId');
-    });
-    this.reload();
-    console.log(this.club);
-
-    this.editClub = this.fb.group({
-      name: [this.club.name, [Validators.required]],
+    this.route.params.subscribe(async (params) => {
+      this.clubId = params.clubId;
+      console.log(this.clubId);
+      await this.drs.syncClub(this.clubId);
+      this.club = this.drs.clubs.value.find((c) => c.uid === this.clubId);
     });
 
-    this.drs.needsUpdateUserData.subscribe(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      this.reload();
+    this.drs.clubs.subscribe((clubs) => {
+      this.club = clubs.find((c) => c.uid === this.clubId);
     });
-
-    for (const member in this.club.clubData.users) {
-      if (this.club.clubData.users[member].role === 'admin') {
-        this.admins.push(this.club.clubData.users[member]);
-      } else if (this.club.clubData.users[member].role === 'owner') {
-        this.admins.push(this.club.clubData.users[member]);
-      }
-    }
+    this.drs.teams.subscribe((teams) => {
+      this.teams = teams.filter((t) => t.owner === this.clubId);
+    });
   }
 
-  public reload() {
-    this.club = this.drs.syncedClubs.get(this.clubId);
-  }
   public saveClub() {
     this.ns.showToast('Fehler beim speichern.');
   }
+
+  public async addAdmin() {}
 }

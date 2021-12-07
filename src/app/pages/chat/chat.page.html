@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Chat</ion-title>
+    <ion-back-button slot="start"></ion-back-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-text *ngIf="meets.length == 0" class="ion-text-center" color="medium">
+    <p>
+      <i> Es sind noch keine Trainings eingetragen. </i>
+    </p>
+  </ion-text>
+
+  <trainingbubble
+    *ngFor="let meet of meets"
+    [meet]="meet"
+    [sessionId]="sessionId"
+    [teamId]="teamId"
+    [clubId]="clubId"
+  ></trainingbubble>
+
+  <ion-fab
+    vertical="top"
+    horizontal="end"
+    slot="fixed"
+    *ngIf="team.headTrainers.includes(sessionId)"
+  >
+    <ion-fab-button (click)="addTraining()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
+
+<!-- Chat footer/toolbar removed in 2.0.0-->
+<!-- <ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button>
+        <ion-icon name="send"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon name="add"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    {{msg.value?.lenght}}
+    <ion-textarea
+      #msg
+      enterkeyhint="send"
+      spellcheck="true"
+      autogrow="true"
+      rows="2"
+    ></ion-textarea>
+  </ion-toolbar>
+</ion-footer> -->

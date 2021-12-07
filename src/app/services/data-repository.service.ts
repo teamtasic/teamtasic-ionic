@@ -1,747 +1,838 @@
 import { Injectable } from '@angular/core';
-import { Team, TeamData } from '../classes/team';
-import { Club, ClubData } from '../classes/club';
-import { Meet, userMeetStatus } from '../classes/meet';
-import { AngularFirestore, DocumentReference, DocumentSnapshot } from '@angular/fire/firestore';
+import { Team } from '../classes/team';
+import { Club } from '../classes/club';
+import { Meet } from '../classes/meet';
+import {
+  AngularFirestore,
+  DocumentReference,
+  DocumentSnapshot,
+  QuerySnapshot,
+} from '@angular/fire/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { AuthUserData } from '../classes/auth-user-data';
-
-//! this is bad
+import { SessionUserData, sessionMembership } from '../classes/session-user-data';
+import { filter, map } from 'rxjs/operators';
 import * as fb from 'firebase';
 @Injectable({
   providedIn: 'root',
 })
 export class DataRepositoryService {
-  syncedClubs: Map<string, Club> = new Map<string, Club>();
-  needsUpdateUserData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  currentUser: BehaviorSubject<AuthUserData> = new BehaviorSubject<AuthUserData>(null);
-
-  hasPreloadedAfterLogin: boolean = false;
-
   constructor(private afs: AngularFirestore) {}
 
   /**
-   * after authentication, get the user data from firestore
+   *  Read behaviorsubs for incoming data from firestore
+   *  @since 2.0.0
    */
-  async prepareSessionForUser() {
-    console.log(
-      '[ 📲 data repository ]',
-      'started loading all session data for authenticated user.'
-    );
-    if (this.currentUser.getValue() && this.currentUser.getValue().memberships.length > 0) {
-      console.log(
-        '[ 📲 data repository ]',
-        'memberships:',
-        this.currentUser.getValue().memberships
-      );
-      this.syncCurrentUser();
-      this.hasPreloadedAfterLogin = true;
-    }
-  }
+  private _clubs: BehaviorSubject<Club[]> = new BehaviorSubject([]);
+  private _teams: BehaviorSubject<Team[]> = new BehaviorSubject([]);
+  private _meets: BehaviorSubject<Meet[]> = new BehaviorSubject([]);
+  private _authUser: BehaviorSubject<AuthUserData[]> = new BehaviorSubject([]);
+  private _sessionUser: BehaviorSubject<SessionUserData[][]> = new BehaviorSubject([]);
+  /** UID-Maps for keeping track of the indexes in the array
+   *  @since 2.0.0
+   */
+  private _clubsMap: Map<string, number> = new Map();
+  private _teamsMap: Map<string, number> = new Map();
+  private _meetsMap: Map<string, number> = new Map();
+  private _authUserMap: Map<string, number> = new Map();
+  private _sessionUserMap: Map<string, number> = new Map();
+
   /**
-   * sync all clubs current user is member of from firestore
-   * @returns void
-   * @throws error if current user is undefined
-   * @throws error if current user has no memberships
-   * @throws error if club is not found in firestore
+   * UID storages for deciding if a new onSpnapshot listener should be added or not
+   * @since 2.0.0
    */
-  async syncCurrentUser() {
-    if (!this.currentUser.getValue()) {
-      throw new Error('no current user');
-    }
-    if (Object.keys(this.currentUser.getValue().memberships).length === 0) {
-      throw new Error('no memberships');
-    }
+  private _clubsUids: string[] = [];
+  private _teamUids: string[] = [];
+  private _meetUids: string[] = [];
+  private _authUserUids: string[] = [];
+  private _sessionUserUids: string[] = [];
 
-    // for (let clubId in this.currentUser.getValue().memberships) {
-    //   if (this.currentUser.getValue().memberships[clubId].type === 'club') {
-    //     let c = await this.getClub(clubId);
-    //     c.clubData = await this.getClubData(clubId);
-    //     this.syncedClubs.set(clubId, c);
-    //     const d = await this.getTeams(clubId);
-    //     for (let team of d) {
-    //       team.teamData = await this.getTeamData(team.uid, clubId);
-    //       this.syncedClubs.get(clubId).clubData.teams.set(team.uid, team);
-    //     }
-    //   }
-    // }
-    for (let memershipdIndex in this.currentUser.getValue().memberships) {
-      let clubId = this.currentUser.getValue().memberships[memershipdIndex]['club'];
-      if (!this.syncedClubs.has(clubId)) {
-        let c = await this.getClub(clubId);
-
-        c.clubData = await this.getClubData(clubId);
-        this.syncedClubs.set(clubId, c);
+  /**
+   *  Gets clubs from firestore
+   *  Subscribes to valueChanges() of a club, and pushes the data to the _clubs BehaviorSubject and saves the index in the uid map
+   *  @since 2.0.0
+   *  @memberof DataRepositoryService
+   *
+   *  @param {string} uid
+   *  @returns {Club}
+   */
+  async syncClub(uid: string) {
+    return await new Promise<Club>((resolve) => {
+      if (!this._clubsUids.includes(uid)) {
+        this._clubsUids.push(uid);
+        this.afs
+          .collection(this.CollectionWithConverter('clubs', Club.converter))
+          .doc<Club>(uid)
+          .valueChanges()
+          .subscribe((club) => {
+            if (club) {
+              console.log('[ Club valueChanged ]', club);
+              const index = this._clubsMap.get(uid);
+              if (index !== undefined) {
+                this._clubs.value[index] = club;
+              } else {
+                this._clubs.next([...this._clubs.value, club]);
+                this._clubsMap.set(uid, this._clubs.value.length - 1);
+              }
+            }
+            resolve(club);
+          });
       }
-
-      if (this.currentUser.getValue().memberships[memershipdIndex]['type'] === 'team') {
-        console.log('memberships found: ');
-        let teamId = this.currentUser.getValue().memberships[memershipdIndex]['team'];
-        let clubId = this.currentUser.getValue().memberships[memershipdIndex]['club'];
-
-        const team = await this.getTeam(teamId, clubId);
-
-        team.teamData = await this.getTeamData(teamId, clubId);
-        this.syncedClubs.get(clubId).clubData.teams.set(team.uid, team);
-      }
-    }
-
-    console.log('[ clubs ]', this.syncedClubs);
-  }
-  /** sync all teams current user is member of from firestore
-   * @returns void
-   * @throws error if current user is undefined
-   * @throws error if current user has no memberships
-   * @throws error if team is not found in firestore
-   */
-  // async syncTeams() {
-  //   if (!this.currentUser.getValue()) {
-  //     throw new Error('no current user');
-  //   }
-  //   if (Object.keys(this.currentUser.getValue().memberships).length === 0) {
-  //     throw new Error('no memberships');
-  //   }
-  //   for (let teamId in this.currentUser.getValue().memberships) {
-  //     if (this.currentUser.getValue().memberships[teamId].type === 'team') {
-  //       let t = await this.getTeam(teamId, this.currentUser.getValue().memberships[teamId].club);
-  //       t.teamData = await this.getTeamData(
-  //         teamId,
-  //         this.currentUser.getValue().memberships[teamId].club
-  //       );
-  //       const clubId: string = t.ref.parent.parent.id;
-  //       this.syncedTeams.set(teamId, t);
-
-  //       let club = this.syncedClubs.get(clubId);
-  //       console.log(club);
-  //       club.clubData.teams.set(teamId, t);
-  //       this.syncedClubs.set(clubId, club);
-  //     }
-  //   }
-  //   console.log('[ teams ]', this.syncedTeams);
-  // }
-  /**
-   * resync all clubs and team from firestore
-   * @returns void
-   * @throws error if current user is undefined
-   */
-  async resync() {
-    if (!this.currentUser.getValue()) {
-      throw new Error('no current user');
-    }
-    this.syncedClubs.clear();
-    this.syncCurrentUser();
-
-    this.needsUpdateUserData.next(true);
-  }
-
-  /**
-   * get user document from firestore
-   * @param userId
-   * @returns user document
-   */
-  async getUserData(uid: string) {
-    return await new Promise<AuthUserData>((resolve, reject) => {
-      this.afs
-        .collection(this.getCollectionRefWithConverter('users', AuthUserData.converter))
-        .doc(uid)
-        .get()
-        .toPromise()
-        .then((data) => {
-          const doc = data.data();
-          resolve(doc as AuthUserData);
-        });
     });
   }
+
   /**
-   * update user document in firestore from currentUser
-   * @returns user document reference
-   * @throws error if current user is undefined
+   * Gets teams from firestore
+   * Subscribes to valueChanges() of a team, and pushes the data to the _teams BehaviorSubject and saves the index in the uid map
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} uid
+   * @param {string} clubId
+   * @returns {void}
    */
-  async updateUser() {
-    if (!this.currentUser.getValue()) {
-      throw new Error('no current user');
+  async syncTeam(uid: string, clubId: string) {
+    if (!this._teamUids.includes(uid)) {
+      this._teamUids.push(uid);
+      this.afs
+        .collection(this.CollectionWithConverter(`clubs/${clubId}/teams`, Team.converter))
+        .doc<Team>(uid)
+        .valueChanges()
+        .subscribe((team) => {
+          if (team) {
+            console.log('[ Team valueChanged ]', team);
+            var key = `${clubId}:${uid}`;
+            const index = this._teamsMap.get(key);
+            if (index !== undefined) {
+              this._teams.value[index] = team;
+            } else {
+              this._teams.next([...this._teams.value, team]);
+              this._teamsMap.set(key, this._teams.value.length - 1);
+            }
+          }
+        });
     }
-    const userRef = this.afs
-      .collection(this.getCollectionRefWithConverter('users', AuthUserData.converter))
-      .doc(this.currentUser.getValue().uid);
-    await userRef.set(this.currentUser.getValue());
-    return userRef;
+    return await new Promise<Team>((resolve) => {
+      this._teams.toPromise().then((teams) => {
+        resolve(teams[this._teamsMap.get(uid)]);
+      });
+    });
   }
 
   /**
-   * create a user document in firestore
-   * @param userData
-   * @returns user document reference
-   * @throws error if user already exists
+   * Gets meets from firestore
+   * Subscribes to valueChanges() of a meet, and pushes the data to the _meets BehaviorSubject and saves the index in the uid map
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} uid
+   * @returns {Meet}
+   * @param {string} clubId
+   * @param {string} teamId
+   *
    */
-  async addUser(data: AuthUserData) {
-    const ref = this.afs
-      .collection(this.getCollectionRefWithConverter('users', AuthUserData.converter))
-      .doc(data.uid);
-    if (
-      await new Promise<Boolean>((resolve) => {
-        ref
-          .get()
-          .toPromise()
-          .then((doc) => resolve(doc.exists));
-      })
-    ) {
-      throw new Error('user already exists');
+  async syncMeet(uid: string, clubId: string, teamId: string) {
+    if (!this._meetUids.includes(uid)) {
+      this._meetUids.push(uid);
+      this.afs
+        .collection(
+          this.CollectionWithConverter(`clubs/${clubId}/teams/${teamId}/meets`, Meet.converter)
+        )
+        .doc<Meet>(uid)
+        .valueChanges()
+        .subscribe((meet) => {
+          if (meet) {
+            console.log('[ Meet valueChanged ]', meet);
+            var key = `${clubId}:${teamId}:${uid}`;
+            const index = this._meetsMap.get(key);
+            if (index !== undefined) {
+              this._meets.value[index] = meet;
+            } else {
+              this._meets.next([...this._meets.value, meet]);
+              this._meetsMap.set(key, this._meets.value.length - 1);
+            }
+            console.log(this._meetsMap);
+          }
+        });
+    }
+    return await new Promise<Meet>((resolve) => {
+      this._meets.toPromise().then((meets) => {
+        resolve(meets[this._meetsMap.get(uid)]);
+      });
+    });
+  }
+
+  /**
+   * Gets authUser from firestore
+   * Subscribes to valueChanges() of a authUser, and pushes the data to the _authUser BehaviorSubject and saves the index in the uid map
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} uid
+   * @returns {Promise<void>}
+   *
+   */
+  async syncAuthUser(uid: string) {
+    if (!this._authUserUids.includes(uid)) {
+      this._authUserUids.push(uid);
+      await new Promise((resolve) => {
+        this.afs
+          .collection(this.CollectionWithConverter('authUsers', AuthUserData.converter))
+          .doc<AuthUserData>(uid)
+          .valueChanges()
+          .subscribe((authUser) => {
+            if (authUser) {
+              console.log('[ AuthUser valueChanged ]', authUser);
+              const index = this._authUserMap.get(uid);
+              if (index !== undefined) {
+                let old = this._authUser.value;
+                old[index] = authUser;
+                this._authUser.next(old);
+              } else {
+                let old = this._authUser.value;
+                old.push(authUser);
+                console.log(old);
+                this._authUser.next(old);
+                console.log(this._authUser.value);
+                this._authUserMap.set(uid, this._authUser.value.length - 1);
+              }
+              resolve(undefined);
+            }
+          });
+      });
+    }
+  }
+
+  /**
+   * Gets all sessionUsers for a user from firestore
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   *
+   * @param {string} uid
+   * @returns {Promise<SessionUserData[]>}
+   */
+  async syncSessionUsers(uid: string) {
+    if (this._sessionUserUids.includes(uid)) {
+      return await new Promise<SessionUserData[]>((resolve) => {
+        this._sessionUser.toPromise().then((sessionUsers) => {
+          resolve(sessionUsers[this._sessionUserMap.get(uid)]);
+        });
+      });
     } else {
-      ref
-        .set(data)
-        .then(() => {
-          console.log('[ 📲 data repository ]', 'user added');
-          return ref;
-        })
-        .catch((err) => {
-          console.log('[ 📲 data repository ]', 'error adding user', err);
-          return undefined;
+      this._sessionUserUids.push(uid);
+      let unsubscribe = this.afs
+        .collection(this.CollectionWithConverter(`sessionUsers`, SessionUserData.converter))
+        .ref.where('owner', '==', uid)
+        .onSnapshot(
+          (querySnapshot) => {
+            var sessionUsers: SessionUserData[][] = [[]];
+            querySnapshot.forEach((doc) => {
+              let data = doc.data() as SessionUserData;
+              sessionUsers[0].push(data);
+            });
+            if (this._sessionUserMap.get(uid) === undefined) {
+              this._sessionUser.next([...this._sessionUser.value, ...sessionUsers]);
+              this._sessionUserMap.set(uid, this._sessionUser.value.length - 1);
+            } else {
+              let index = this._sessionUserMap.get(uid);
+              this._sessionUser.value[index] = sessionUsers[0];
+            }
+            console.log('[ SessionUsers valueChanged ]', sessionUsers);
+          },
+          (error) => {
+            console.log('[ SessionUsers error ]', error);
+          }
+        );
+
+      return await new Promise<SessionUserData[]>((resolve) => {
+        this._sessionUser.toPromise().then((sessionUsers) => {
+          resolve(sessionUsers[this._sessionUserMap.get(uid)]);
         });
+      });
     }
   }
-
-  async kickstartPostLogin() {
-    this.prepareSessionForUser();
-  }
-  // create new club
-  async createClub(club: Club, license: number) {
-    const clubRef = this.afs
-      .collection(this.getCollectionRefWithConverter('clubs', Club.converter))
-      .doc();
-
-    club.ref = clubRef.ref;
-    club.uid = clubRef.ref.id;
-
-    await clubRef.set(club);
-    await this.createClubData(club, license);
-
-    let user = this.currentUser.getValue();
-    user.memberships.push({
-      role: 'owner',
-      displayName: club.name,
-      name: user.username,
-      type: 'club',
-      club: club.uid,
-    });
-    this.currentUser.next(user);
-    this.updateUser();
-  }
-  async writeClubData(clubData: ClubData) {
-    const clubDataRef = this.afs.collection(
-      this.getCollectionRefWithConverter(
-        `clubs/${clubData.ref.parent.parent}/clubData/clubData`,
-        ClubData.converter
-      )
-    );
-  }
-  async createClubData(club: Club, license: number) {
-    const clubDataRef = this.afs
-      .collection(
-        this.getCollectionRefWithConverter(`clubs/${club.ref.id}/clubData/`, ClubData.converter)
-      )
-      .doc('clubData');
-    if (!this.currentUser.getValue()) {
-      throw new Error('no current user');
-    }
-    let users: Object = {
-      [this.currentUser.getValue().uid]: {
-        name: this.currentUser.getValue().username,
-        role: 'owner',
-      },
-    };
-    let clubData = new ClubData(clubDataRef.ref.id, clubDataRef.ref, users, license);
-
-    await clubDataRef.set(clubData);
-  }
-  /**
-   * get club document from firestore
-   * @param clubId
-   * @returns club document
-   * @throws error if club does not exist
+  /** get all sessionMembership s for a sessionuser
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} sessionUserId
+   * @return {Promise<sessionMembership[]>}
    */
-  async getClub(clubId: string) {
-    return await new Promise<Club>((resolve, reject) => {
-      this.afs
-        .collection(this.getCollectionRefWithConverter('clubs', Club.converter))
-        .doc(clubId)
-        .get()
-        .toPromise()
-        .then((data) => {
-          const doc = data.data();
-          if (doc) {
-            resolve(doc as Club);
-          } else {
-            reject(new Error('club does not exist'));
-          }
-        });
-    });
-  }
-  /**
-   * get club data document from firestore
-   * @param clubId
-   * @returns club data document
-   * @throws error if club does not exist
-   * @throws error if club data does not exist
-   */
-  async getClubData(clubId: string) {
-    return await new Promise<ClubData>((resolve, reject) => {
-      this.afs
-        .collection(
-          this.getCollectionRefWithConverter(`clubs/${clubId}/clubData/`, ClubData.converter)
-        )
-        .doc('clubData')
-        .get()
-        .toPromise()
-        .then((data) => {
-          const doc = data.data();
-          if (doc) {
-            resolve(doc as ClubData);
-          } else {
-            reject(new Error('club data does not exist'));
-          }
-        });
-    });
-  }
-  /**
-   * update club document in firestore from index of syncedClubs
-   * @returns club document reference
-   * @params clubId
-   * @throws error if club is undefined
-   * @throws error if club data is undefined
-   */
-  async updateClub(clubId: string) {
-    if (!this.syncedClubs.get(clubId)) {
-      throw new Error('no club');
-    }
-    const clubRef = this.afs
-      .collection(this.getCollectionRefWithConverter('clubs', Club.converter))
-      .doc(clubId);
-    await clubRef.set(this.syncedClubs[clubId]);
-    return clubRef;
-  }
-  /**
-   * create team document in firestore
-   * @param team
-   * @param clubId
-   * @returns team document reference
-   * @throws error if team already exists
-   * @throws error if club does not exist
-   */
-  async addTeam(team: Team, clubId: string) {
-    const teamRef = this.afs
-      .collection(this.getCollectionRefWithConverter(`clubs/${clubId}/teams`, Team.converter))
-      .doc();
-    if (
-      await new Promise<Boolean>((resolve) => {
-        teamRef
-          .get()
-          .toPromise()
-          .then((doc) => resolve(doc.exists));
-      })
-    ) {
-      throw new Error('team already exists');
-    } else {
-      team.uid = teamRef.ref.id;
-      await teamRef.set(team);
-      return teamRef;
-    }
-  }
-  /**
-   * get team document from firestore
-   * @param teamId
-   * @param clubId
-   * @returns team document
-   * @throws error if team does not exist
-   * @throws error if club does not exist
-   */
-  async getTeam(teamId: string, clubId: string) {
-    return await new Promise<Team>((resolve, reject) => {
-      this.afs
-        .collection(this.getCollectionRefWithConverter(`clubs/${clubId}/teams`, Team.converter))
-        .doc(teamId)
-        .get()
-        .toPromise()
-        .then((data) => {
-          const doc = data.data();
-          if (doc) {
-            new Team(data.id, data.ref, (doc as Team).name);
-            resolve(doc as Team);
-          } else {
-            reject(new Error('team does not exist'));
-          }
-        });
-    });
-  }
-  /**
-   * update team document in firestore
-   * @param teamId
-   * @param clubId
-   * @returns team document reference
-   * @throws error if team does not exist
-   * @throws error if club does not exist
-   * @throws error if team is undefined
-   * @throws error if team data is undefined
-   */
-  async updateTeam(teamId: string, clubId: string) {
-    // if (!this.syncedClubs.get(clubId).clubData.teams[teamId]) {
-    //   throw new Error('no team with id: ' + teamId + 'for club ' + clubId);
-    // }
-    const teamRef = this.afs
-      .collection(this.getCollectionRefWithConverter(`clubs/${clubId}/teams`, Team.converter))
-      .doc(teamId);
-    await teamRef.set(this.syncedClubs.get(clubId).clubData.teams.get(teamId));
-    return teamRef;
-  }
-  /**
-   * delete team document from firestore
-   * @param teamId
-   * @param clubId
-   * @returns team document reference
-   */
-  async deleteTeam(teamId: string, clubId: string) {
-    const teamRef = this.afs
-      .collection(this.getCollectionRefWithConverter(`clubs/${clubId}/teams`, Team.converter))
-      .doc(teamId);
-    await teamRef.delete();
-    return teamRef;
-  }
-
-  /**
-   * set team data document in firestore
-   * @param teamId
-   * @param clubId
-   * @returns team data document reference
-   */
-  async setTeamData(teamId: string, clubId: string, teamData: TeamData) {
-    const teamDataRef = this.afs
-      .collection(
-        this.getCollectionRefWithConverter(
-          `clubs/${clubId}/teams/${teamId}/teamData`,
-          TeamData.converter
-        )
-      )
-      .doc('teamData');
-    await teamDataRef.set(teamData);
-    return teamDataRef;
-  }
-  /**
-   * get team data document from firestore
-   * @param teamId
-   * @param clubId
-   * @returns team data document
-   * @throws error if team does not exist
-   * @throws error if club does not exist
-   */
-  async getTeamData(teamId: string, clubId: string) {
-    return await new Promise<TeamData>((resolve, reject) => {
-      this.afs
-        .collection(
-          this.getCollectionRefWithConverter(
-            `clubs/${clubId}/teams/${teamId}/teamData`,
-            TeamData.converter
-          )
-        )
-        .doc('teamData')
-        .get()
-        .toPromise()
-        .then((data) => {
-          const doc = data.data();
-          if (doc) {
-            resolve(doc as TeamData);
-          } else {
-            reject(new Error('team data does not exist. TEAM: ' + teamId + 'of CLUB: ' + clubId));
-          }
-        });
-    });
-  }
-  /**
-   * get all teams of a club from firestore
-   * @param clubId
-   * @returns array of team documents
-   * @throws error if club does not exist
-   */
-  async getTeams(clubId: string) {
-    return await new Promise<Team[]>((resolve, reject) => {
-      this.afs
-        .collection(this.getCollectionRefWithConverter(`clubs/${clubId}/teams`, Team.converter))
-        .get()
-        .toPromise()
-        .then((data) => {
-          const docs = data.docs;
-          if (docs.length > 0) {
-            resolve(
-              docs.map((doc) => {
-                return doc.data() as Team;
-              })
-            );
-          } else {
-            console.warn('no teams found');
-            resolve([]);
-          }
-        });
-    });
-  }
-
-  /**
-   * checks if a user with uid exists in firestore
-   * @param uid
-   * @returns true if user exists or false if not
-   */
-  async userExists(uid: string) {
-    return await new Promise<Boolean>((resolve) => {
-      this.afs
-        .collection('users')
-        .doc(uid)
-        .get()
-        .toPromise()
-        .then((data) => {
-          resolve(data.exists);
-        });
-    });
-  }
-
-  /**
-   * create meet document in firestore
-   * @param meet
-   * @param teamId
-   * @param clubId
-   * @returns meet document reference
-   * @throws error if team does not exist
-   * @throws error if club does not exist
-   * @throws error if meet is undefined
-   * @throws error if meet data is undefined
-   */
-  async createMeet(meet: Meet, teamId: string, clubId: string) {
-    const meetRef = this.afs
-      .collection(
-        this.getCollectionRefWithConverter(`clubs/${clubId}/teams/${teamId}/meets`, Meet.converter)
-      )
-      .doc();
-    meet.uid = meetRef.ref.id;
-    await meetRef.set(meet);
-    return meetRef;
-  }
-  /**
-   * get meet document from firestore
-   * @param meetId
-   * @param teamId
-   * @param clubId
-   * @returns meet document
-   * @throws error if team does not exist
-   * @throws error if club does not exist
-   * @throws error if meet does not exist
-   * @throws error if meet data is undefined
-   */
-  async getMeet(meetId: string, teamId: string, clubId: string) {
-    return await new Promise<Meet>((resolve, reject) => {
-      this.afs
-        .collection(
-          this.getCollectionRefWithConverter(
-            `clubs/${clubId}/teams/${teamId}/meets`,
-            Meet.converter
-          )
-        )
-        .doc(meetId)
-        .get()
-        .toPromise()
-        .then((data) => {
-          const doc = data.data();
-          if (doc) {
-            resolve(doc as Meet);
-          } else {
-            reject(
-              new Error(
-                'meet does not exist. MEET: ' + meetId + 'of TEAM: ' + teamId + 'of CLUB: ' + clubId
-              )
-            );
-          }
-        });
-    });
-  }
-  /**
-   * get all meets of a team from firestore
-   * @param teamId
-   * @param clubId
-   * @returns array of meet documents
-   * @throws error if team does not exist
-   * @throws error if club does not exist
-   * @throws error if meets are undefined
-   */
-  async getMeets(
-    teamId: string,
-    clubId: string,
-    start: number = 0,
-    limit: number = 5,
-    userId: string
-  ) {
-    return await new Promise<Meet[]>((resolve, reject) => {
-      const ref = this.afs.collection(
-        this.getCollectionRefWithConverter(`clubs/${clubId}/teams/${teamId}/meets`, Meet.converter),
-        (ref) =>
-          ref
-            .where('start', '>=', fb.default.firestore.Timestamp.now())
-            .orderBy('start', 'asc')
-            .startAt(start)
-            .limit(limit)
+  async syncSessionMemberships(sessionUserId: string) {
+    return await new Promise<sessionMembership[]>((resolve) => {
+      let query = this.afs.collectionGroup<Object>('teams', (ref) =>
+        ref.where('users', 'array-contains', sessionUserId)
       );
-      ref
+      query
         .get()
         .toPromise()
-        .then((data) => {
-          const docs = data.docs;
-          if (docs.length > 0) {
-            resolve(
-              docs.map((doc) => {
-                let _ = doc.data() as Meet;
-                console.log('fixing status for user with uid of:', userId);
-                _.fixUserStatus(userId);
-                return _;
-              })
-            );
-          } else {
-            console.warn('no meets found');
-            resolve([]);
-          }
+        .then((sessionMemberships) => {
+          console.log('[ SessionMemberships valueChanged ]', sessionMemberships);
+          let rval = [];
+          sessionMemberships.forEach((doc) => {
+            let team = doc.data() as Team;
+            let membership: sessionMembership = {
+              userId: sessionUserId,
+              clubId: doc.ref.parent.parent.id,
+              teamId: doc.ref.id,
+              displayName: team.name,
+              role: 'member',
+            };
+            console.log('Found Membership in Team: ', team);
+
+            if (team.users.includes(sessionUserId)) {
+              membership.role = 'member';
+            }
+            if (team.trainers.includes(sessionUserId)) {
+              membership.role = 'coach';
+            }
+            if (team.headTrainers.includes(sessionUserId)) {
+              membership.role = 'headcoach';
+            }
+            if (team.admins.includes(sessionUserId)) {
+              membership.role = 'admin';
+            }
+            rval.push(membership);
+          });
+          resolve(rval);
         });
     });
   }
 
+  // MARK: - Create
   /**
-   * writes a join request to collection 'joinReq'
-   * @param teamId
-   * @param clubId
-   * @param userId
-   * @param actualUserId
-   * @param userName
-   * @param role
-   * @returns void
+   * Creates a new club in firestore
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {Club} club
+   *
+   * @returns {Promise<void>}
    */
-  async createJoinRequest(
-    teamId: string,
-    clubId: string,
-    userId: string,
-    actualUserId: string,
-    userName: string,
-    displayName: string,
-    role: string
-  ) {
-    await this.afs.collection('joinReq').add({
-      teamId: teamId,
-      clubId: clubId,
-      userId: userId,
-      actualUserId: actualUserId,
-      userName: userName,
-      displayName: displayName,
-      role: role,
-    });
+  async createClub(club: Club) {
+    return await this.afs
+      .collection(this.CollectionWithConverter('clubs', Club.converter))
+      .add(club)
+      .then((ref) => {
+        this.syncClub(ref.id);
+      });
   }
   /**
-   * writes a leave request to collection 'leaveReq'
-   * @param teamIdy
-   * @param clubId
-   * @param userId
-   * @param actualUserId
-   * @param userName
-   * @returns void
+   * Creates a new team in firestore
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {Team} team
+   * @param {string} clubId
+   * @returns {Promise<void>}
    */
-  async createLeaveRequest(teamId: string, clubId: string, userId: string) {
-    await this.afs.collection('leaveReq').add({
-      teamId: teamId,
-      clubId: clubId,
-      userId: userId,
-    });
+  async createTeam(team: Team, clubId: string) {
+    return await this.afs
+      .collection(this.CollectionWithConverter(`clubs/${clubId}/teams`, Team.converter))
+      .add(team)
+      .then((ref) => {
+        this.syncTeam(ref.id, clubId);
+      });
   }
-
-  /** write meet to collection 'meets'
-   * @param meet
-   * @param teamId
-   * @param clubId
-   * @returns void
-   * @throws error if team does not exist
-   * @throws error if club does not exist
-   * @throws error if meet is undefined
+  /**
+   * Creates a new meet in firestore
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {Meet} meet
+   * @param {string} clubId
+   * @param {string} teamId
+   * @returns {Promise<void>}
    */
-  async writeMeet(meet: Meet, teamId: string, clubId: string) {
-    if (!meet) {
-      throw new Error('meet is undefined');
-    }
-    await this.afs
+  async createMeet(meet: Meet, clubId: string, teamId: string) {
+    return await this.afs
       .collection(
-        this.getCollectionRefWithConverter(`clubs/${clubId}/teams/${teamId}/meets`, Meet.converter)
+        this.CollectionWithConverter(`clubs/${clubId}/teams/${teamId}/meets`, Meet.converter)
       )
-      .doc(meet.uid)
-      .set(meet);
+      .add(meet)
+      .then((ref) => {
+        this.syncMeet(ref.id, clubId, teamId);
+      });
   }
-  /** writes a mutation request to collection mutateReq inf firestore
-   * @param clubId
-   * @param teamId
-   * @param meetId
-   * @param userId
-   * @param status
+  /**
+   * Creates a new sessionUser in firestore
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {SessionUserData} sessionUser
+   * @param {string} ownerUid
+   * @returns {Promise<void>}
+   *
    */
-  async writeMutationRequest(
+  async createSessionUser(sessionUser: SessionUserData, ownerUid: string) {
+    sessionUser.owner = ownerUid;
+    return await this.afs
+      .collection(this.CollectionWithConverter('sessionUsers', SessionUserData.converter))
+      .add(sessionUser)
+      .then((ref) => {
+        this.syncSessionUsers(ownerUid);
+      });
+  }
+  /**
+   * Creates a new authUser in firestore
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {AuthUserData} authUser
+   * @returns {Promise<string>}
+   */
+  createAuthUser(authUser: AuthUserData, uid: string) {
+    return new Promise<string>((resolve) => {
+      this.afs
+        .collection(this.CollectionWithConverter('authUsers', AuthUserData.converter))
+        .doc(uid)
+        .set(authUser)
+        .then((ref) => {
+          this.syncAuthUser(uid);
+          resolve(uid);
+        });
+    });
+  }
+  // MARK: - Update
+  /**
+   * Updates a club in firestore
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {Club} club
+   * @param {string} clubId
+   * @returns {Promise<void>}
+   */
+  async updateClub(club: Club, clubId: string) {
+    return await this.afs
+      .collection(this.CollectionWithConverter('clubs', Club.converter))
+      .doc(clubId)
+      .update(club)
+      .then(() => {
+        this.syncClub(clubId);
+      });
+  }
+  /**
+   * Updates a team in firestore
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {Team} team
+   * @param {string} clubId
+   * @param {string} teamId
+   * @returns {Promise<void>}
+   */
+  async updateTeam(team: Team, clubId: string, teamId: string) {
+    return await this.afs
+      .collection(this.CollectionWithConverter(`clubs/${clubId}/teams`, Team.converter))
+      .doc(teamId)
+      .set(team)
+      .then(() => {
+        this.syncTeam(teamId, clubId);
+      });
+  }
+  /**
+   * Updates a meet in firestore
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {Meet} meet
+   * @param {string} clubId
+   * @param {string} teamId
+   * @param {string} meetId
+   * @returns {Promise<void>}
+   */
+  async updateMeet(meet: Meet, clubId: string, teamId: string, meetId: string) {
+    return await this.afs
+      .collection(
+        this.CollectionWithConverter(`clubs/${clubId}/teams/${teamId}/meets`, Meet.converter)
+      )
+      .doc(meetId)
+      .set(meet)
+      .then(() => {
+        this.syncMeet(meetId, clubId, teamId);
+      });
+  }
+  /** update meet status in firestore
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} clubId
+   * @param {string} teamId
+   * @param {string} meetId
+   * @param {string} status
+   * @param {string} sessionId
+   * @returns {Promise<void>}
+   */
+  async updateMeetStatus(
     clubId: string,
     teamId: string,
     meetId: string,
-    userId: string,
-    status: 'accepted' | 'declined' | 'pending',
-    meet: Meet
+    status: 'accepted' | 'declined' | 'unknown',
+    sessionId: string
   ) {
-    await this.afs.collection('mutateReq').add({
-      clubId: clubId,
-      teamId: teamId,
-      meetId: meetId,
-      userId: userId,
-      status: status,
-    });
-    if (status == 'accepted') {
-      if (meet.acceptedUsers.indexOf(userId) == -1) {
-        meet.acceptedUsers.push(userId);
-      }
-      const i = meet.declinedUsers.indexOf(userId);
-      if (i != -1) {
-        meet.declinedUsers.splice(i, 1);
-      }
-    }
-    if (status == 'declined') {
-      if (meet.declinedUsers.indexOf(userId) == -1) {
-        meet.declinedUsers.push(userId);
-      }
-      const i = meet.acceptedUsers.indexOf(userId);
-      if (i != -1) {
-        meet.acceptedUsers.splice(i, 1);
-      }
-    }
-    if (status == 'pending') {
-      const i = meet.acceptedUsers.indexOf(userId);
-      const j = meet.declinedUsers.indexOf(userId);
-      if (j != -1) {
-        meet.declinedUsers.splice(j, 1);
-      }
-      if (i != -1) {
-        meet.acceptedUsers.splice(i, 1);
-      }
-    }
-    return meet;
+    this.afs
+      .collection(`clubs/${clubId}/teams/${teamId}/meets/`)
+      .doc(meetId)
+      .update({
+        acceptedUsers:
+          status == 'accepted'
+            ? fb.default.firestore.FieldValue.arrayUnion(sessionId)
+            : fb.default.firestore.FieldValue.arrayRemove(sessionId),
+        declinedUsers:
+          status == 'declined'
+            ? fb.default.firestore.FieldValue.arrayUnion(sessionId)
+            : fb.default.firestore.FieldValue.arrayRemove(sessionId),
+      });
+  }
+  /**
+   * Updates a sessionUser in firestore
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {SessionUserData} sessionUser
+   * @param {string} uid
+   * @param {string} sessionUserId
+   * @returns {Promise<void>}
+   */
+  async updateSessionUser(sessionUser: SessionUserData, uid: string, sessionUserId: string) {
+    return await this.afs
+      .collection(this.CollectionWithConverter('sessionUsers', SessionUserData.converter))
+      .doc(sessionUserId)
+      .set(sessionUser)
+      .then(() => {
+        this.syncSessionUsers(uid);
+      });
+  }
+  /**
+   * Updates a authUser in firestore
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {AuthUserData} authUser
+   * @param {string} authUserId
+   * @returns {Promise<void>}
+   */
+  async updateAuthUser(authUser: AuthUserData, authUserId: string) {
+    return await this.afs
+      .collection(this.CollectionWithConverter('authUsers', AuthUserData.converter))
+      .doc(authUserId)
+      .set(authUser)
+      .then(() => {
+        this.syncAuthUser(authUserId);
+      });
+  }
+  // MARK: - Delete
+  /**
+   * Deletes a club in firestore
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} clubId
+   * @returns {Promise<void>}
+   */
+  async deleteClub(clubId: string) {
+    return await this.afs
+      .collection(this.CollectionWithConverter('clubs', Club.converter))
+      .doc(clubId)
+      .delete();
+  }
+  /**
+   * Deletes a team in firestore
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} clubId
+   * @param {string} teamId
+   * @returns {Promise<void>}
+   */
+  async deleteTeam(clubId: string, teamId: string) {
+    return await this.afs
+      .collection(this.CollectionWithConverter(`clubs/${clubId}/teams`, Team.converter))
+      .doc(teamId)
+      .delete();
+  }
+  /**
+   * Deletes a meet in firestore
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} clubId
+   * @param {string} teamId
+   * @param {string} meetId
+   * @returns {Promise<void>}
+   */
+  async deleteMeet(clubId: string, teamId: string, meetId: string) {
+    return await this.afs
+      .collection(
+        this.CollectionWithConverter(`clubs/${clubId}/teams/${teamId}/meets`, Meet.converter)
+      )
+      .doc(meetId)
+      .delete();
+  }
+  /**
+   * Deletes a sessionUser in firestore
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} sessionUserId
+   * @returns {Promise<void>}
+   */
+  async deleteSessionUser(sessionUserId: string) {
+    return await this.afs
+      .collection(this.CollectionWithConverter('sessionUsers', SessionUserData.converter))
+      .doc(sessionUserId)
+      .delete();
+  }
+  /**
+   * Deletes a authUser in firestore
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} authUserId
+   * @returns {Promise<void>}
+   */
+  async deleteAuthUser(authUserId: string) {
+    console.warn(
+      'You just ACTUALLY broke the internet. (Or at least this service) please call support, I beg you.'
+    );
+    return await this.afs
+      .collection(this.CollectionWithConverter('authUsers', AuthUserData.converter))
+      .doc(authUserId)
+      .delete();
   }
 
-  /** get team name string from local syncedClubs
-   * @param teamId
-   * @param clubId
-   * @returns team name string
-   * @throws error if team does not exist
-   * @throws error if club does not exist
+  // MARK: Getters
+
+  get clubs() {
+    return this._clubs;
+  }
+  get teams() {
+    return this._teams;
+  }
+  get meets() {
+    return this._meets;
+  }
+  get sessionUsers() {
+    return this._sessionUser;
+  }
+  get authUsers() {
+    return this._authUser;
+  }
+  set clubs(clubs: BehaviorSubject<Club[]>) {
+    throw new Error('You can not set clubs');
+  }
+  set teams(teams: BehaviorSubject<Team[]>) {
+    throw new Error('You can not set teams');
+  }
+  set meets(meets: BehaviorSubject<Meet[]>) {
+    throw new Error('You can not set meets');
+  }
+  set sessionUsers(sessionUsers: BehaviorSubject<SessionUserData[][]>) {
+    throw new Error('You can not set sessionUsers');
+  }
+  set authUsers(authUsers: BehaviorSubject<AuthUserData[]>) {
+    throw new Error('You can not set authUsers');
+  }
+
+  // MARK: Dynamic observers
+
+  /**
+   * Sync a club and subscribe to changes
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} clubId The id of the club to listen to
+   * @returns {Observable<Club>}
    */
-  getTeamName(teamId: string, clubId: string) {
-    return this.syncedClubs.get(clubId).clubData.teams.get(teamId).name;
+  getClub(clubId: string) {
+    this.syncClub(clubId);
+    // pipe internal clubs to an observable containing the club of type Observable<Club>
+    return this._clubs.pipe(
+      map((clubs: Club[]) => {
+        return clubs.find((club: Club) => club.uid === clubId);
+      })
+    );
   }
-  getDocumentRefWithConverterFromPath(path: string, converter: any) {
-    return this.afs.firestore.doc(path).withConverter(converter);
+  /**
+   * Sync a team and subscribe to changes
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} teamId The id of the team to listen to
+   * @param {string} clubId The id of the club the team belongs to
+   * @returns {Promise<Team>}
+   */
+  getTeam(teamId: string, clubId: string) {
+    return new Promise<Team>((resolve, reject) => {
+      this.afs
+        .collection(this.CollectionWithConverter(`clubs/${clubId}/teams`, Team.converter))
+        .doc<Team>(teamId)
+        .get()
+        .toPromise()
+        .then((doc: any) => {
+          if (doc.exists) {
+            resolve(doc.data() as Team);
+          } else {
+            reject(new Error('Team does not exist'));
+          }
+        });
+    });
   }
-  getCollectionRefWithConverter(path: string, converter: any) {
+
+  /**
+   * Get all clubs relevant for a admin
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} - adminId The id of the admin
+   * @returns {string[]} - The ids of the clubs
+   */
+  getClubsForAdmin(adminId: string): Promise<string[]> {
+    return new Promise((resolve, reject) => {
+      this.afs
+        .collection(this.CollectionWithConverter('clubs', Club.converter))
+        .ref.where('admins', 'array-contains', adminId)
+        .get()
+        .then((querySnapshot: QuerySnapshot<Club>) => {
+          console.log(querySnapshot);
+          resolve(querySnapshot.docs.map((doc: DocumentSnapshot<Club>) => doc.id));
+        });
+    });
+  }
+
+  /**
+   * Get all teams for a club (field 'owner')
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} clubId The id of the club
+   * @returns {string[]} The ids of the teams
+   *
+   */
+  getTeamsForClub(clubId: string) {
+    return new Promise((resolve, reject) => {
+      this.afs
+        .collection(this.CollectionWithConverter(`clubs/${clubId}/teams`, Team.converter))
+        .valueChanges()
+        .subscribe((querySnapshot) => {
+          var res: Team[] = [];
+          querySnapshot.forEach((team: Team) => {
+            if (team) {
+              res.push(team);
+              console.log('[ Team valueChanged ]', team);
+              var key = `${clubId}:${team.uid}`;
+              const index = this._teamsMap.get(key);
+              if (index !== undefined) {
+                this._teams.value[index] = team;
+              } else {
+                this._teams.next([...this._teams.value, team]);
+                this._teamsMap.set(key, this._teams.value.length - 1);
+              }
+            }
+          });
+          resolve(res);
+        });
+    });
+  }
+  // if(team) {
+  //   console.log('[ Team valueChanged ]', team);
+  //   var key = `${clubId}:${uid}`;
+  //   const index = this._teamsMap.get(key);
+  //   if (index !== undefined) {
+  //     this._teams.value[index] = team;
+  //   } else {
+  //     this._teams.next([...this._teams.value, team]);
+  //     this._teamsMap.set(key, this._teams.value.length - 1);
+  //   }
+  // }
+  /**
+   * Get all teams for a sessionUser Id using a collectionGroup query
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} sessionUserId The id of the sessionUser
+   * @returns {string[]} The ids of the teams
+   */
+  async getTeamsForSessionUser(sessionUserId: string): Promise<string[]> {
+    return new Promise((resolve, reject) => {
+      this.afs
+        .collectionGroup('teams', (ref) =>
+          ref.where('sessionUsers', 'array-contains', sessionUserId)
+        )
+        .get()
+        .toPromise()
+        .then((querySnapshot: QuerySnapshot<Team>) => {
+          resolve(querySnapshot.docs.map((doc: DocumentSnapshot<Team>) => doc.id));
+        });
+    });
+  }
+
+  /**
+   * Get all meets for a team
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} teamId The id of the team
+   * @param {string} clubId The id of the club the team belongs to
+   * @returns {string[]} The ids of the meets
+   */
+  async getMeetsForTeam(teamId: string, clubId: string): Promise<string[]> {
+    return this.afs
+      .collection(
+        this.CollectionWithConverter(`clubs/${clubId}/teams/${teamId}/meets`, Meet.converter)
+      )
+      .ref.get()
+      .then((querySnapshot: QuerySnapshot<Meet>) => {
+        return querySnapshot.docs.map((doc: DocumentSnapshot<Meet>) => doc.id);
+      });
+  }
+  /** Gets an behavior subject of all meets for a team
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} teamId The id of the team
+   * @param {string} clubId The id of the club the team belongs to
+   * @returns {Meet[]} The ids of the meets
+   */
+  syncMeetsForTeam(teamId: string, clubId: string): Observable<Meet[]> {
+    return this.afs
+      .collection<Meet>(
+        this.CollectionWithConverter(`clubs/${clubId}/teams/${teamId}/meets`, Meet.converter)
+      )
+      .valueChanges();
+  }
+
+  /**
+   * Check if a auth user exists
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} authUserId The id of the auth user
+   * @returns {boolean} True if the auth user exists
+   */
+  authUserExists(authUserId: string): Promise<boolean> {
+    return new Promise<boolean>((resolve) => {
+      this.afs
+        .collection(this.CollectionWithConverter('authUsers', AuthUserData.converter))
+        .ref.doc(authUserId)
+        .get()
+        .then((doc: DocumentSnapshot<AuthUserData>) => {
+          resolve(doc.exists);
+        });
+    });
+  }
+
+  /** checks if a joinCode exists for a team, and returns the code
+   * @since 2.0.0
+   * @memberof DataRepositoryService
+   * @param {string} teamId The id of the team
+   * @param {string} clubId The id of the club the team belongs to
+   * @param {string} role The role of the joinCode
+   * @returns {string} The joinCode
+   * @throws {Error} If the joinCode does not exist
+   */
+  getJoinCodeForTeam(
+    teamId: string,
+    clubId: string,
+    role: 'admin' | 'headcoach' | 'coach' | 'member'
+  ): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      this.afs
+        .collection('joinCodes')
+        .ref.where('teamId', '==', teamId)
+        .where('clubId', '==', clubId)
+        .where('role', '==', role)
+        .limit(1)
+        .get()
+        .then((querySnapshot: QuerySnapshot<Object>) => {
+          if (querySnapshot.docs.length == 1) {
+            console.log('[ JoinCode ]', querySnapshot.docs[0].data(), querySnapshot.docs[0].id);
+            resolve(querySnapshot.docs[0].id);
+          } else {
+            reject(new Error(`Join code for team ${teamId} not found`));
+          }
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  }
+
+  // HELPERS
+  CollectionWithConverter(path: string, converter: any) {
     return this.afs.firestore.collection(path).withConverter(converter);
   }
 }
-
-// structure was drawn on paper :(

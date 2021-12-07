@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
+import { LogicService } from 'src/app/services/logic.service';
 
 @Component({
   selector: 'app-my-clubs',
@@ -9,23 +10,24 @@ import { DataRepositoryService } from 'src/app/services/data-repository.service'
   styleUrls: ['./my-clubs.page.scss'],
 })
 export class MyClubsPage implements OnInit {
-  constructor(public drs: DataRepositoryService, public auth: AuthService, private router: Router) {
-    if (!this.drs.currentUser) {
-      this.router.navigate(['/login']);
-    }
-  }
+  constructor(
+    public drs: DataRepositoryService,
+    public auth: AuthService,
+    private router: Router,
+    public logic: LogicService
+  ) {}
   displayableClubs: Object[] = [];
 
   ngOnInit() {
-    this.drs.needsUpdateUserData.subscribe(() => {
-      const memberships = this.drs.currentUser.getValue().memberships;
-      console.log(memberships);
-      // set displayable clubs to be the clubs the user is a member of with role 'admin' or role 'owner'
-      this.displayableClubs = memberships.filter((membership) => {
-        return (
-          (membership['role'] === 'admin' || membership['role'] === 'owner') &&
-          membership['type'] === 'club'
-        );
+    this.drs.clubs.subscribe((clubs) => {
+      this.displayableClubs = [];
+      clubs.forEach((club) => {
+        if (club.admins.includes(this.drs.authUsers.value[0].uid)) {
+          this.displayableClubs.push({
+            displayName: club.name,
+            club: club.uid,
+          });
+        }
       });
     });
   }

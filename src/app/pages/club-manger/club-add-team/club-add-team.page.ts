@@ -26,35 +26,15 @@ export class ClubAddTeamPage implements OnInit {
       teamName: ['', Validators.required],
     });
 
-    this.clubId = this.route.snapshot.paramMap.get('clubId');
+    this.route.params.subscribe(async (params) => {
+      this.clubId = params.clubId;
+    });
   }
 
   async createTeam() {
-    let user = this.drs.currentUser.getValue();
-    const roles = {};
-    const team = new Team('', undefined, this.teamName.value);
-    const teamData = new TeamData(roles);
+    const team = new Team('', this.teamName.value, {}, [], [], [], []);
+    this.drs.createTeam(team, this.clubId);
 
-    team.uid = await (await this.drs.addTeam(team, this.clubId)).ref.id;
-
-    await this.drs.setTeamData(team.uid, this.clubId, teamData);
-
-    user.memberships.push({
-      role: 'owner',
-      displayName: team.name,
-      name: user.username,
-      club: this.clubId,
-      team: team.uid,
-      type: 'team',
-    });
-    console.log('user now is:          ', user);
-
-    this.drs.currentUser.next(user);
-    await this.drs.updateUser();
-
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    await this.drs.resync();
-    this.drs.needsUpdateUserData.next(true);
     this.router.navigate(['/my-clubs/detail', this.clubId]);
   }
   get teamName() {

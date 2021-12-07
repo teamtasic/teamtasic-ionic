@@ -9,13 +9,8 @@ import { SignupPageRoutingModule } from './signup-routing.module';
 import { SignupPage } from './signup.page';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    IonicModule,
-    SignupPageRoutingModule
-  ],
-  declarations: [SignupPage]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, IonicModule, SignupPageRoutingModule],
+  declarations: [SignupPage],
+  providers: [],
 })
 export class SignupPageModule {}

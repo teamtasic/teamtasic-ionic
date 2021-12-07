@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { DataRepositoryService } from 'src/app/services/data-repository.service';
-import { Clipboard } from '@capacitor/clipboard';
-import { Share } from '@capacitor/share';
+import { ModalController } from '@ionic/angular';
+import { SessionUserData } from 'src/app/classes/session-user-data';
+import { EditSessionUserComponent } from 'src/app/components/edit-session-user/edit-session-user.component';
 import { AuthService } from 'src/app/services/auth.service';
+import { DataRepositoryService } from 'src/app/services/data-repository.service';
+import { LogicService } from 'src/app/services/logic.service';
 import { NotificationService } from 'src/app/services/notification-service.service';
 
 @Component({
@@ -14,9 +16,11 @@ import { NotificationService } from 'src/app/services/notification-service.servi
 export class MyAccountPage implements OnInit {
   constructor(
     public drs: DataRepositoryService,
+    public logic: LogicService,
     public auth: AuthService,
     public fb: FormBuilder,
-    public ns: NotificationService
+    public ns: NotificationService,
+    private modalController: ModalController
   ) {}
 
   userData: FormGroup = this.fb.group({
@@ -25,30 +29,29 @@ export class MyAccountPage implements OnInit {
     address: ['', Validators.required],
     zipcode: ['', Validators.required],
   });
-  _userData: FormGroup = this.userData;
+  async ngOnInit() {
+    let user = this.drs.authUsers.value[0];
+    this.userData = this.fb.group({
+      username: [user.username, Validators.required],
+      phoneNumber: [user.phoneNumber, Validators.required],
+      address: [user.address, Validators.required],
+      zipcode: [user.zipcode, Validators.required],
+    });
 
-  ngOnInit() {
-    this.drs.currentUser.subscribe((user) => {
-      if (user) {
-        this.userData = this.fb.group({
-          username: [user.username, Validators.required],
-          phoneNumber: [user.phoneNumber, Validators.required],
-          address: [user.address, Validators.required],
-          zipcode: [user.zipcode, Validators.required],
-        });
-      }
+    this.drs.syncSessionUsers(this.drs.authUsers.value[0].uid);
+    this.drs.sessionUsers.subscribe((users) => {
+      console.log(users);
     });
   }
   async saveUserData() {
-    let user = await this.drs.currentUser.getValue();
+    let user = this.drs.authUsers.value[0];
     if (user) {
       try {
         user.username = this.username.value;
         user.phoneNumber = this.phoneNumber.value;
         user.address = this.address.value;
         user.zipcode = this.zipcode.value;
-        this.drs.currentUser.next(user);
-        await this.drs.updateUser();
+        await this.drs.updateAuthUser(user, this.drs.authUsers.value[0].uid);
         this.ns.showToast('Deine Daten wurden gespeichert.');
       } catch (error) {
         this.ns.showToast(`Fehler beim Speichern der Daten: ${error}`);
@@ -56,29 +59,8 @@ export class MyAccountPage implements OnInit {
     }
   }
 
-  async copyUidToClipboard() {
-    try {
-      await Clipboard.write({ string: this.drs.currentUser.getValue().uid });
-      this.ns.showToast('Benutzer Id wurde in die Zwischenablage kopiert.');
-    } catch (error) {
-      console.warn(error);
-    }
-  }
-  async shareUid() {
-    try {
-      await Share.share({
-        title: 'Meine Teamtasic User Id, füge mich deinem Team hinzu!',
-        text: `Füge mich deinem Team hinzu, meine Teamtasic User Id ist ${
-          this.drs.currentUser.getValue().uid
-        }`,
-        dialogTitle: 'Teile deine User Id mit deinem Administrator.',
-      });
-    } catch (error) {
-      console.warn(error);
-    }
-  }
   async changePassword() {
-    await this.auth.resetPassword(this.drs.currentUser.getValue().email);
+    await this.auth.resetPassword(this.drs.authUsers.value[0].email);
     this.ns.showToast('Eine E-Mail mit einem Link wurde an deine E-Mail Adresse gesendet.');
   }
   async changeEmail() {
@@ -86,9 +68,7 @@ export class MyAccountPage implements OnInit {
   }
   async deleteAccount() {
     // await this.auth.deleteAccount();
-    this.ns.showToast(
-      'Dein Account konnte nicht gelöscht werden. Bitte Verlasse zuerst alle Teams.'
-    );
+    this.ns.showToast('Dein Account konnte nicht gelöscht werden. Fehler #29-AUTH-NO');
   }
 
   get username() {
@@ -102,5 +82,28 @@ export class MyAccountPage implements OnInit {
   }
   get zipcode() {
     return this.userData.get('zipcode');
+  }
+
+  // UI Actions
+  async openSessenEditorNew() {
+    const modal = await this.modalController.create({
+      component: EditSessionUserComponent,
+      swipeToClose: true,
+      componentProps: {
+        newSession: true,
+      },
+    });
+    await modal.present();
+  }
+
+  async openSessionEditor(session: SessionUserData) {
+    const modal = await this.modalController.create({
+      component: EditSessionUserComponent,
+      swipeToClose: true,
+      componentProps: {
+        session: session,
+      },
+    });
+    await modal.present();
   }
 }
