@@ -8,11 +8,19 @@
     </ion-buttons>
     <ion-title>{{ meet.title }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="save()">Speichern</ion-button>
+      <ion-button (click)="save()" [disabled]="!isOpenToChanges()">Speichern</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content>
+  <!-- not open to changes -->
+  <ion-card *ngIf="!isOpenToChanges()">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-text color="primary"> Anmeldefrist abgelaufen </ion-text>
+      </ion-card-title>
+    </ion-card-header>
+  </ion-card>
   <ion-list>
     <ion-item>
       <ion-note slot="start">Zeit:</ion-note>
@@ -89,7 +97,7 @@
     <!-- start change my status section -->
     <ion-grid>
       <ion-col>
-        <ion-segment [value]="status" (ionChange)="change($event)">
+        <ion-segment [value]="status" (ionChange)="change($event)" [disabled]="!isOpenToChanges()">
           <ion-segment-button value="accepted">
             <ion-icon name="checkmark-circle-outline"></ion-icon>
           </ion-segment-button>
@@ -208,12 +216,14 @@
 
     <!-- end other users section -->
   </ion-list>
-  <ion-list-header>
-    <ion-label>Training bearbeiten</ion-label>
-  </ion-list-header>
-  <ion-row *ngIf="team.headTrainers.includes(sessionId)">
-    <ion-col>
-      <ion-button (click)="delete()" expand="block" color="danger">Löschen</ion-button>
-    </ion-col>
-  </ion-row>
+  <ng-template *ngIf="team.headTrainers.includes(sessionId)">
+    <ion-list-header>
+      <ion-label>Training bearbeiten</ion-label>
+    </ion-list-header>
+    <ion-row>
+      <ion-col>
+        <ion-button (click)="delete()" expand="block" color="danger">Löschen</ion-button>
+      </ion-col>
+    </ion-row>
+  </ng-template>
 </ion-content>

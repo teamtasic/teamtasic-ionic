@@ -31,6 +31,14 @@ export class TrainingDetailViewComponent implements OnInit {
   members_declined = [];
   members_else = [];
 
+  isOpenToChanges() {
+    if (this.meet) {
+      // is it 24h before the meet?
+      return (this.meet.start as any) > new Date(Date.now() + 24 * 60 * 60 * 1000);
+    }
+    return false;
+  }
+
   async ngOnInit() {
     this.drs.syncTeam(this.teamId, this.clubId);
     this.drs.teams.subscribe((teams) => {
@@ -114,8 +122,8 @@ export class TrainingDetailViewComponent implements OnInit {
   }
   async delete() {
     const alert = await this.alertController.create({
-      header: 'Confirm!',
-      message: 'Message <strong>text</strong>!!!',
+      header: 'Löschen bestätigen',
+      message: 'Diese Aktion kann nicht rückgägig gemacht werden.',
       buttons: [
         {
           text: 'Cancel',

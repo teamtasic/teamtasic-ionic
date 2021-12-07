@@ -67,7 +67,7 @@ export class ChatPage implements OnInit, AfterViewInit {
       });
       // filter out meets starting in the past
       m = m.filter((meet) => {
-        return (meet.start as any) > Date.now();
+        return (meet.start as any) > Date.now() - 1000 * 60 * 30;
       });
       this.meets = m;
     });
