@@ -37,7 +37,7 @@ export class NotificationService {
     PushNotifications.addListener(
       'pushNotificationReceived',
       (notification: PushNotificationSchema) => {
-        alert('Push received: ' + JSON.stringify(notification));
+        // alert('Push received: ' + JSON.stringify(notification));
       }
     );
 
@@ -45,7 +45,7 @@ export class NotificationService {
     PushNotifications.addListener(
       'pushNotificationActionPerformed',
       (notification: ActionPerformed) => {
-        alert('Push action performed: ' + JSON.stringify(notification));
+        // alert('Push action performed: ' + JSON.stringify(notification));
         // Open messages here
       }
     );
