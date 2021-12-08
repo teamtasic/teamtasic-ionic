@@ -96,7 +96,7 @@ export class EditSessionUserComponent implements OnInit {
     const code = this.joinForm.value.code;
     this.joinForm.reset();
     this.mss
-      .joinUsingCode(code, this.session.uid, this.session.name)
+      .joinUsingCode(code.trim(), this.session.uid, this.session.name)
       .then(() => {
         this.ns.showToast('Team beigetreten');
         this.init();
