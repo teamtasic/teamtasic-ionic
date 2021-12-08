@@ -33,6 +33,9 @@ export class Tab2Page implements OnInit {
         this.memberships[0].teamId,
       ]);
     }
+    this.memberships.forEach((m) => {
+      this.drs.syncClub(m.clubId);
+    });
   }
   ngOnInit() {
     this.drs.authUsers.subscribe(async (users) => {
@@ -40,5 +43,8 @@ export class Tab2Page implements OnInit {
         this.drs.syncSessionUsers(users[0].uid);
       }
     });
+  }
+  getClubName(clubId: string) {
+    return this.drs.clubs.getValue().find((c) => c.uid == clubId).name;
   }
 }
