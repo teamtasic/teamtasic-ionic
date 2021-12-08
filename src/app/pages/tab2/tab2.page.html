@@ -36,6 +36,7 @@
     >
       <ion-label>
         <h2>{{membership.displayName}}</h2>
+        <p>{{getClubName(membership.clubId)}}</p>
       </ion-label>
       <ion-avatar slot="start">
         <img [src]="'https://avatars.dicebear.com/api/initials/'+ membership.displayName +'.svg'" />
