@@ -78,6 +78,7 @@ export class AuthService {
       if (user) {
         console.log('[ 🔑 login ]', 'Signed in succsessfully, starting session');
         this.logic.userId = user.uid;
+        this.ns.registerPushNotifications(user.uid);
         ng.run(() => {
           this.router.navigateByUrl('/tabs/tab2');
         });

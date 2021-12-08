@@ -1,4 +1,4 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { AlertController, ToastController } from '@ionic/angular';
 import {
   ActionPerformed,
@@ -6,31 +6,31 @@ import {
   PushNotifications,
   Token,
 } from '@capacitor/push-notifications';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { DataRepositoryService } from './data-repository.service';
+import * as firebase from 'firebase';
 @Injectable({
   providedIn: 'root',
 })
 export class NotificationService {
-  constructor(private toastController: ToastController, private alertController: AlertController) {
-    // Request permission to use push notifications
-    // iOS will prompt user and return if they granted permission or not
-    // Android will just grant without prompting
-    PushNotifications.requestPermissions().then((result) => {
-      if (result.receive === 'granted') {
-        // Register with Apple / Google to receive push via APNS/FCM
-        PushNotifications.register();
-      } else {
-        // Show some error
-      }
-    });
+  token: Token = undefined;
 
+  constructor(
+    private toastController: ToastController,
+    private alertController: AlertController,
+    private afs: AngularFirestore,
+    private drs: DataRepositoryService
+  ) {
     // On success, we should be able to receive notifications
-    PushNotifications.addListener('registration', (token: Token) => {
-      alert('Push registration success, token: ' + token.value);
+    PushNotifications.addListener('registration', async (token: Token) => {
+      console.log('[ 🔔 PUSH NOTIFICATIONS ] Push registration success, token: ' + token.value);
+      // Send the token to your server so it can use it to send push notifications to this device
+      this.token = token;
     });
 
     // Some issue with our setup and push will not work
     PushNotifications.addListener('registrationError', (error: any) => {
-      alert('Error on registration: ' + JSON.stringify(error));
+      console.warn('[ 🔔 PUSH NOTIFICATIONS ] Error on registration: ' + JSON.stringify(error));
     });
 
     // Show us the notification payload if the app is open on our device
@@ -46,6 +46,7 @@ export class NotificationService {
       'pushNotificationActionPerformed',
       (notification: ActionPerformed) => {
         alert('Push action performed: ' + JSON.stringify(notification));
+        // Open messages here
       }
     );
   }
@@ -99,5 +100,38 @@ export class NotificationService {
     return data.data.values.newEmail;
   }
 
-  ngOnInit() {}
+  async requestPushPermission() {
+    PushNotifications.requestPermissions().then((result) => {
+      if (result.receive === 'granted') {
+        // Register with Apple / Google to receive push via APNS/FCM
+        PushNotifications.register();
+        // this.showToast('Push Erlaubnis erteilt');
+      } else {
+        // this.showToast('Push Erlaubnis abgelehnt');
+      }
+    });
+  }
+  registerPushNotifications(uid: string) {
+    const ref = this.afs.collection('fbm_push_tokens').doc(uid);
+    ref
+      .get()
+      .toPromise()
+      .then((old) => {
+        if (old.exists) {
+          ref.update({
+            tokens: firebase.default.firestore.FieldValue.arrayUnion(this.token.value),
+          });
+        } else {
+          ref.set({
+            tokens: [this.token.value],
+          });
+        }
+      });
+
+    try {
+      PushNotifications.register();
+    } catch (err) {
+      console.warn('[ 🔔 PUSH NOTIFICATIONS ] Error registering:', err);
+    }
+  }
 }

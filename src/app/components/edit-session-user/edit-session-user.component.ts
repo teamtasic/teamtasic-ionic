@@ -81,6 +81,8 @@ export class EditSessionUserComponent implements OnInit {
         );
         this.drs.updateSessionUser(_sess, this.drs.authUsers.value[0].uid, this.session.uid);
       }
+      this.ns.requestPushPermission();
+      this.ns.registerPushNotifications(this.drs.authUsers.value[0].uid);
       this.dismiss();
     } catch (error) {
       this.ns.showToast(error.message);
