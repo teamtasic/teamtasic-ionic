@@ -30,6 +30,11 @@ export class MeetCreateComponent implements OnInit {
       meetDate: [this.today, [Validators.required]],
       meetTime: [this.today, [Validators.required]],
       meetEndTime: [this.today, [Validators.required]],
+      meetComment: [''],
+      meetDeadline: [
+        '1',
+        [Validators.required, Validators.min(1), Validators.max(14), Validators.pattern('[0-9]*')],
+      ],
     });
   }
 
@@ -61,7 +66,11 @@ export class MeetCreateComponent implements OnInit {
       endDate,
       this.meetCreateGroup.value.meetLocation,
       this.clubId,
-      this.teamId
+      this.teamId,
+      [],
+      [],
+      this.meetComment.value,
+      this.meetDeadline.value
     );
     await this.drs.createMeet(meet, this.clubId, this.teamId);
 
@@ -89,5 +98,11 @@ export class MeetCreateComponent implements OnInit {
   }
   get meetEndTime() {
     return this.meetCreateGroup.get('meetEndTime');
+  }
+  get meetComment() {
+    return this.meetCreateGroup.get('meetComment');
+  }
+  get meetDeadline() {
+    return this.meetCreateGroup.get('meetDeadline');
   }
 }

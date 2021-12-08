@@ -9,6 +9,22 @@ export class Meet {
   meetpoint: string;
   clubId: string;
   teamId: string;
+  /**
+   * Comments by Trainers on this meet
+   *
+   * @type {string}
+   * @memberof Meet
+   * @since 2.1.0
+   */
+  comment: string;
+  /**
+   * Deadline in days
+   *
+   * @type {number}
+   * @memberof Meet
+   * @since 2.1.0
+   */
+  deadline: number;
 
   acceptedUsers: string[] = [];
   declinedUsers: string[] = [];
@@ -22,7 +38,9 @@ export class Meet {
     clubId: string,
     teamId: string,
     acceptedUsers: string[] = [],
-    declinedUsers: string[] = []
+    declinedUsers: string[] = [],
+    comment: string,
+    deadline: number
   ) {
     this.uid = uid;
     this.title = title;
@@ -33,6 +51,8 @@ export class Meet {
     this.teamId = teamId;
     this.acceptedUsers = acceptedUsers;
     this.declinedUsers = declinedUsers;
+    this.comment = comment;
+    this.deadline = deadline;
   }
 
   get startTimestamp(): fb.default.firestore.Timestamp {
@@ -54,8 +74,10 @@ export class Meet {
         data.meetpoint,
         data.clubId,
         data.teamId,
-        data.acceptedUsers,
-        data.declinedUsers
+        data.acceptedUsers || [],
+        data.declinedUsers || [],
+        data.comment || '',
+        data.deadline || 1
       );
     },
     toFirestore: function (meet: Meet) {
@@ -69,6 +91,8 @@ export class Meet {
         teamId: meet.teamId,
         acceptedUsers: meet.acceptedUsers,
         declinedUsers: meet.declinedUsers,
+        comment: meet.comment,
+        deadline: meet.deadline,
       };
     },
   };

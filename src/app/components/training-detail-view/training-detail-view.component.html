@@ -37,6 +37,21 @@
         {{ meet.meetpoint }}
       </ion-label>
     </ion-item>
+    <ion-item>
+      <ion-note slot="start">Bemerkungen:</ion-note>
+
+      <ion-label class="ion-text-wrap">
+        {{ meet.comment }}
+      </ion-label>
+    </ion-item>
+    <ion-item *ngIf="meet.deadline != 1">
+      <ion-note slot="start">Eintragen bis</ion-note>
+      <ion-note slot="end">Tage vorher</ion-note>
+
+      <ion-label>
+        {{ meet.deadline }}
+      </ion-label>
+    </ion-item>
 
     <!-- My status section start -->
 

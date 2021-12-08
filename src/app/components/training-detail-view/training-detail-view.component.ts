@@ -34,7 +34,9 @@ export class TrainingDetailViewComponent implements OnInit {
   isOpenToChanges() {
     if (this.meet) {
       // is it 24h before the meet?
-      return (this.meet.start as any) > new Date(Date.now() + 24 * 60 * 60 * 1000);
+      return (
+        (this.meet.start as any) > new Date(Date.now() + 24 * 60 * 60 * 1000 * this.meet.deadline)
+      );
     }
     return false;
   }
@@ -148,7 +150,7 @@ export class TrainingDetailViewComponent implements OnInit {
 
   status: 'accepted' | 'declined' | 'unknown' = 'unknown';
   trainersOpen: boolean = false;
-  usersOpen: boolean = false;
+  usersOpen: boolean = true;
 
   change(event) {
     this.status = event.detail.value;
