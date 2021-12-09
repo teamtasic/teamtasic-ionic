@@ -833,6 +833,29 @@ export class DataRepositoryService {
     });
   }
 
+  /** get session user from afs
+   * @since 2.1.1
+   * @memberof DataRepositoryService
+   * @param {string} sessionUserId The id of the session user
+   * @returns {Promise<SessionUserData>} The session user
+   */
+  getSessionUser(sessionUserId: string): Promise<SessionUserData> {
+    return new Promise<SessionUserData>((resolve, reject) => {
+      this.afs
+        .collection(this.CollectionWithConverter('sessionUsers', SessionUserData.converter))
+        .doc(sessionUserId)
+        .get()
+        .toPromise()
+        .then((doc: DocumentSnapshot<SessionUserData>) => {
+          if (doc.exists) {
+            resolve(doc.data() as SessionUserData);
+          } else {
+            reject(new Error(`Session user ${sessionUserId} not found`));
+          }
+        });
+    });
+  }
+
   // HELPERS
   CollectionWithConverter(path: string, converter: any) {
     return this.afs.firestore.collection(path).withConverter(converter);
