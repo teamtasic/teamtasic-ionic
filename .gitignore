@@ -31,4 +31,4 @@ npm-debug.log*
 /www
 .firebase/hosting.d3d3.cache
 *.cache
-.firebase/hosting.d3d3.cache
+*.d3d3.cache
