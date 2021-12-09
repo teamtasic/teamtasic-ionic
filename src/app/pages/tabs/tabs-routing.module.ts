@@ -22,6 +22,13 @@ const routes: Routes = [
             path: 'chat',
             loadChildren: () => import('../chat/chat.module').then((m) => m.ChatPageModule),
           },
+          {
+            path: 'addressbook',
+            loadChildren: () =>
+              import('../../pages/addressbook/addressbook.module').then(
+                (m) => m.AddressbookPageModule
+              ),
+          },
         ],
       },
       // {

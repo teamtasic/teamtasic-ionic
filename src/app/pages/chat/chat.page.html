@@ -2,6 +2,13 @@
   <ion-toolbar>
     <ion-title>Chat</ion-title>
     <ion-back-button slot="start"></ion-back-button>
+    <ion-buttons slot="end" *ngIf="showTrainerCtrls">
+      <ion-button
+        [routerLink]="'../../../../addressbook/'+ sessionId + '/' + clubId + '/' + teamId"
+      >
+        <ion-icon slot="icon-only" name="people-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
   <ion-toolbar>
     <!-- <ion-title> - </ion-title> -->

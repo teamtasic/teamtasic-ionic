@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Adressbuch</ion-title>
+    <ion-back-button slot="start"></ion-back-button>
+  </ion-toolbar>
+  <ion-toolbar>
+    <!-- <ion-title> - </ion-title> -->
+    <ion-breadcrumbs>
+      <ion-breadcrumb> {{team.name}} </ion-breadcrumb>
+      <ion-breadcrumb> {{sessionUserString}} </ion-breadcrumb>
+    </ion-breadcrumbs>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar (ionChange)="queryChanged($event)"></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let user of elementsToDisplay" (click)="openModal(user[0])">
+      {{user[1]}}
+    </ion-item>
+  </ion-list>
+</ion-content>
