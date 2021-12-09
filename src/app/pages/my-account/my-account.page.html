@@ -85,6 +85,10 @@
         </ion-col>
       </ion-row>
     </form>
+    <ion-list-header> Push-Benachrichtigungen </ion-list-header>
+    <ion-item button detail (click)="pushNotifications()">
+      <ion-label>Push-Benachrichtigungen aktivieren</ion-label>
+    </ion-item>
     <ion-list-header> Sicherheit </ion-list-header>
     <ion-item detail button (click)="changePassword()">
       <ion-label>Passwort ändern</ion-label>

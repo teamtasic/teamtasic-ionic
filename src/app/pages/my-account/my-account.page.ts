@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Capacitor } from '@capacitor/core';
 import { ModalController } from '@ionic/angular';
 import { SessionUserData } from 'src/app/classes/session-user-data';
 import { EditSessionUserComponent } from 'src/app/components/edit-session-user/edit-session-user.component';
@@ -105,5 +106,14 @@ export class MyAccountPage implements OnInit {
       },
     });
     await modal.present();
+  }
+
+  async pushNotifications() {
+    if (Capacitor.isNativePlatform()) {
+      await this.ns.requestPushPermission();
+      this.ns.registerPushNotifications(this.drs.authUsers.value[0].uid);
+    } else {
+      this.ns.showToast('Push-Benachrichtigungen können nur in der App verwendet werden.');
+    }
   }
 }
