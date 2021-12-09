@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      {{ user.name || 'User' }}
+    </ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-tab-button (click)="dismiss()">
+        <ion-icon slot="start" name="close"></ion-icon>
+        <ion-label>Schliessen</ion-label>
+      </ion-tab-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <h2>
+    {{ user.name }}
+  </h2>
+  <!-- output all fields of sessionuser user-->
+  <ion-item>
+    <ion-note> E-Mail: </ion-note>
+    <ion-label>
+      {{ user.email }}
+    </ion-label>
+  </ion-item>
+  <ion-item>
+    <ion-note> Telefonnummer </ion-note>
+    <ion-label>
+      {{ user.phoneNumber }}
+    </ion-label>
+  </ion-item>
+  <ion-item>
+    <ion-note> Notfallnummer </ion-note>
+    <ion-label>
+      <ion-text color="danger">
+        {{ user.emergencyContact }}
+      </ion-text>
+    </ion-label>
+  </ion-item>
+</ion-content>
