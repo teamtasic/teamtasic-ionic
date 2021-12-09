@@ -231,7 +231,7 @@
 
     <!-- end other users section -->
   </ion-list>
-  <ng-template *ngIf="team.headTrainers.includes(sessionId)">
+  <div *ngIf="team.headTrainers.includes(sessionId)">
     <ion-list-header>
       <ion-label>Training bearbeiten</ion-label>
     </ion-list-header>
@@ -240,5 +240,5 @@
         <ion-button (click)="delete()" expand="block" color="danger">Löschen</ion-button>
       </ion-col>
     </ion-row>
-  </ng-template>
+  </div>
 </ion-content>
