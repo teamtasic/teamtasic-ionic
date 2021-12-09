@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ModalController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { sessionMembership, SessionUserData } from 'src/app/classes/session-user-data';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
 import { MembershipsService } from 'src/app/services/memberships.service';
@@ -34,7 +34,8 @@ export class EditSessionUserComponent implements OnInit {
     public drs: DataRepositoryService,
     public mss: MembershipsService,
     private fb: FormBuilder,
-    private ns: NotificationService
+    private ns: NotificationService,
+    private alertController: AlertController
   ) {}
 
   async ngOnInit() {
@@ -93,17 +94,43 @@ export class EditSessionUserComponent implements OnInit {
   }
   //MARK JOIN TEAM LEAVE TEAM
   async joinTeam() {
-    const code = this.joinForm.value.code;
-    this.joinForm.reset();
-    this.mss
-      .joinUsingCode(code.trim(), this.session.uid, this.session.name)
-      .then(() => {
-        this.ns.showToast('Team beigetreten');
-        this.init();
-      })
-      .catch((error) => {
-        this.ns.showToast(error.message);
-      });
+    // confirm dialog
+
+    const alert = await this.alertController.create({
+      header: 'Datenweitergabe erlauben',
+      message:
+        'Bitte bestätige, dass wir deine Kontaktdaten an die Trainer des Teams weitergeben dürfen. (z.B. Notfallkontakt)',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            this.ns.showToast('Abgebrochen');
+          },
+        },
+        {
+          text: 'Einverstanden',
+          handler: () => {
+            const code = this.joinForm.value.code;
+            this.joinForm.reset();
+            this.mss
+              .joinUsingCode(code.trim(), this.session.uid, this.session.name)
+              .then(() => {
+                this.ns.showToast('Team beigetreten');
+                this.init();
+              })
+              .catch((error) => {
+                this.ns.showToast(
+                  error.message || 'Team konnte nicht beigetreten werden. Stimmt der Code?'
+                );
+              });
+          },
+        },
+      ],
+    });
+
+    await alert.present();
   }
 
   leaveTeam(membership: sessionMembership) {
