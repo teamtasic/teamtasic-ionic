@@ -28,7 +28,6 @@ export class MeetCreateComponent implements OnInit {
       meetName: ['', [Validators.required]],
       meetLocation: ['', [Validators.required]],
       meetDate: [this.today, [Validators.required]],
-      meetTime: [this.today, [Validators.required]],
       meetEndTime: [this.today, [Validators.required]],
       meetComment: [''],
       meetDeadline: [
@@ -40,16 +39,14 @@ export class MeetCreateComponent implements OnInit {
 
   async createMeet() {
     let date: Date = new Date(Date.parse(this.meetCreateGroup.value.meetDate));
-
-    let start: Date = new Date(Date.parse(this.meetCreateGroup.value.meetTime));
     let end: Date = new Date(Date.parse(this.meetCreateGroup.value.meetEndTime));
 
     let startDate = new Date(
       date.getFullYear(),
       date.getMonth(),
       date.getDate(),
-      start.getHours(),
-      start.getMinutes()
+      date.getHours(),
+      date.getMinutes()
     );
     let endDate = new Date(
       date.getFullYear(),
