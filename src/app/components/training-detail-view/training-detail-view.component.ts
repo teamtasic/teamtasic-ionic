@@ -31,7 +31,10 @@ export class TrainingDetailViewComponent implements OnInit {
   members_declined = [];
   members_else = [];
 
-  isOpenToChanges() {
+  comment = '';
+
+  isOpenToChanges(a = false) {
+    if (this.team.headTrainers.includes(this.sessionId) && !a) return true;
     if (this.meet) {
       // is it 24h before the meet?
       return (
@@ -53,8 +56,9 @@ export class TrainingDetailViewComponent implements OnInit {
     });
     this.drs.meets.subscribe((meets) => {
       meets.find((meet) => {
-        if (meet.uid === this.sessionId) {
+        if (meet.uid === this.meet.uid) {
           this.meet = meet;
+          this.comment = meet.comment;
         }
       });
       this.significantChange();
@@ -109,7 +113,6 @@ export class TrainingDetailViewComponent implements OnInit {
     this.modalController.dismiss();
   }
   async save() {
-    this.meet;
     this.meet.acceptedUsers.splice(this.meet.acceptedUsers.indexOf(this.sessionId), 1);
     this.meet.declinedUsers.splice(this.meet.declinedUsers.indexOf(this.sessionId), 1);
 
@@ -118,7 +121,8 @@ export class TrainingDetailViewComponent implements OnInit {
       this.teamId,
       this.meet.uid,
       this.status,
-      this.sessionId
+      this.sessionId,
+      this.comment
     );
     this.modalController.dismiss();
   }
@@ -161,5 +165,8 @@ export class TrainingDetailViewComponent implements OnInit {
   }
   toggleUsers() {
     this.usersOpen = !this.usersOpen;
+  }
+  commentChange(event) {
+    this.comment = event.detail.value;
   }
 }

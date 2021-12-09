@@ -69,6 +69,9 @@ export class ChatPage implements OnInit, AfterViewInit {
       m = m.filter((meet) => {
         return (meet.start as any) > Date.now() - 1000 * 60 * 30;
       });
+      m.forEach((meet) => {
+        this.drs.syncMeet(meet.uid, this.clubId, this.teamId);
+      });
       this.meets = m;
     });
 

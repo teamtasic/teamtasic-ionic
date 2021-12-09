@@ -14,7 +14,7 @@
 </ion-header>
 <ion-content>
   <!-- not open to changes -->
-  <ion-card *ngIf="!isOpenToChanges()">
+  <ion-card *ngIf="!isOpenToChanges(true)">
     <ion-card-header>
       <ion-card-title>
         <ion-text color="primary"> Anmeldefrist abgelaufen </ion-text>
@@ -38,11 +38,14 @@
       </ion-label>
     </ion-item>
     <ion-item>
-      <ion-note slot="start">Bemerkungen:</ion-note>
-
-      <ion-label class="ion-text-wrap">
-        {{ meet.comment }}
-      </ion-label>
+      <ion-label position="stacked">Bemerkungen</ion-label>
+      <ion-textarea
+        [value]="comment"
+        (ionChange)="commentChange($event)"
+        [readonly]="!team.headTrainers.includes(sessionId)"
+        auto-grow
+      >
+      </ion-textarea>
     </ion-item>
     <ion-item *ngIf="meet.deadline != 1">
       <ion-note slot="start">Eintragen bis</ion-note>

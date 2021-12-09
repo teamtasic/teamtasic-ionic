@@ -456,9 +456,10 @@ export class DataRepositoryService {
     teamId: string,
     meetId: string,
     status: 'accepted' | 'declined' | 'unknown',
-    sessionId: string
+    sessionId: string,
+    comment: string
   ) {
-    this.afs
+    await this.afs
       .collection(`clubs/${clubId}/teams/${teamId}/meets/`)
       .doc(meetId)
       .update({
@@ -470,6 +471,7 @@ export class DataRepositoryService {
           status == 'declined'
             ? fb.default.firestore.FieldValue.arrayUnion(sessionId)
             : fb.default.firestore.FieldValue.arrayRemove(sessionId),
+        comment: comment,
       });
   }
   /**
