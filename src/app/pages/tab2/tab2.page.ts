@@ -45,6 +45,10 @@ export class Tab2Page implements OnInit {
     });
   }
   getClubName(clubId: string) {
-    return this.drs.clubs.getValue().find((c) => c.uid == clubId).name;
+    try {
+      return this.drs.clubs.getValue().find((c) => c.uid == clubId).name;
+    } catch {
+      return '';
+    }
   }
 }
