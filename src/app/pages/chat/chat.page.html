@@ -13,7 +13,7 @@
   <ion-toolbar>
     <!-- <ion-title> - </ion-title> -->
     <ion-breadcrumbs>
-      <ion-breadcrumb> {{team.name}} </ion-breadcrumb>
+      <ion-breadcrumb> {{team?.name}} </ion-breadcrumb>
       <ion-breadcrumb> {{sessionUserString}} </ion-breadcrumb>
     </ion-breadcrumbs>
   </ion-toolbar>
@@ -38,7 +38,7 @@
     vertical="top"
     horizontal="end"
     slot="fixed"
-    *ngIf="team.headTrainers.includes(sessionId)"
+    *ngIf="team?.headTrainers.includes(sessionId)"
   >
     <ion-fab-button (click)="addTraining()">
       <ion-icon name="add"></ion-icon>

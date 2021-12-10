@@ -59,7 +59,7 @@ export class ChatPage implements OnInit, AfterViewInit {
     this.drs.syncTeam(this.teamId, this.clubId);
     this.drs.teams.subscribe((teams) => {
       this.team = teams.find((t) => t.uid === this.teamId);
-      this.showTrainerCtrls = this.team.trainers.includes(this.sessionId);
+      this.showTrainerCtrls = this.team?.trainers.includes(this.sessionId);
     });
 
     this.drs.syncMeetsForTeam(this.teamId, this.clubId).subscribe((meets) => {
