@@ -77,7 +77,7 @@ export class Meet {
         data.acceptedUsers || [],
         data.declinedUsers || [],
         data.comment || '',
-        data.deadline || 1
+        data.deadline || 0
       );
     },
     toFirestore: function (meet: Meet) {

@@ -449,6 +449,9 @@ export class DataRepositoryService {
    * @param {string} meetId
    * @param {string} status
    * @param {string} sessionId
+   * @param {string} comment
+   * @param {string} deadline
+   * @param {string} meetpoint
    * @returns {Promise<void>}
    */
   async updateMeetStatus(
@@ -457,7 +460,9 @@ export class DataRepositoryService {
     meetId: string,
     status: 'accepted' | 'declined' | 'unknown',
     sessionId: string,
-    comment: string
+    comment: string,
+    deadline: string,
+    meetpoint: string
   ) {
     await this.afs
       .collection(`clubs/${clubId}/teams/${teamId}/meets/`)
@@ -472,6 +477,8 @@ export class DataRepositoryService {
             ? fb.default.firestore.FieldValue.arrayUnion(sessionId)
             : fb.default.firestore.FieldValue.arrayRemove(sessionId),
         comment: comment,
+        deadline: deadline,
+        meetpoint: meetpoint,
       });
   }
   /**

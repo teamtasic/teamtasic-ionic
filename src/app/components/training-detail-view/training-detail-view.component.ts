@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlertController, ModalController } from '@ionic/angular';
 import { Meet } from 'src/app/classes/meet';
 import { Team } from 'src/app/classes/team';
@@ -15,7 +16,8 @@ export class TrainingDetailViewComponent implements OnInit {
     private modalController: ModalController,
     public drs: DataRepositoryService,
     private alertController: AlertController,
-    private ns: NotificationService
+    private ns: NotificationService,
+    private fb: FormBuilder
   ) {}
 
   @Input() sessionId: string;
@@ -31,7 +33,7 @@ export class TrainingDetailViewComponent implements OnInit {
   members_declined = [];
   members_else = [];
 
-  comment = '';
+  meetForm: FormGroup;
 
   isOpenToChanges(a = false) {
     if (this.team.headTrainers.includes(this.sessionId) && !a) return true;
@@ -45,6 +47,11 @@ export class TrainingDetailViewComponent implements OnInit {
   }
 
   async ngOnInit() {
+    this.meetForm = this.fb.group({
+      meetpoint: ['', Validators.required],
+      comment: ['', Validators.required],
+      deadline: ['', Validators.required],
+    });
     this.drs.syncTeam(this.teamId, this.clubId);
     this.drs.teams.subscribe((teams) => {
       teams.find((team) => {
@@ -58,7 +65,11 @@ export class TrainingDetailViewComponent implements OnInit {
       meets.find((meet) => {
         if (meet.uid === this.meet.uid) {
           this.meet = meet;
-          this.comment = meet.comment;
+          this.meetForm = this.fb.group({
+            meetpoint: [meet.meetpoint, Validators.required],
+            comment: [meet.comment],
+            deadline: [meet.deadline, Validators.required],
+          });
         }
       });
       this.significantChange();
@@ -122,7 +133,9 @@ export class TrainingDetailViewComponent implements OnInit {
       this.meet.uid,
       this.status,
       this.sessionId,
-      this.comment
+      this.meetForm.value.comment,
+      this.meetForm.value.deadline,
+      this.meetForm.value.meetpoint
     );
     this.modalController.dismiss();
   }
@@ -158,15 +171,5 @@ export class TrainingDetailViewComponent implements OnInit {
 
   change(event) {
     this.status = event.detail.value;
-  }
-
-  toggleTrainers() {
-    this.trainersOpen = !this.trainersOpen;
-  }
-  toggleUsers() {
-    this.usersOpen = !this.usersOpen;
-  }
-  commentChange(event) {
-    this.comment = event.detail.value;
   }
 }
