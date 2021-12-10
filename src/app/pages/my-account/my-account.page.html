@@ -76,6 +76,23 @@
           placeholder="Postleizahl, Stadt"
         ></ion-input>
       </ion-item>
+      <ion-list-header> Push-Benachrichtigungen </ion-list-header>
+      <ion-item>
+        <ion-label>Push-Benachrichtigungen</ion-label>
+        <ion-toggle formControlName="notificationsEnabled"></ion-toggle>
+      </ion-item>
+      <ion-item *ngIf="userData?.value.notificationsEnabled">
+        <ion-label> Neues Training eingetragen </ion-label>
+        <ion-toggle formControlName="newTrainingNotifications"></ion-toggle>
+      </ion-item>
+      <ion-item *ngIf="userData?.value.notificationsEnabled">
+        <ion-label> Termin von Trainer bearbeitet </ion-label>
+        <ion-toggle formControlName="trainingChangedNotifications"></ion-toggle>
+      </ion-item>
+      <ion-item *ngIf="userData?.value.notificationsEnabled">
+        <ion-label> Trainingshinweis </ion-label>
+        <ion-toggle formControlName="trainingReminderNotifications"></ion-toggle>
+      </ion-item>
 
       <ion-row>
         <ion-col>
@@ -84,11 +101,20 @@
           >
         </ion-col>
       </ion-row>
+      <ion-row>
+        <ion-col>
+          <ion-button
+            expand="block"
+            (click)="enPushNotifications()"
+            color="secondary"
+            *ngIf="isPushNotifsAvailable()"
+          >
+            Push-Benachrichtigungen aktivieren</ion-button
+          >
+        </ion-col>
+      </ion-row>
     </form>
-    <ion-list-header> Push-Benachrichtigungen </ion-list-header>
-    <ion-item button detail (click)="pushNotifications()">
-      <ion-label>Push-Benachrichtigungen aktivieren</ion-label>
-    </ion-item>
+
     <ion-list-header> Sicherheit </ion-list-header>
     <ion-item detail button (click)="changePassword()">
       <ion-label>Passwort ändern</ion-label>

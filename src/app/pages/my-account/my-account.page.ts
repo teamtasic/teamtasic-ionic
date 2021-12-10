@@ -29,6 +29,9 @@ export class MyAccountPage implements OnInit {
     phoneNumber: ['', Validators.required],
     address: ['', Validators.required],
     zipcode: ['', Validators.required],
+    newTrainingNotifications: [false],
+    trainingChangedNotifications: [false],
+    trainingReminderNotifications: [false],
   });
   async ngOnInit() {
     let user = this.drs.authUsers.value[0];
@@ -37,6 +40,16 @@ export class MyAccountPage implements OnInit {
       phoneNumber: [user.phoneNumber, Validators.required],
       address: [user.address, Validators.required],
       zipcode: [user.zipcode, Validators.required],
+      notificationsEnabled: [user.pushNotificationOptions.enabled],
+      newTrainingNotifications: [user.pushNotificationOptions.newTrainingNotifications],
+      trainingChangedNotifications: [user.pushNotificationOptions.trainingChangedNotifications],
+      trainingReminderNotifications: [user.pushNotificationOptions.trainingReminderNotifications],
+    });
+
+    this.userData.valueChanges.subscribe((data) => {
+      if (data.notificationsEnabled) {
+        this.enPushNotifications();
+      }
     });
 
     this.drs.syncSessionUsers(this.drs.authUsers.value[0].uid);
@@ -52,11 +65,21 @@ export class MyAccountPage implements OnInit {
         user.phoneNumber = this.phoneNumber.value;
         user.address = this.address.value;
         user.zipcode = this.zipcode.value;
+        user.pushNotificationOptions = {
+          enabled: this.notificationsEnabled,
+          newTrainingNotifications: this.newTrainingNotifications,
+          trainingChangedNotifications: this.trainingChangedNotifications,
+          trainingReminderNotifications: this.trainingReminderNotifications,
+        };
+
         await this.drs.updateAuthUser(user, this.drs.authUsers.value[0].uid);
         this.ns.showToast('Deine Daten wurden gespeichert.');
       } catch (error) {
         this.ns.showToast(`Fehler beim Speichern der Daten: ${error}`);
       }
+    }
+    if (user.pushNotificationOptions.enabled) {
+      this.enPushNotifications();
     }
   }
 
@@ -84,6 +107,18 @@ export class MyAccountPage implements OnInit {
   get zipcode() {
     return this.userData.get('zipcode');
   }
+  get notificationsEnabled() {
+    return this.userData.get('notificationsEnabled').value;
+  }
+  get newTrainingNotifications() {
+    return this.userData.get('newTrainingNotifications').value;
+  }
+  get trainingChangedNotifications() {
+    return this.userData.get('trainingChangedNotifications').value;
+  }
+  get trainingReminderNotifications() {
+    return this.userData.get('trainingReminderNotifications').value;
+  }
 
   // UI Actions
   async openSessenEditorNew() {
@@ -108,12 +143,17 @@ export class MyAccountPage implements OnInit {
     await modal.present();
   }
 
-  async pushNotifications() {
+  async enPushNotifications() {
     if (Capacitor.isNativePlatform()) {
       await this.ns.requestPushPermission();
       this.ns.registerPushNotifications(this.drs.authUsers.value[0].uid);
     } else {
-      this.ns.showToast('Push-Benachrichtigungen können nur in der App verwendet werden.');
+      this.ns.showToast(
+        'Push-Benachrichtigungen können nur in der App verwendet werden. Bitte klicke in der App auf den Button "Push-Benachrichtigungen aktivieren".'
+      );
     }
+  }
+  isPushNotifsAvailable() {
+    return Capacitor.isNativePlatform();
   }
 }
