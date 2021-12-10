@@ -27,8 +27,8 @@ export class MeetCreateComponent implements OnInit {
     this.meetCreateGroup = this.fb.group({
       meetName: ['', [Validators.required]],
       meetLocation: ['', [Validators.required]],
-      meetDate: [this.today, [Validators.required]],
-      meetEndTime: [this.today, [Validators.required]],
+      meetDate: ['', [Validators.required]],
+      meetEndTime: ['', [Validators.required]],
       meetComment: [''],
       meetDeadline: [
         '1',
