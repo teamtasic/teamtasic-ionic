@@ -1,4 +1,4 @@
 firebase use teamtasic-production
 ionic build --prod
-firebase deploy --except functions
+firebase deploy
 firebase use testing

@@ -53,7 +53,7 @@
       </ion-item>
     </form>
 
-    <ion-card>
+    <ion-card *ngIf="!newSession">
       <ion-card-header>
         <ion-card-title>
           <ion-text color="danger">
@@ -67,16 +67,16 @@
       </ion-card-header>
     </ion-card>
 
-    <ion-list-header> Mitgliedschaften </ion-list-header>
+    <ion-list-header *ngIf="!newSession"> Mitgliedschaften </ion-list-header>
 
-    <ion-item *ngFor="let membership of memberships">
+    <ion-item *ngFor="let membership of !newSession ? memberships : []">
       <ion-label> {{ membership.displayName }} </ion-label>
       <ion-button (click)="leaveTeam(membership)" slot="end" color="warning">
         Verlassen
       </ion-button>
     </ion-item>
 
-    <form [formGroup]="joinForm">
+    <form [formGroup]="joinForm" *ngIf="!newSession">
       <ion-item>
         <ion-label position="stacked">TeamCode <ion-text color="danger">*</ion-text></ion-label>
         <ion-input required formControlName="code" type="text"></ion-input>
@@ -86,7 +86,7 @@
       </ion-item>
     </form>
 
-    <ion-card>
+    <ion-card *ngIf="!newSession">
       <ion-card-header>
         <ion-card-title>
           <ion-text color="primary"> Etwas nicht geklappt? </ion-text>
