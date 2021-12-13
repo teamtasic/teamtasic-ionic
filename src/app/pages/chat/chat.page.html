@@ -4,6 +4,11 @@
     <ion-back-button slot="start"></ion-back-button>
     <ion-buttons slot="end" *ngIf="showTrainerCtrls">
       <ion-button
+        [routerLink]="'../../../../chat-archive/'+ sessionId + '/' + clubId + '/' + teamId"
+      >
+        <ion-icon slot="icon-only" name="archive-outline"></ion-icon>
+      </ion-button>
+      <ion-button
         [routerLink]="'../../../../addressbook/'+ sessionId + '/' + clubId + '/' + teamId"
       >
         <ion-icon slot="icon-only" name="people-circle-outline"></ion-icon>

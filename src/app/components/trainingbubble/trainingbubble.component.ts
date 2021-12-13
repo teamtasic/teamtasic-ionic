@@ -13,16 +13,19 @@ export class TrainingbubbleComponent implements OnInit {
   @Input() sessionId: string;
   @Input() teamId: string;
   @Input() clubId: string;
+  @Input() isArchive: boolean | undefined;
 
   buttonColor: 'primary' | 'danger' | 'success' = 'primary';
 
   constructor(private modalController: ModalController) {}
 
   ngOnInit() {
-    this.buttonColor = this.meet.acceptedUsers.includes(this.sessionId) ? 'success' : 'primary';
-    this.buttonColor = this.meet.declinedUsers.includes(this.sessionId)
-      ? 'danger'
-      : this.buttonColor;
+    if (!this.isArchive) {
+      this.buttonColor = this.meet.acceptedUsers.includes(this.sessionId) ? 'success' : 'primary';
+      this.buttonColor = this.meet.declinedUsers.includes(this.sessionId)
+        ? 'danger'
+        : this.buttonColor;
+    }
   }
 
   async presentModal() {
