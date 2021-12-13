@@ -142,7 +142,11 @@
     <ion-accordion-group>
       <ion-accordion value="trainers">
         <ion-item slot="header">
-          <ion-label>Trainer</ion-label>
+          <ion-label slot="start">Trainer</ion-label>
+          <ion-note slot="end">
+            <ion-text color="success"> {{ trainers_accepted?.length }}</ion-text> /
+            <ion-text color="danger">{{ trainers_declined?.length }}</ion-text></ion-note
+          >
         </ion-item>
         <ion-list slot="content">
           <ion-item
@@ -203,7 +207,11 @@
       </ion-accordion>
       <ion-accordion value="members">
         <ion-item slot="header">
-          <ion-label>Athleten</ion-label>
+          <ion-label slot="start">Athleten</ion-label>
+          <ion-note slot="end"
+            ><ion-text color="success">{{ members_accepted?.length }} </ion-text>/
+            <ion-text color="danger">{{ members_declined?.length }}</ion-text></ion-note
+          >
         </ion-item>
         <ion-list slot="content">
           <ion-item
