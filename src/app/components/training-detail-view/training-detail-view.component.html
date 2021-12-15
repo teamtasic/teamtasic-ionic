@@ -155,7 +155,11 @@
             <ion-label> Keine Trainer vorhanden </ion-label>
           </ion-item>
 
-          <ion-item *ngFor="let cath of trainers_accepted">
+          <ion-item
+            *ngFor="let cath of trainers_accepted"
+            [detail]="false"
+            (click)="openStatusModal($event, cath)"
+          >
             <ion-avatar slot="start">
               <img
                 [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'"
@@ -171,7 +175,7 @@
             </ion-label>
             <ion-badge color="success" slot="end">Kommt</ion-badge>
           </ion-item>
-          <ion-item *ngFor="let cath of trainers_declined">
+          <ion-item *ngFor="let cath of trainers_declined" (click)="openStatusModal($event, cath)">
             <ion-avatar slot="start">
               <img
                 [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'"
@@ -187,7 +191,7 @@
             </ion-label>
             <ion-badge color="danger" slot="end">Kommt nicht</ion-badge>
           </ion-item>
-          <ion-item *ngFor="let cath of trainers_else">
+          <ion-item *ngFor="let cath of trainers_else" (click)="openStatusModal($event, cath)">
             <ion-avatar slot="start">
               <img
                 [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'"
@@ -219,7 +223,7 @@
           >
             <ion-label> Keine Athleten vorhanden </ion-label>
           </ion-item>
-          <ion-item *ngFor="let cath of members_accepted">
+          <ion-item *ngFor="let cath of members_accepted" (click)="openStatusModal($event, cath)">
             <ion-avatar slot="start">
               <img
                 [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'"
@@ -235,7 +239,7 @@
             </ion-label>
             <ion-badge color="success" slot="end">Kommt</ion-badge>
           </ion-item>
-          <ion-item *ngFor="let cath of members_declined">
+          <ion-item *ngFor="let cath of members_declined" (click)="openStatusModal($event, cath)">
             <ion-avatar slot="start">
               <img
                 [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'"
@@ -251,7 +255,7 @@
             </ion-label>
             <ion-badge color="danger" slot="end">Kommt nicht</ion-badge>
           </ion-item>
-          <ion-item *ngFor="let cath of members_else">
+          <ion-item *ngFor="let cath of members_else" (click)="openStatusModal($event, cath)">
             <ion-avatar slot="start">
               <img
                 [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'"

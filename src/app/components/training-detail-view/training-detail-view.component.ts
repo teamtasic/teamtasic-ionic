@@ -1,10 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AlertController, ModalController } from '@ionic/angular';
+import { AlertController, ModalController, PopoverController } from '@ionic/angular';
 import { Meet } from 'src/app/classes/meet';
 import { Team } from 'src/app/classes/team';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
 import { NotificationService } from 'src/app/services/notification-service.service';
+import { AdminSetMemberStatusComponent } from '../admin-set-member-status/admin-set-member-status.component';
 
 @Component({
   selector: 'app-training-detail-view',
@@ -17,7 +18,8 @@ export class TrainingDetailViewComponent implements OnInit {
     public drs: DataRepositoryService,
     private alertController: AlertController,
     private ns: NotificationService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private popoverController: PopoverController
   ) {}
 
   @Input() sessionId: string;
@@ -52,7 +54,7 @@ export class TrainingDetailViewComponent implements OnInit {
       comment: ['', Validators.required],
       deadline: ['', Validators.required],
     });
-    this.drs.syncTeam(this.teamId, this.clubId);
+
     this.drs.teams.subscribe((teams) => {
       teams.find((team) => {
         if (team.uid === this.teamId) {
@@ -62,6 +64,7 @@ export class TrainingDetailViewComponent implements OnInit {
       this.significantChange();
     });
     this.drs.meets.subscribe((meets) => {
+      console.log('meet change accepted in detail');
       meets.find((meet) => {
         if (meet.uid === this.meet.uid) {
           this.meet = meet;
@@ -74,6 +77,7 @@ export class TrainingDetailViewComponent implements OnInit {
       });
       this.significantChange();
     });
+    this.drs.syncTeam(this.teamId, this.clubId);
   }
 
   async significantChange() {
@@ -171,5 +175,21 @@ export class TrainingDetailViewComponent implements OnInit {
 
   change(event) {
     this.status = event.detail.value;
+  }
+
+  async openStatusModal(ev: any, userId: string) {
+    if (this.team.trainers.includes(this.sessionId)) {
+      const popover = await this.popoverController.create({
+        component: AdminSetMemberStatusComponent,
+        componentProps: {
+          sessionId: userId,
+          meet: this.meet,
+          team: this.team,
+        },
+        event: ev,
+        reference: 'event',
+      });
+      await popover.present();
+    }
   }
 }

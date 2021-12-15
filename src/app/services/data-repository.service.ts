@@ -69,7 +69,9 @@ export class DataRepositoryService {
               console.log('[ Club valueChanged ]', club);
               const index = this._clubsMap.get(uid);
               if (index !== undefined) {
-                this._clubs.value[index] = club;
+                let cs = this._clubs.value;
+                cs[index] = club;
+                this._clubs.next(cs);
               } else {
                 this._clubs.next([...this._clubs.value, club]);
                 this._clubsMap.set(uid, this._clubs.value.length - 1);
@@ -103,7 +105,9 @@ export class DataRepositoryService {
             var key = `${clubId}:${uid}`;
             const index = this._teamsMap.get(key);
             if (index !== undefined) {
-              this._teams.value[index] = team;
+              let ts = this._teams.value;
+              ts[index] = team;
+              this._teams.next(ts);
             } else {
               this._teams.next([...this._teams.value, team]);
               this._teamsMap.set(key, this._teams.value.length - 1);
@@ -144,12 +148,13 @@ export class DataRepositoryService {
             var key = `${clubId}:${teamId}:${uid}`;
             const index = this._meetsMap.get(key);
             if (index !== undefined) {
-              this._meets.value[index] = meet;
+              let ms = this._meets.value;
+              ms[index] = meet;
+              this._meets.next(ms);
             } else {
               this._meets.next([...this._meets.value, meet]);
               this._meetsMap.set(key, this._meets.value.length - 1);
             }
-            console.log(this._meetsMap);
           }
         });
     }
@@ -461,7 +466,7 @@ export class DataRepositoryService {
     status: 'accepted' | 'declined' | 'unknown',
     sessionId: string,
     comment: string,
-    deadline: string,
+    deadline: number,
     meetpoint: string
   ) {
     await this.afs
