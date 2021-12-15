@@ -15,6 +15,23 @@ export class TrainingbubbleComponent implements OnInit {
   @Input() clubId: string;
   @Input() isArchive: boolean | undefined;
 
+  options = {
+    weekday: undefined,
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+  };
+  optionsTime = {
+    weekday: undefined,
+    year: undefined,
+    month: undefined,
+    day: undefined,
+    hour: 'numeric',
+    minute: 'numeric',
+  };
+
   buttonColor: 'primary' | 'danger' | 'success' = 'primary';
 
   constructor(private modalController: ModalController) {}
