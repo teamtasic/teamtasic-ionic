@@ -8,18 +8,18 @@ import { ChatPageRoutingModule } from './chat-routing.module';
 
 import { ChatPage } from './chat.page';
 import { TextbubbleComponent } from 'src/app/components/textbubble/textbubble.component';
-import { TrainingbubbleComponent } from 'src/app/components/trainingbubble/trainingbubble.component';
-import { TrainingDetailViewComponent } from 'src/app/components/training-detail-view/training-detail-view.component';
 import { MeetCreateComponent } from 'src/app/components/meet-create/meet-create.component';
+import { TrainingbubbleModuleModule } from 'src/app/components/trainingbubble-module/trainingbubble-module.module';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, IonicModule, ChatPageRoutingModule],
-  declarations: [
-    ChatPage,
-    TextbubbleComponent,
-    TrainingbubbleComponent,
-    TrainingDetailViewComponent,
-    MeetCreateComponent,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    IonicModule,
+    ChatPageRoutingModule,
+    TrainingbubbleModuleModule,
   ],
+  declarations: [ChatPage, TextbubbleComponent, MeetCreateComponent],
 })
 export class ChatPageModule {}

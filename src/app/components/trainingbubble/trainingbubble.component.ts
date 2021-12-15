@@ -15,7 +15,7 @@ export class TrainingbubbleComponent implements OnInit {
   @Input() clubId: string;
   @Input() isArchive: boolean | undefined;
 
-  options = {
+  options: DateTimeFormatOptions = {
     weekday: undefined,
     year: 'numeric',
     month: 'short',
@@ -23,7 +23,7 @@ export class TrainingbubbleComponent implements OnInit {
     hour: 'numeric',
     minute: 'numeric',
   };
-  optionsTime = {
+  optionsTime: DateTimeFormatOptions = {
     weekday: undefined,
     year: undefined,
     month: undefined,
@@ -58,4 +58,12 @@ export class TrainingbubbleComponent implements OnInit {
 
     await modal.present();
   }
+}
+interface DateTimeFormatOptions {
+  weekday?: 'long' | 'short' | undefined;
+  year?: 'numeric' | '2-digit' | undefined;
+  month?: 'long' | 'short' | 'numeric' | undefined;
+  day?: 'numeric' | undefined;
+  hour?: 'numeric' | undefined;
+  minute?: 'numeric' | undefined;
 }

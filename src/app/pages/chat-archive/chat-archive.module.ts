@@ -7,10 +7,16 @@ import { IonicModule } from '@ionic/angular';
 import { ChatArchivePageRoutingModule } from './chat-archive-routing.module';
 
 import { ChatArchivePage } from './chat-archive.page';
-import { TrainingbubbleComponent } from 'src/app/components/trainingbubble/trainingbubble.component';
+import { TrainingbubbleModuleModule } from 'src/app/components/trainingbubble-module/trainingbubble-module.module';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, IonicModule, ChatArchivePageRoutingModule],
-  declarations: [ChatArchivePage, TrainingbubbleComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    ChatArchivePageRoutingModule,
+    TrainingbubbleModuleModule,
+  ],
+  declarations: [ChatArchivePage],
 })
 export class ChatArchivePageModule {}
