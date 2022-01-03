@@ -2,6 +2,25 @@
   <ion-toolbar>
     <ion-title>Chat</ion-title>
     <ion-back-button slot="start"></ion-back-button>
+    <ion-buttons slot="end" *ngIf="showTrainerCtrls">
+      <ion-button
+        [routerLink]="'../../../../chat-archive/'+ sessionId + '/' + clubId + '/' + teamId"
+      >
+        <ion-icon slot="icon-only" name="archive-outline"></ion-icon>
+      </ion-button>
+      <ion-button
+        [routerLink]="'../../../../addressbook/'+ sessionId + '/' + clubId + '/' + teamId"
+      >
+        <ion-icon slot="icon-only" name="people-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar>
+    <!-- <ion-title> - </ion-title> -->
+    <ion-breadcrumbs>
+      <ion-breadcrumb> {{sessionUserString}} </ion-breadcrumb>
+      <ion-breadcrumb> {{team?.name}} </ion-breadcrumb>
+    </ion-breadcrumbs>
   </ion-toolbar>
 </ion-header>
 
@@ -24,7 +43,7 @@
     vertical="top"
     horizontal="end"
     slot="fixed"
-    *ngIf="team.headTrainers.includes(sessionId)"
+    *ngIf="team?.headTrainers.includes(sessionId)"
   >
     <ion-fab-button (click)="addTraining()">
       <ion-icon name="add"></ion-icon>

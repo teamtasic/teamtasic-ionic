@@ -35,6 +35,10 @@ export class ChatPage implements OnInit, AfterViewInit {
   selectedSessionId: string;
   memberships: sessionMembership[] = [];
 
+  sessionUserString: string;
+
+  showTrainerCtrls: boolean = false;
+
   @ViewChild(IonContent) content: IonContent;
 
   constructor(
@@ -55,6 +59,7 @@ export class ChatPage implements OnInit, AfterViewInit {
     this.drs.syncTeam(this.teamId, this.clubId);
     this.drs.teams.subscribe((teams) => {
       this.team = teams.find((t) => t.uid === this.teamId);
+      this.showTrainerCtrls = this.team?.trainers.includes(this.sessionId);
     });
 
     this.drs.syncMeetsForTeam(this.teamId, this.clubId).subscribe((meets) => {
@@ -63,14 +68,24 @@ export class ChatPage implements OnInit, AfterViewInit {
       m.sort((a, b) => {
         return (a.start as any) - (b.start as any);
       });
-      console.log(m);
+      // filter out meets starting in the past
+      m = m.filter((meet) => {
+        return (meet.start as any) > Date.now() - 1000 * 60 * 30;
+      });
+      m.forEach((meet) => {
+        this.drs.syncMeet(meet.uid, this.clubId, this.teamId);
+      });
       this.meets = m;
     });
 
     this.drs.authUsers.subscribe(async (users) => {
       if (users.length > 0) {
-        this.drs.syncSessionUsers(users[0].uid);
+        const sessions = await this.drs.syncSessionUsers(users[0].uid);
       }
+    });
+    this.drs.sessionUsers.subscribe((sessionUsers) => {
+      console.log(sessionUsers, 'sessions');
+      this.sessionUserString = sessionUsers[0].find((s) => s.uid === this.sessionId).name;
     });
   }
   ngAfterViewInit() {
@@ -86,10 +101,5 @@ export class ChatPage implements OnInit, AfterViewInit {
       },
     });
     await modal.present();
-  }
-
-  async sessionChanged(event: any) {
-    this.selectedSessionId = event.detail.value;
-    this.memberships = await this.drs.syncSessionMemberships(this.selectedSessionId);
   }
 }

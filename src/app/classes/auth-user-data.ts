@@ -6,6 +6,12 @@ export class AuthUserData {
   phoneNumber: string;
   address: string;
   zipcode: string;
+  pushNotificationOptions: {
+    enabled: boolean;
+    newTrainingNotifications: boolean;
+    trainingChangedNotifications: boolean;
+    trainingReminderNotifications: boolean;
+  };
 
   constructor(
     uid: string,
@@ -13,7 +19,13 @@ export class AuthUserData {
     email: string,
     phoneNumber: string = '',
     address: string = '',
-    zipcode: string = ''
+    zipcode: string = '',
+    pushNotificationOptions: {
+      enabled: boolean;
+      newTrainingNotifications: boolean;
+      trainingChangedNotifications: boolean;
+      trainingReminderNotifications: boolean;
+    }
   ) {
     this.uid = uid;
     this.username = username;
@@ -21,6 +33,7 @@ export class AuthUserData {
     this.phoneNumber = phoneNumber;
     this.address = address;
     this.zipcode = zipcode;
+    this.pushNotificationOptions = pushNotificationOptions;
   }
 
   static converter = {
@@ -32,7 +45,13 @@ export class AuthUserData {
         data.email,
         data.phoneNumber,
         data.address,
-        data.zipcode
+        data.zipcode,
+        data.pushNotificationOptions || {
+          enabled: false,
+          newTrainingNotifications: true,
+          trainingChangedNotifications: true,
+          trainingReminderNotifications: true,
+        }
       );
     },
     toFirestore(data: AuthUserData): any {
@@ -42,6 +61,7 @@ export class AuthUserData {
         phoneNumber: data.phoneNumber,
         address: data.address,
         zipcode: data.zipcode,
+        pushNotificationOptions: data.pushNotificationOptions,
       };
     },
   };

@@ -27,7 +27,12 @@ export class AuthService {
         if (user) {
           user.sendEmailVerification();
         }
-        let userData = new AuthUserData('', username, email, phoneNumber, address, zip);
+        let userData = new AuthUserData('', username, email, phoneNumber, address, zip, {
+          enabled: false,
+          newTrainingNotifications: true,
+          trainingChangedNotifications: true,
+          trainingReminderNotifications: true,
+        });
         await this.drs.createAuthUser(userData, user.uid);
         // alert succesfull signup
         const alert = await this.alertController.create({
@@ -78,6 +83,7 @@ export class AuthService {
       if (user) {
         console.log('[ 🔑 login ]', 'Signed in succsessfully, starting session');
         this.logic.userId = user.uid;
+        this.ns.registerPushNotifications(user.uid);
         ng.run(() => {
           this.router.navigateByUrl('/tabs/tab2');
         });

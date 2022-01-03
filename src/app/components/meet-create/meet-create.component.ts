@@ -27,24 +27,26 @@ export class MeetCreateComponent implements OnInit {
     this.meetCreateGroup = this.fb.group({
       meetName: ['', [Validators.required]],
       meetLocation: ['', [Validators.required]],
-      meetDate: [this.today, [Validators.required]],
-      meetTime: [this.today, [Validators.required]],
-      meetEndTime: [this.today, [Validators.required]],
+      meetDate: ['', [Validators.required]],
+      meetEndTime: ['', [Validators.required]],
+      meetComment: [''],
+      meetDeadline: [
+        '1',
+        [Validators.required, Validators.min(1), Validators.max(14), Validators.pattern('[0-9]*')],
+      ],
     });
   }
 
   async createMeet() {
     let date: Date = new Date(Date.parse(this.meetCreateGroup.value.meetDate));
-
-    let start: Date = new Date(Date.parse(this.meetCreateGroup.value.meetTime));
     let end: Date = new Date(Date.parse(this.meetCreateGroup.value.meetEndTime));
 
     let startDate = new Date(
       date.getFullYear(),
       date.getMonth(),
       date.getDate(),
-      start.getHours(),
-      start.getMinutes()
+      date.getHours(),
+      date.getMinutes()
     );
     let endDate = new Date(
       date.getFullYear(),
@@ -61,7 +63,11 @@ export class MeetCreateComponent implements OnInit {
       endDate,
       this.meetCreateGroup.value.meetLocation,
       this.clubId,
-      this.teamId
+      this.teamId,
+      [],
+      [],
+      this.meetComment.value,
+      this.meetDeadline.value
     );
     await this.drs.createMeet(meet, this.clubId, this.teamId);
 
@@ -89,5 +95,11 @@ export class MeetCreateComponent implements OnInit {
   }
   get meetEndTime() {
     return this.meetCreateGroup.get('meetEndTime');
+  }
+  get meetComment() {
+    return this.meetCreateGroup.get('meetComment');
+  }
+  get meetDeadline() {
+    return this.meetCreateGroup.get('meetDeadline');
   }
 }

@@ -13,16 +13,36 @@ export class TrainingbubbleComponent implements OnInit {
   @Input() sessionId: string;
   @Input() teamId: string;
   @Input() clubId: string;
+  @Input() isArchive: boolean | undefined;
+
+  options: DateTimeFormatOptions = {
+    weekday: undefined,
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+  };
+  optionsTime: DateTimeFormatOptions = {
+    weekday: undefined,
+    year: undefined,
+    month: undefined,
+    day: undefined,
+    hour: 'numeric',
+    minute: 'numeric',
+  };
 
   buttonColor: 'primary' | 'danger' | 'success' = 'primary';
 
   constructor(private modalController: ModalController) {}
 
   ngOnInit() {
-    this.buttonColor = this.meet.acceptedUsers.includes(this.sessionId) ? 'success' : 'primary';
-    this.buttonColor = this.meet.declinedUsers.includes(this.sessionId)
-      ? 'danger'
-      : this.buttonColor;
+    if (!this.isArchive) {
+      this.buttonColor = this.meet.acceptedUsers.includes(this.sessionId) ? 'success' : 'primary';
+      this.buttonColor = this.meet.declinedUsers.includes(this.sessionId)
+        ? 'danger'
+        : this.buttonColor;
+    }
   }
 
   async presentModal() {
@@ -38,4 +58,12 @@ export class TrainingbubbleComponent implements OnInit {
 
     await modal.present();
   }
+}
+interface DateTimeFormatOptions {
+  weekday?: 'long' | 'short' | undefined;
+  year?: 'numeric' | '2-digit' | undefined;
+  month?: 'long' | 'short' | 'numeric' | undefined;
+  day?: 'numeric' | undefined;
+  hour?: 'numeric' | undefined;
+  minute?: 'numeric' | undefined;
 }

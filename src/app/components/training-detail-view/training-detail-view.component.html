@@ -8,27 +8,60 @@
     </ion-buttons>
     <ion-title>{{ meet.title }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="save()">Speichern</ion-button>
+      <ion-button (click)="save()" [disabled]="!isOpenToChanges()">Speichern</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content>
+  <!-- not open to changes -->
+  <ion-card *ngIf="!isOpenToChanges(true)">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-text color="primary"> Anmeldefrist abgelaufen </ion-text>
+      </ion-card-title>
+    </ion-card-header>
+  </ion-card>
   <ion-list>
-    <ion-item>
-      <ion-note slot="start">Zeit:</ion-note>
+    <form [formGroup]="meetForm">
+      <ion-item>
+        <ion-note slot="start">Zeit:</ion-note>
 
-      <ion-label>
-        {{ meet.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }} -
-        {{ meet.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}
-      </ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-note slot="start">Treffpunkt:</ion-note>
-
-      <ion-label>
-        {{ meet.meetpoint }}
-      </ion-label>
-    </ion-item>
+        <ion-label>
+          {{ meet.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }} -
+          {{ meet.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Treffpunkt <ion-text color="danger">*</ion-text></ion-label>
+        <ion-input
+          type="text"
+          placeholder="Treffpunkt"
+          required
+          formControlName="meetpoint"
+          [readonly]="!team.headTrainers.includes(sessionId)"
+        ></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Bemerkungen</ion-label>
+        <ion-textarea
+          formControlName="comment"
+          [readonly]="!team.headTrainers.includes(sessionId)"
+          [rows]="4"
+        >
+        </ion-textarea>
+      </ion-item>
+      <ion-item *ngIf="meet.deadline != 0">
+        <ion-label position="stacked"
+          >Deadline - Eintragen bis X Tage vorher<ion-text color="danger">*</ion-text></ion-label
+        >
+        <ion-input
+          type="text"
+          placeholder="Deadline"
+          formControlName="deadline"
+          [readonly]="!team.headTrainers.includes(sessionId)"
+        ></ion-input>
+      </ion-item>
+    </form>
 
     <!-- My status section start -->
 
@@ -89,7 +122,7 @@
     <!-- start change my status section -->
     <ion-grid>
       <ion-col>
-        <ion-segment [value]="status" (ionChange)="change($event)">
+        <ion-segment [value]="status" (ionChange)="change($event)" [disabled]="!isOpenToChanges()">
           <ion-segment-button value="accepted">
             <ion-icon name="checkmark-circle-outline"></ion-icon>
           </ion-segment-button>
@@ -106,106 +139,152 @@
 
     <!-- other users section -->
 
-    <ion-list-header>
-      <ion-label>Trainer</ion-label>
-      <ion-button (click)="toggleTrainers()">{{
-        trainersOpen ? 'Verstecken' : 'Zeigen'
-      }}</ion-button>
-    </ion-list-header>
-    <ion-list *ngIf="trainersOpen">
-      <ion-item *ngFor="let cath of trainers_accepted">
-        <ion-avatar slot="start">
-          <img [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'" />
-        </ion-avatar>
-        <ion-label>
-          <h2>{{ team.names[cath] }}</h2>
-          <p>
-            <ion-text color="primary">
-              <strong>Trainer</strong>
-            </ion-text>
-          </p>
-        </ion-label>
-        <ion-badge color="success" slot="end">Kommt</ion-badge>
-      </ion-item>
-      <ion-item *ngFor="let cath of trainers_declined">
-        <ion-avatar slot="start">
-          <img [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'" />
-        </ion-avatar>
-        <ion-label>
-          <h2>{{ team.names[cath] }}</h2>
-          <p>
-            <ion-text color="primary">
-              <strong>Trainer</strong>
-            </ion-text>
-          </p>
-        </ion-label>
-        <ion-badge color="danger" slot="end">Kommt nicht</ion-badge>
-      </ion-item>
-      <ion-item *ngFor="let cath of trainers_else">
-        <ion-avatar slot="start">
-          <img [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'" />
-        </ion-avatar>
-        <ion-label>
-          <h2>{{ team.names[cath] }}</h2>
-          <p>
-            <ion-text color="primary">
-              <strong>Trainer</strong>
-            </ion-text>
-          </p>
-        </ion-label>
-        <ion-badge color="medium" slot="end">Unbekannt</ion-badge>
-      </ion-item>
-    </ion-list>
+    <ion-accordion-group>
+      <ion-accordion value="trainers">
+        <ion-item slot="header">
+          <ion-label slot="start">Trainer</ion-label>
+          <ion-note slot="end">
+            <ion-text color="success"> {{ trainers_accepted?.length }}</ion-text> /
+            <ion-text color="danger">{{ trainers_declined?.length }}</ion-text></ion-note
+          >
+        </ion-item>
+        <ion-list slot="content">
+          <ion-item
+            *ngIf="trainers_accepted.length + trainers_declined.length + trainers_else.length == 0"
+          >
+            <ion-label> Keine Trainer vorhanden </ion-label>
+          </ion-item>
 
-    <ion-list-header>
-      <ion-label>Athleten</ion-label>
-      <ion-button (click)="toggleUsers()">{{ usersOpen ? 'Verstecken' : 'Zeigen' }}</ion-button>
-    </ion-list-header>
-    <ion-list *ngIf="usersOpen">
-      <ion-item *ngFor="let cath of members_accepted">
-        <ion-avatar slot="start">
-          <img [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'" />
-        </ion-avatar>
-        <ion-label>
-          <h2>{{ team.names[cath] }}</h2>
-          <p>
-            <ion-text color="primary">
-              <strong>Athlet</strong>
-            </ion-text>
-          </p>
-        </ion-label>
-        <ion-badge color="success" slot="end">Kommt</ion-badge>
-      </ion-item>
-      <ion-item *ngFor="let cath of members_declined">
-        <ion-avatar slot="start">
-          <img [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'" />
-        </ion-avatar>
-        <ion-label>
-          <h2>{{ team.names[cath] }}</h2>
-          <p>
-            <ion-text color="primary">
-              <strong>Athlet</strong>
-            </ion-text>
-          </p>
-        </ion-label>
-        <ion-badge color="danger" slot="end">Kommt nicht</ion-badge>
-      </ion-item>
-      <ion-item *ngFor="let cath of members_else">
-        <ion-avatar slot="start">
-          <img [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'" />
-        </ion-avatar>
-        <ion-label>
-          <h2>{{ team.names[cath] }}</h2>
-          <p>
-            <ion-text color="primary">
-              <strong>Athlet</strong>
-            </ion-text>
-          </p>
-        </ion-label>
-        <ion-badge color="medium" slot="end">Unbekannt</ion-badge>
-      </ion-item>
-    </ion-list>
+          <ion-item
+            *ngFor="let cath of trainers_accepted"
+            [detail]="false"
+            (click)="openStatusModal($event, cath)"
+          >
+            <ion-avatar slot="start">
+              <img
+                [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'"
+              />
+            </ion-avatar>
+            <ion-label>
+              <h2>{{ team.names[cath] }}</h2>
+              <p>
+                <ion-text color="primary">
+                  <strong>Trainer</strong>
+                </ion-text>
+              </p>
+            </ion-label>
+            <ion-badge color="success" slot="end">Kommt</ion-badge>
+          </ion-item>
+          <ion-item *ngFor="let cath of trainers_declined" (click)="openStatusModal($event, cath)">
+            <ion-avatar slot="start">
+              <img
+                [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'"
+              />
+            </ion-avatar>
+            <ion-label>
+              <h2>{{ team.names[cath] }}</h2>
+              <p>
+                <ion-text color="primary">
+                  <strong>Trainer</strong>
+                </ion-text>
+              </p>
+            </ion-label>
+            <ion-badge color="danger" slot="end">Kommt nicht</ion-badge>
+          </ion-item>
+          <ion-item *ngFor="let cath of trainers_else" (click)="openStatusModal($event, cath)">
+            <ion-avatar slot="start">
+              <img
+                [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'"
+              />
+            </ion-avatar>
+            <ion-label>
+              <h2>{{ team.names[cath] }}</h2>
+              <p>
+                <ion-text color="primary">
+                  <strong>Trainer</strong>
+                </ion-text>
+              </p>
+            </ion-label>
+            <ion-badge color="medium" slot="end">Unbekannt</ion-badge>
+          </ion-item>
+        </ion-list>
+      </ion-accordion>
+      <ion-accordion value="members">
+        <ion-item slot="header">
+          <ion-label slot="start">Athleten</ion-label>
+          <ion-note slot="end"
+            ><ion-text color="success">{{ members_accepted?.length }} </ion-text>/
+            <ion-text color="danger">{{ members_declined?.length }}</ion-text></ion-note
+          >
+        </ion-item>
+        <ion-list slot="content">
+          <ion-item
+            *ngIf="members_accepted.length + members_declined.length + members_else.length == 0"
+          >
+            <ion-label> Keine Athleten vorhanden </ion-label>
+          </ion-item>
+          <ion-item *ngFor="let cath of members_accepted" (click)="openStatusModal($event, cath)">
+            <ion-avatar slot="start">
+              <img
+                [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'"
+              />
+            </ion-avatar>
+            <ion-label>
+              <h2>{{ team.names[cath] }}</h2>
+              <p>
+                <ion-text color="primary">
+                  <strong>Athlet</strong>
+                </ion-text>
+              </p>
+            </ion-label>
+            <ion-badge color="success" slot="end">Kommt</ion-badge>
+          </ion-item>
+          <ion-item *ngFor="let cath of members_declined" (click)="openStatusModal($event, cath)">
+            <ion-avatar slot="start">
+              <img
+                [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'"
+              />
+            </ion-avatar>
+            <ion-label>
+              <h2>{{ team.names[cath] }}</h2>
+              <p>
+                <ion-text color="primary">
+                  <strong>Athlet</strong>
+                </ion-text>
+              </p>
+            </ion-label>
+            <ion-badge color="danger" slot="end">Kommt nicht</ion-badge>
+          </ion-item>
+          <ion-item *ngFor="let cath of members_else" (click)="openStatusModal($event, cath)">
+            <ion-avatar slot="start">
+              <img
+                [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'"
+              />
+            </ion-avatar>
+            <ion-label>
+              <h2>{{ team.names[cath] }}</h2>
+              <p>
+                <ion-text color="primary">
+                  <strong>Athlet</strong>
+                </ion-text>
+              </p>
+            </ion-label>
+            <ion-badge color="medium" slot="end">Unbekannt</ion-badge>
+          </ion-item>
+        </ion-list>
+      </ion-accordion>
+    </ion-accordion-group>
 
     <!-- end other users section -->
   </ion-list>
+  <div *ngIf="team.headTrainers.includes(sessionId)">
+    <ion-list-header>
+      <ion-label>Training bearbeiten</ion-label>
+    </ion-list-header>
+    <ion-row>
+      <ion-col>
+        <ion-button (click)="delete()" expand="block" color="danger">Löschen</ion-button>
+      </ion-col>
+    </ion-row>
+  </div>
 </ion-content>

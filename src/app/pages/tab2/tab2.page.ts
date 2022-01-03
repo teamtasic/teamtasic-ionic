@@ -11,7 +11,11 @@ import { MembershipsService } from 'src/app/services/memberships.service';
   styleUrls: ['tab2.page.scss'],
 })
 export class Tab2Page implements OnInit {
-  constructor(public drs: DataRepositoryService, private mms: MembershipsService) {}
+  constructor(
+    public drs: DataRepositoryService,
+    private mms: MembershipsService,
+    public router: Router
+  ) {}
 
   selectedSessionId: string;
 
@@ -21,6 +25,17 @@ export class Tab2Page implements OnInit {
     this.selectedSessionId = event.detail.value;
 
     this.memberships = await this.drs.syncSessionMemberships(this.selectedSessionId);
+    if (this.memberships.length == 1) {
+      this.router.navigate([
+        '/tabs/tab2/chat',
+        this.selectedSessionId,
+        this.memberships[0].clubId,
+        this.memberships[0].teamId,
+      ]);
+    }
+    this.memberships.forEach((m) => {
+      this.drs.syncClub(m.clubId);
+    });
   }
   ngOnInit() {
     this.drs.authUsers.subscribe(async (users) => {
@@ -28,5 +43,12 @@ export class Tab2Page implements OnInit {
         this.drs.syncSessionUsers(users[0].uid);
       }
     });
+  }
+  getClubName(clubId: string) {
+    try {
+      return this.drs.clubs.getValue().find((c) => c.uid == clubId).name;
+    } catch {
+      return '';
+    }
   }
 }

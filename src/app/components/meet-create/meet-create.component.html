@@ -15,44 +15,47 @@
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <form [formGroup]="meetCreateGroup">
-      <ion-item>
-        <ion-input placeholder="Titel" formControlName="meetName"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-input placeholder="Treffpunk" formControlName="meetLocation"></ion-input>
-      </ion-item>
-      <ion-item-divider></ion-item-divider>
-      <ion-item>
-        <ion-label> Datum </ion-label>
-        <ion-datetime
-          placeholder="Datum auswählen"
-          max="2100"
-          [min]="today"
-          formControlName="meetDate"
-        ></ion-datetime>
-      </ion-item>
-      <ion-item>
-        <ion-label>Start</ion-label>
-        <ion-datetime
-          placeholder="Zeit auswählen"
-          display-format="HH:mm"
-          picker-format="HH:mm"
-          formControlName="meetTime"
-          minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
-        ></ion-datetime>
-      </ion-item>
-      <ion-item>
-        <ion-label>Ende</ion-label>
-        <ion-datetime
-          placeholder="Zeit auswählen"
-          display-format="HH:mm"
-          picker-format="HH:mm"
-          formControlName="meetEndTime"
-          minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
-        ></ion-datetime>
-      </ion-item>
-    </form>
-  </ion-list>
+  <form [formGroup]="meetCreateGroup">
+    <ion-item>
+      <ion-label position="inline"><ion-text color="danger">*</ion-text></ion-label>
+      <ion-input placeholder="Titel" formControlName="meetName"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="inline"><ion-text color="danger">*</ion-text></ion-label>
+      <ion-input placeholder="Treffpunkt" formControlName="meetLocation"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input placeholder="Bemerkungen" formControlName="meetComment"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="inline"><ion-text color="danger">*</ion-text></ion-label>
+      <ion-input placeholder="Deadline" formControlName="meetDeadline"></ion-input>
+      <ion-note slot="end">Tage vorher eintragen</ion-note>
+    </ion-item>
+    <div class="grid-item">
+      <h2>Datum & Start</h2>
+
+      <ion-datetime
+        placeholder="Datum auswählen"
+        display-format="HH:mm"
+        [min]="today"
+        formControlName="meetDate"
+        presentation="date-time"
+        size="cover"
+        hourCycle="h23"
+        [firstDayOfWeek]="1"
+      ></ion-datetime>
+    </div>
+    <div class="grid-item">
+      <h2>Ende</h2>
+      <ion-datetime
+        placeholder="Zeit auswählen"
+        display-format="HH:mm"
+        formControlName="meetEndTime"
+        presentation="time"
+        size="cover"
+        hourCycle="h23"
+      ></ion-datetime>
+    </div>
+  </form>
 </ion-content>

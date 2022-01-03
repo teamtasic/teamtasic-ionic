@@ -1,6 +1,6 @@
 {
-  "name": "teamtasic",
-  "short_name": "teamtasic",
+  "name": "Teamtasic",
+  "short_name": "Teamtasic",
   "theme_color": "#288fff",
   "background_color": "#fafafa",
   "display": "standalone",
@@ -21,6 +21,12 @@
       "src": "./assets/icons/apple-touch-icon-180x180-precomposed.png ",
       "sizes": "180x180",
       "type": "image/png"
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "itunes",
+      "url": "https://itunes.apple.com/de/app/teamtasic/id1588914453"
     }
   ]
 }

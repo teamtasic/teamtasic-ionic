@@ -69,7 +69,9 @@ export class DataRepositoryService {
               console.log('[ Club valueChanged ]', club);
               const index = this._clubsMap.get(uid);
               if (index !== undefined) {
-                this._clubs.value[index] = club;
+                let cs = this._clubs.value;
+                cs[index] = club;
+                this._clubs.next(cs);
               } else {
                 this._clubs.next([...this._clubs.value, club]);
                 this._clubsMap.set(uid, this._clubs.value.length - 1);
@@ -103,7 +105,9 @@ export class DataRepositoryService {
             var key = `${clubId}:${uid}`;
             const index = this._teamsMap.get(key);
             if (index !== undefined) {
-              this._teams.value[index] = team;
+              let ts = this._teams.value;
+              ts[index] = team;
+              this._teams.next(ts);
             } else {
               this._teams.next([...this._teams.value, team]);
               this._teamsMap.set(key, this._teams.value.length - 1);
@@ -144,12 +148,13 @@ export class DataRepositoryService {
             var key = `${clubId}:${teamId}:${uid}`;
             const index = this._meetsMap.get(key);
             if (index !== undefined) {
-              this._meets.value[index] = meet;
+              let ms = this._meets.value;
+              ms[index] = meet;
+              this._meets.next(ms);
             } else {
               this._meets.next([...this._meets.value, meet]);
               this._meetsMap.set(key, this._meets.value.length - 1);
             }
-            console.log(this._meetsMap);
           }
         });
     }
@@ -449,6 +454,9 @@ export class DataRepositoryService {
    * @param {string} meetId
    * @param {string} status
    * @param {string} sessionId
+   * @param {string} comment
+   * @param {string} deadline
+   * @param {string} meetpoint
    * @returns {Promise<void>}
    */
   async updateMeetStatus(
@@ -456,9 +464,12 @@ export class DataRepositoryService {
     teamId: string,
     meetId: string,
     status: 'accepted' | 'declined' | 'unknown',
-    sessionId: string
+    sessionId: string,
+    comment: string,
+    deadline: number,
+    meetpoint: string
   ) {
-    this.afs
+    await this.afs
       .collection(`clubs/${clubId}/teams/${teamId}/meets/`)
       .doc(meetId)
       .update({
@@ -470,6 +481,9 @@ export class DataRepositoryService {
           status == 'declined'
             ? fb.default.firestore.FieldValue.arrayUnion(sessionId)
             : fb.default.firestore.FieldValue.arrayRemove(sessionId),
+        comment: comment,
+        deadline: deadline,
+        meetpoint: meetpoint,
       });
   }
   /**
@@ -827,6 +841,29 @@ export class DataRepositoryService {
         })
         .catch((error) => {
           reject(error);
+        });
+    });
+  }
+
+  /** get session user from afs
+   * @since 2.1.1
+   * @memberof DataRepositoryService
+   * @param {string} sessionUserId The id of the session user
+   * @returns {Promise<SessionUserData>} The session user
+   */
+  getSessionUser(sessionUserId: string): Promise<SessionUserData> {
+    return new Promise<SessionUserData>((resolve, reject) => {
+      this.afs
+        .collection(this.CollectionWithConverter('sessionUsers', SessionUserData.converter))
+        .doc(sessionUserId)
+        .get()
+        .toPromise()
+        .then((doc: DocumentSnapshot<SessionUserData>) => {
+          if (doc.exists) {
+            resolve(doc.data() as SessionUserData);
+          } else {
+            reject(new Error(`Session user ${sessionUserId} not found`));
+          }
         });
     });
   }

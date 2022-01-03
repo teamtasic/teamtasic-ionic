@@ -1,8 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AlertController, ModalController, PopoverController } from '@ionic/angular';
 import { Meet } from 'src/app/classes/meet';
 import { Team } from 'src/app/classes/team';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
+import { NotificationService } from 'src/app/services/notification-service.service';
+import { AdminSetMemberStatusComponent } from '../admin-set-member-status/admin-set-member-status.component';
 
 @Component({
   selector: 'app-training-detail-view',
@@ -10,7 +13,14 @@ import { DataRepositoryService } from 'src/app/services/data-repository.service'
   styleUrls: ['./training-detail-view.component.scss'],
 })
 export class TrainingDetailViewComponent implements OnInit {
-  constructor(private modalController: ModalController, public drs: DataRepositoryService) {}
+  constructor(
+    private modalController: ModalController,
+    public drs: DataRepositoryService,
+    private alertController: AlertController,
+    private ns: NotificationService,
+    private fb: FormBuilder,
+    private popoverController: PopoverController
+  ) {}
 
   @Input() sessionId: string;
   @Input() teamId: string;
@@ -25,8 +35,26 @@ export class TrainingDetailViewComponent implements OnInit {
   members_declined = [];
   members_else = [];
 
+  meetForm: FormGroup;
+
+  isOpenToChanges(a = false) {
+    if (this.team.headTrainers.includes(this.sessionId) && !a) return true;
+    if (this.meet) {
+      // is it 24h before the meet?
+      return (
+        (this.meet.start as any) > new Date(Date.now() + 24 * 60 * 60 * 1000 * this.meet.deadline)
+      );
+    }
+    return false;
+  }
+
   async ngOnInit() {
-    this.drs.syncTeam(this.teamId, this.clubId);
+    this.meetForm = this.fb.group({
+      meetpoint: ['', Validators.required],
+      comment: ['', Validators.required],
+      deadline: ['', Validators.required],
+    });
+
     this.drs.teams.subscribe((teams) => {
       teams.find((team) => {
         if (team.uid === this.teamId) {
@@ -36,13 +64,20 @@ export class TrainingDetailViewComponent implements OnInit {
       this.significantChange();
     });
     this.drs.meets.subscribe((meets) => {
+      console.log('meet change accepted in detail');
       meets.find((meet) => {
-        if (meet.uid === this.sessionId) {
+        if (meet.uid === this.meet.uid) {
           this.meet = meet;
+          this.meetForm = this.fb.group({
+            meetpoint: [meet.meetpoint, Validators.required],
+            comment: [meet.comment],
+            deadline: [meet.deadline, Validators.required],
+          });
         }
       });
       this.significantChange();
     });
+    this.drs.syncTeam(this.teamId, this.clubId);
   }
 
   async significantChange() {
@@ -93,7 +128,6 @@ export class TrainingDetailViewComponent implements OnInit {
     this.modalController.dismiss();
   }
   async save() {
-    this.meet;
     this.meet.acceptedUsers.splice(this.meet.acceptedUsers.indexOf(this.sessionId), 1);
     this.meet.declinedUsers.splice(this.meet.declinedUsers.indexOf(this.sessionId), 1);
 
@@ -102,23 +136,60 @@ export class TrainingDetailViewComponent implements OnInit {
       this.teamId,
       this.meet.uid,
       this.status,
-      this.sessionId
+      this.sessionId,
+      this.meetForm.value.comment,
+      this.meetForm.value.deadline,
+      this.meetForm.value.meetpoint
     );
     this.modalController.dismiss();
+  }
+  async delete() {
+    const alert = await this.alertController.create({
+      header: 'Löschen bestätigen',
+      message: 'Diese Aktion kann nicht rückgägig gemacht werden.',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('Confirm Cancel: blah');
+          },
+        },
+        {
+          text: 'Delete',
+          cssClass: 'secondary',
+          handler: () => {
+            this.drs.deleteMeet(this.clubId, this.teamId, this.meet.uid);
+            this.ns.showToast('Training gelöscht');
+            this.modalController.dismiss();
+          },
+        },
+      ],
+    });
+    await alert.present();
   }
 
   status: 'accepted' | 'declined' | 'unknown' = 'unknown';
   trainersOpen: boolean = false;
-  usersOpen: boolean = false;
+  usersOpen: boolean = true;
 
   change(event) {
     this.status = event.detail.value;
   }
 
-  toggleTrainers() {
-    this.trainersOpen = !this.trainersOpen;
-  }
-  toggleUsers() {
-    this.usersOpen = !this.usersOpen;
+  async openStatusModal(ev: any, userId: string) {
+    if (this.team.trainers.includes(this.sessionId)) {
+      const popover = await this.popoverController.create({
+        component: AdminSetMemberStatusComponent,
+        componentProps: {
+          sessionId: userId,
+          meet: this.meet,
+          team: this.team,
+        },
+        event: ev,
+        reference: 'event',
+      });
+      await popover.present();
+    }
   }
 }
