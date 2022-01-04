@@ -89,9 +89,10 @@ export class AuthService {
         });
         await this.logic.startSession();
       } else {
-        ng.run(() => {
-          this.router.navigateByUrl('/', { replaceUrl: true });
-        });
+        //! todo: check where user is on page
+        // ng.run(() => {
+        //   this.router.navigateByUrl('/', { replaceUrl: true });
+        // });
       }
     });
   }
