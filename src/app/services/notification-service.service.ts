@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
 import { AlertController, ToastController } from '@ionic/angular';
+import { Capacitor } from '@capacitor/core';
+
 import {
   ActionPerformed,
   PushNotificationSchema,
   PushNotifications,
   Token,
 } from '@capacitor/push-notifications';
+
 import { AngularFirestore } from '@angular/fire/firestore';
 import { DataRepositoryService } from './data-repository.service';
 import * as firebase from 'firebase';
@@ -101,6 +104,7 @@ export class NotificationService {
   }
 
   async requestPushPermission() {
+    if (!Capacitor.isNativePlatform()) return;
     PushNotifications.requestPermissions().then((result) => {
       if (result.receive === 'granted') {
         // Register with Apple / Google to receive push via APNS/FCM
@@ -112,19 +116,22 @@ export class NotificationService {
     });
   }
   registerPushNotifications(uid: string) {
+    if (!Capacitor.isNativePlatform()) return;
     const ref = this.afs.collection('fbm_push_tokens').doc(uid);
     ref
       .get()
       .toPromise()
       .then((old) => {
-        if (old.exists) {
+        if (old.exists && this.token) {
           ref.update({
             tokens: firebase.default.firestore.FieldValue.arrayUnion(this.token.value),
           });
         } else {
-          ref.set({
-            tokens: [this.token.value],
-          });
+          if (this.token) {
+            ref.set({
+              tokens: [this.token.value],
+            });
+          }
         }
       });
 
