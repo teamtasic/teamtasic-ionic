@@ -18,6 +18,13 @@
     <form [formGroup]="dataFrom">
       <ion-item>
         <ion-label position="stacked">
+          Vorname
+          <ion-text color="danger">*</ion-text>
+        </ion-label>
+        <ion-input type="text" placeholder="Name" formControlName="surname"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">
           Name
           <ion-text color="danger">*</ion-text>
         </ion-label>

@@ -44,7 +44,11 @@ export class EditSessionUserComponent implements OnInit {
       this.session = new SessionUserData('', this.drs.authUsers.value[0].uid, '', '', '', '', '');
     } else {
       this.dataFrom = this.fb.group({
-        name: [this.session.name || '', Validators.required],
+        name: [
+          `${this.session.name.split(' ')[1] || ''} ${this.session.name.split(' ')[2] || ''}` || '',
+          Validators.required,
+        ],
+        surname: [this.session.name.split(' ')[0] || '', Validators.required],
         email: [this.session.email || '', Validators.required],
         birthdate: [this.session.birthdate || '', Validators.required],
         phone: [this.session.phoneNumber || '', Validators.required],
@@ -63,7 +67,7 @@ export class EditSessionUserComponent implements OnInit {
         this.session = new SessionUserData(
           '',
           this.drs.authUsers.value[0].uid,
-          this.dataFrom.value.name,
+          `${this.dataFrom.value.surname} ${this.dataFrom.value.name}`,
           this.dataFrom.value.email,
           this.dataFrom.value.birthdate,
           this.dataFrom.value.phone,
@@ -74,7 +78,7 @@ export class EditSessionUserComponent implements OnInit {
         let _sess = new SessionUserData(
           '',
           this.drs.authUsers.value[0].uid,
-          this.dataFrom.value.name,
+          `${this.dataFrom.value.surname} ${this.dataFrom.value.name}`,
           this.dataFrom.value.email,
           this.dataFrom.value.birthdate,
           this.dataFrom.value.phone,
