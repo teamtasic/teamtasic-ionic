@@ -12,6 +12,7 @@ export class AuthUserData {
     trainingChangedNotifications: boolean;
     trainingReminderNotifications: boolean;
   };
+  joinCode?: string;
 
   constructor(
     uid: string,
@@ -25,7 +26,8 @@ export class AuthUserData {
       newTrainingNotifications: boolean;
       trainingChangedNotifications: boolean;
       trainingReminderNotifications: boolean;
-    }
+    },
+    joinCode?: string
   ) {
     this.uid = uid;
     this.username = username;
@@ -34,6 +36,7 @@ export class AuthUserData {
     this.address = address;
     this.zipcode = zipcode;
     this.pushNotificationOptions = pushNotificationOptions;
+    this.joinCode = joinCode;
   }
 
   static converter = {
@@ -51,7 +54,8 @@ export class AuthUserData {
           newTrainingNotifications: true,
           trainingChangedNotifications: true,
           trainingReminderNotifications: true,
-        }
+        },
+        data.joinCode
       );
     },
     toFirestore(data: AuthUserData): any {
@@ -62,6 +66,7 @@ export class AuthUserData {
         address: data.address,
         zipcode: data.zipcode,
         pushNotificationOptions: data.pushNotificationOptions,
+        joinCode: data.joinCode || '',
       };
     },
   };

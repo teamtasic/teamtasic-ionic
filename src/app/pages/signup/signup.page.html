@@ -17,7 +17,11 @@
   <!-- page start -->
   <form [formGroup]="signupform" (submit)="signUp()">
     <ion-item>
-      <ion-label position="stacked">Vorname, Name <ion-text color="danger">*</ion-text></ion-label>
+      <ion-label position="stacked">Vorname<ion-text color="danger">*</ion-text></ion-label>
+      <ion-input type="text" required formControlName="surname"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Name <ion-text color="danger">*</ion-text></ion-label>
       <ion-input type="text" required formControlName="name"></ion-input>
     </ion-item>
     <ion-item>
@@ -50,7 +54,7 @@
     </ion-item>
     <ion-card>
       <ion-card-header>
-        <ion-card-title> Um einem Team beizuterten, </ion-card-title>
+        <ion-card-title> Um einem Team beizutreten, </ion-card-title>
       </ion-card-header>
       <ion-card-content> erstelle in den Einstellungen zuerst einen Benutzer. </ion-card-content>
     </ion-card>

@@ -375,6 +375,7 @@ export class DataRepositoryService {
    * @since 2.0.0
    * @memberof DataRepositoryService
    * @param {AuthUserData} authUser
+   * @param {string} uid
    * @returns {Promise<string>}
    */
   createAuthUser(authUser: AuthUserData, uid: string) {

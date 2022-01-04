@@ -18,7 +18,8 @@ export class AuthService {
     username: string,
     phoneNumber: string,
     address: string,
-    zip: string
+    zip: string,
+    joinCode?: string
   ) {
     await this.fba
       .createUserWithEmailAndPassword(email, pw)
@@ -27,12 +28,21 @@ export class AuthService {
         if (user) {
           user.sendEmailVerification();
         }
-        let userData = new AuthUserData('', username, email, phoneNumber, address, zip, {
-          enabled: false,
-          newTrainingNotifications: true,
-          trainingChangedNotifications: true,
-          trainingReminderNotifications: true,
-        });
+        let userData = new AuthUserData(
+          '',
+          username,
+          email,
+          phoneNumber,
+          address,
+          zip,
+          {
+            enabled: false,
+            newTrainingNotifications: true,
+            trainingChangedNotifications: true,
+            trainingReminderNotifications: true,
+          },
+          joinCode
+        );
         await this.drs.createAuthUser(userData, user.uid);
         // alert succesfull signup
         const alert = await this.alertController.create({
