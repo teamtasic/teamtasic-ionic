@@ -77,6 +77,8 @@ export class AuthService {
   }
   async logout() {
     await this.fba.signOut();
+    this.router.navigateByUrl('/', { replaceUrl: true });
+    this.drs.reset();
   }
   constructor(
     private router: Router,

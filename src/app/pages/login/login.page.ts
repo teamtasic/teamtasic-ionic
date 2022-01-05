@@ -36,7 +36,13 @@ export class LoginPage implements OnInit {
       message: 'logging in...',
     });
     await loading.present();
-    await this.authService.login(this.email.value, this.password.value);
+    const { email, password } = this.loginform.value;
+    this.loginform = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+    });
+    await this.authService.login(email, password);
+
     this.loadingController.dismiss();
     await loading.onDidDismiss();
   }

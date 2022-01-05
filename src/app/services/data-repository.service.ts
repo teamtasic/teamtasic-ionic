@@ -869,6 +869,25 @@ export class DataRepositoryService {
     });
   }
 
+  /** resets drs after logout */
+  reset() {
+    this._clubs.next([]);
+    this._clubsMap.clear();
+    this._teams.next([]);
+    this._teamsMap.clear();
+    this._sessionUser.next([]);
+    this._sessionUserMap.clear();
+    this._authUser.next([]);
+    this._authUserMap.clear();
+    this._meets.next([]);
+    this._meetsMap.clear();
+    this._clubsUids = [];
+    this._teamUids = [];
+    this._sessionUserUids = [];
+    this._authUserUids = [];
+    this._meetUids = [];
+  }
+
   // HELPERS
   CollectionWithConverter(path: string, converter: any) {
     return this.afs.firestore.collection(path).withConverter(converter);
