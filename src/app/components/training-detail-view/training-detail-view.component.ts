@@ -95,9 +95,7 @@ export class TrainingDetailViewComponent implements OnInit {
         return !usersToRemove.has(name);
       });
       usersWOtrainers.forEach((uid) => {
-        if (uid == this.sessionId) {
-          // pass
-        } else if (this.meet.acceptedUsers.includes(uid)) {
+        if (this.meet.acceptedUsers.includes(uid)) {
           this.members_accepted.push(uid);
         } else if (this.meet.declinedUsers.includes(uid)) {
           this.members_declined.push(uid);
@@ -106,9 +104,7 @@ export class TrainingDetailViewComponent implements OnInit {
         }
       });
       this.team.trainers.forEach((uid) => {
-        if (uid == this.sessionId) {
-          // pass
-        } else if (this.meet.acceptedUsers.includes(uid)) {
+        if (this.meet.acceptedUsers.includes(uid)) {
           this.trainers_accepted.push(uid);
         } else if (this.meet.declinedUsers.includes(uid)) {
           this.trainers_declined.push(uid);
