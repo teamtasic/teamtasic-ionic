@@ -21,7 +21,7 @@
           Vorname
           <ion-text color="danger">*</ion-text>
         </ion-label>
-        <ion-input type="text" placeholder="Name" formControlName="surname"></ion-input>
+        <ion-input type="text" placeholder="Vorname" formControlName="surname"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">
@@ -58,6 +58,28 @@
         </ion-label>
         <ion-input type="text" placeholder="Notfallkontakt" formControlName="emergency"></ion-input>
       </ion-item>
+      <ion-item>
+        <ion-label position="stacked"> J+S Nummer </ion-label>
+        <ion-input type="text" placeholder="J+S Nummer" formControlName="jsnumber"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked"> AHV Nummer - 756.xxxx.xxxx.xx</ion-label>
+        <ion-input type="text" placeholder="AHV Nummer" formControlName="ahvnumber"></ion-input>
+      </ion-item>
+
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-label> Erklärung AHV- & J+S-Nummer </ion-label>
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-label>
+            Die AHV-Nummer wird von den Vereinsleitern evtl. benötigt, um Kinder bei Jugend+Sport zu
+            registrieren.
+          </ion-label>
+        </ion-card-content>
+      </ion-card>
     </form>
 
     <ion-card *ngIf="!newSession">
