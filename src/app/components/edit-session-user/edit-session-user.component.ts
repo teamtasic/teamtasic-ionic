@@ -41,7 +41,11 @@ export class EditSessionUserComponent implements OnInit {
   async ngOnInit() {
     console.log(this.session, this.newSession);
     if (this.newSession) {
-      this.session = new SessionUserData('', this.drs.authUsers.value[0].uid, '', '', '', '', '');
+      this.session = new SessionUserData('', this.drs.authUsers.value[0].uid, '', '', '', '', '', {
+        jsId: '',
+        ahvNumber: '',
+        ownsGA: false,
+      });
     } else {
       this.dataFrom = this.fb.group({
         name: [
@@ -71,7 +75,8 @@ export class EditSessionUserComponent implements OnInit {
           this.dataFrom.value.email,
           this.dataFrom.value.birthdate,
           this.dataFrom.value.phone,
-          this.dataFrom.value.emergency
+          this.dataFrom.value.emergency,
+          { jsId: '', ahvNumber: '', ownsGA: false }
         );
         this.drs.createSessionUser(this.session, this.drs.authUsers.value[0].uid);
       } else {
@@ -82,7 +87,8 @@ export class EditSessionUserComponent implements OnInit {
           this.dataFrom.value.email,
           this.dataFrom.value.birthdate,
           this.dataFrom.value.phone,
-          this.dataFrom.value.emergency
+          this.dataFrom.value.emergency,
+          { jsId: '', ahvNumber: '', ownsGA: false }
         );
         this.drs.updateSessionUser(_sess, this.drs.authUsers.value[0].uid, this.session.uid);
       }

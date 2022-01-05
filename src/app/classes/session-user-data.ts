@@ -8,6 +8,11 @@ export class SessionUserData {
   birthdate: string;
   phoneNumber: string;
   emergencyContact: string;
+  otherData: {
+    jsId: string;
+    ahvNumber: string;
+    ownsGA: boolean;
+  };
 
   constructor(
     uid: string,
@@ -16,7 +21,12 @@ export class SessionUserData {
     email: string,
     birthdate: string,
     phoneNumber: string,
-    emergencyContact: string
+    emergencyContact: string,
+    otherData: {
+      jsId: string;
+      ahvNumber: string;
+      ownsGA: boolean;
+    }
   ) {
     this.uid = uid;
     this.owner = owner;
@@ -25,6 +35,7 @@ export class SessionUserData {
     this.birthdate = birthdate;
     this.phoneNumber = phoneNumber;
     this.emergencyContact = emergencyContact;
+    this.otherData = otherData;
   }
 
   static converter = {
@@ -37,7 +48,8 @@ export class SessionUserData {
         data.email,
         data.birthdate,
         data.phoneNumber,
-        data.emergencyContact
+        data.emergencyContact,
+        data.otherData || { jsId: '', ahvNumber: '', ownsGA: false }
       );
     },
     toFirestore(data: SessionUserData): any {
@@ -48,6 +60,7 @@ export class SessionUserData {
         birthdate: data.birthdate,
         phoneNumber: data.phoneNumber,
         emergencyContact: data.emergencyContact,
+        otherData: data.otherData,
       };
     },
   };
