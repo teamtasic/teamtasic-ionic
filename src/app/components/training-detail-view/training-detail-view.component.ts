@@ -22,23 +22,23 @@ export class TrainingDetailViewComponent implements OnInit {
     private popoverController: PopoverController
   ) {}
 
-  @Input() sessionId: string;
-  @Input() teamId: string;
-  @Input() clubId: string;
-  @Input() meet: Meet;
-  team: Team;
+  @Input() sessionId: string = '';
+  @Input() teamId: string = '';
+  @Input() clubId: string = '';
+  @Input() meet: Meet | undefined;
+  team: Team | undefined;
   //presentational fields
-  trainers_accepted = [];
-  trainers_declined = [];
-  trainers_else = [];
-  members_accepted = [];
-  members_declined = [];
-  members_else = [];
+  trainers_accepted: string[] = [];
+  trainers_declined: string[] = [];
+  trainers_else: string[] = [];
+  members_accepted: string[] = [];
+  members_declined: string[] = [];
+  members_else: string[] = [];
 
-  meetForm: FormGroup;
+  meetForm: FormGroup = this.fb.group({});
 
   isOpenToChanges(a = false) {
-    if (this.team.headTrainers.includes(this.sessionId) && !a) return true;
+    if (this.team?.headTrainers.includes(this.sessionId) && !a) return true;
     if (this.meet) {
       // is it 24h before the meet?
       return (
@@ -66,7 +66,7 @@ export class TrainingDetailViewComponent implements OnInit {
     this.drs.meets.subscribe((meets) => {
       console.log('meet change accepted in detail');
       meets.find((meet) => {
-        if (meet.uid === this.meet.uid) {
+        if (meet.uid === this.meet?.uid) {
           this.meet = meet;
           this.meetForm = this.fb.group({
             meetpoint: [meet.meetpoint, Validators.required],
@@ -95,18 +95,18 @@ export class TrainingDetailViewComponent implements OnInit {
         return !usersToRemove.has(name);
       });
       usersWOtrainers.forEach((uid) => {
-        if (this.meet.acceptedUsers.includes(uid)) {
+        if (this.meet?.acceptedUsers.includes(uid)) {
           this.members_accepted.push(uid);
-        } else if (this.meet.declinedUsers.includes(uid)) {
+        } else if (this.meet?.declinedUsers.includes(uid)) {
           this.members_declined.push(uid);
         } else {
           this.members_else.push(uid);
         }
       });
       this.team.trainers.forEach((uid) => {
-        if (this.meet.acceptedUsers.includes(uid)) {
+        if (this.meet?.acceptedUsers.includes(uid)) {
           this.trainers_accepted.push(uid);
-        } else if (this.meet.declinedUsers.includes(uid)) {
+        } else if (this.meet?.declinedUsers.includes(uid)) {
           this.trainers_declined.push(uid);
         } else {
           this.trainers_else.push(uid);
@@ -124,14 +124,14 @@ export class TrainingDetailViewComponent implements OnInit {
     this.modalController.dismiss();
   }
   async save() {
-    this.meet.acceptedUsers.splice(this.meet.acceptedUsers.indexOf(this.sessionId), 1);
-    this.meet.declinedUsers.splice(this.meet.declinedUsers.indexOf(this.sessionId), 1);
+    this.meet?.acceptedUsers.splice(this.meet?.acceptedUsers.indexOf(this.sessionId), 1);
+    this.meet?.declinedUsers.splice(this.meet?.declinedUsers.indexOf(this.sessionId), 1);
 
     await this.drs.updateMeetStatus(
       this.clubId,
       this.teamId,
-      this.meet.uid,
-      this.status,
+      this.meet?.uid || '',
+      this.status || 'unknown',
       this.sessionId,
       this.meetForm.value.comment,
       this.meetForm.value.deadline,
@@ -155,7 +155,7 @@ export class TrainingDetailViewComponent implements OnInit {
           text: 'Delete',
           cssClass: 'secondary',
           handler: () => {
-            this.drs.deleteMeet(this.clubId, this.teamId, this.meet.uid);
+            this.drs.deleteMeet(this.clubId, this.teamId, this.meet?.uid ?? '');
             this.ns.showToast('Training gelöscht');
             this.modalController.dismiss();
           },
@@ -165,16 +165,16 @@ export class TrainingDetailViewComponent implements OnInit {
     await alert.present();
   }
 
-  status: 'accepted' | 'declined' | 'unknown' = 'unknown';
+  status: 'accepted' | 'declined' | 'unknown' | undefined = 'unknown';
   trainersOpen: boolean = false;
   usersOpen: boolean = true;
 
-  change(event) {
+  change(event: any) {
     this.status = event.detail.value;
   }
 
   async openStatusModal(ev: any, userId: string) {
-    if (this.team.trainers.includes(this.sessionId)) {
+    if (this.team?.trainers.includes(this.sessionId)) {
       const popover = await this.popoverController.create({
         component: AdminSetMemberStatusComponent,
         componentProps: {

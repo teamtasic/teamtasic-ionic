@@ -17,7 +17,7 @@ export class Tab2Page implements OnInit {
     public router: Router
   ) {}
 
-  selectedSessionId: string;
+  selectedSessionId: string = '';
 
   memberships: sessionMembership[] = [];
 
@@ -46,7 +46,7 @@ export class Tab2Page implements OnInit {
   }
   getClubName(clubId: string) {
     try {
-      return this.drs.clubs.getValue().find((c) => c.uid == clubId).name;
+      return this.drs.clubs.getValue().find((c) => c.uid == clubId)?.name;
     } catch {
       return '';
     }

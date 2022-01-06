@@ -21,7 +21,7 @@ export class ResetPasswordPage implements OnInit {
   ) {}
 
   async resetPassword() {
-    await this.auth.resetPassword(this.email.value);
+    await this.auth.resetPassword(this.email?.value);
     this.resetPasswordForm.reset();
     this.alertController
       .create({

@@ -10,9 +10,9 @@ import { AuthService } from 'src/app/services/auth.service';
 export class SignupPage implements OnInit {
   constructor(private fb: FormBuilder, private auth: AuthService, private route: ActivatedRoute) {}
 
-  signupform: FormGroup;
+  signupform: FormGroup = this.fb.group({});
 
-  joinCode: string;
+  joinCode: string = '';
 
   ngOnInit() {
     this.signupform = this.fb.group({
@@ -37,12 +37,12 @@ export class SignupPage implements OnInit {
     console.log(this.signupform.value);
 
     await this.auth.createUser(
-      this.email.value,
-      this.password.value,
-      `${this.surname.value} ${this.name.value}`,
-      this.phoneNumber.value,
-      this.address.value,
-      this.zipcode.value,
+      this.email?.value,
+      this.password?.value,
+      `${this.surname?.value} ${this.name?.value}`,
+      this.phoneNumber?.value,
+      this.address?.value,
+      this.zipcode?.value,
       this.joinCode
     );
   }

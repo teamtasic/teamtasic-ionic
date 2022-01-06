@@ -9,7 +9,7 @@ import { ChatPageRoutingModule } from './chat-routing.module';
 import { ChatPage } from './chat.page';
 import { TextbubbleComponent } from 'src/app/components/textbubble/textbubble.component';
 import { MeetCreateComponent } from 'src/app/components/meet-create/meet-create.component';
-import { TrainingbubbleModuleModule } from 'src/app/components/trainingbubble-module/trainingbubble-module.module';
+import { TrainingbubbleModuleModule } from 'src/app/components/trainingbubble/trainingbubble-module.module';
 
 @NgModule({
   imports: [

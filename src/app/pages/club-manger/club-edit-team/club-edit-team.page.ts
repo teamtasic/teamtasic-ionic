@@ -36,33 +36,33 @@ export class ClubEditTeamPage implements OnInit {
     public loadingController: LoadingController
   ) {}
 
-  editGroup: FormGroup;
-  addGroup: FormGroup;
+  editGroup: FormGroup = this.fb.group({});
+  addGroup: FormGroup = this.fb.group({});
 
-  clubId: string;
-  teamId: string;
+  clubId: string = '';
+  teamId: string = '';
 
-  team: Team;
-  roles: Object = {};
+  team: Team | undefined;
+  roles: any = {};
 
   membercode: string = '';
   trainercode: string = '';
   headtrainercode: string = '';
   ngOnInit() {
     this.route.paramMap.subscribe(async (params) => {
-      this.clubId = params.get('clubId');
-      this.teamId = params.get('teamId');
+      this.clubId = params.get('clubId') || '';
+      this.teamId = params.get('teamId') || '';
       this.team = this.drs.teams.value.find((t) => t.uid == this.teamId);
-      this.teamChanged(this.team);
+      this.teamChanged(this.team as Team);
     });
     this.drs.teams.subscribe((teams) => {
       this.team = teams.find((t) => t.uid == this.teamId);
-      this.teamChanged(this.team);
+      this.teamChanged(this.team as Team);
     });
 
     this.editGroup = this.fb.group({
       name: [
-        this.drs.teams.value.find((team) => team.uid == this.teamId).name,
+        this.drs.teams.value.find((team) => team.uid == this.teamId)?.name,
         [Validators.required],
       ],
     });
@@ -130,7 +130,7 @@ export class ClubEditTeamPage implements OnInit {
 
   async presentActionSheet(userId: string) {
     const actionSheet = await this.actionSheetController.create({
-      header: this.team.names[userId].name,
+      header: this.team?.names[userId].name,
       buttons: [
         {
           text: 'Entfernen',
@@ -153,7 +153,7 @@ export class ClubEditTeamPage implements OnInit {
 
   async removeMember(userId: string) {
     console.log('remove', userId);
-    if (this.team.admins.indexOf(userId) == -1) {
+    if (this.team?.admins.indexOf(userId) == -1) {
       this.mms
         .leaveFromTeam(userId, this.teamId, this.clubId)
         .then(async () => {
@@ -163,7 +163,7 @@ export class ClubEditTeamPage implements OnInit {
           });
           await loading.present();
           await loading.onDidDismiss();
-          this.team = this.drs.teams.value.find((t) => t.uid == this.teamId);
+          this.team = this.drs.teams.value.find((t) => t.uid == this.teamId) as Team;
           this.teamChanged(this.team);
 
           this.ns.showToast('Mitglied entfernt');

@@ -1,12 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  Input,
-  OnInit,
-  QueryList,
-  ViewChild,
-  ViewChildren,
-} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
@@ -22,24 +14,22 @@ import { DataRepositoryService } from 'src/app/services/data-repository.service'
   templateUrl: './chat.page.html',
   styleUrls: ['./chat.page.scss'],
 })
-export class ChatPage implements OnInit, AfterViewInit {
+export class ChatPage implements OnInit {
   today: string = new Date(Date.now()).toISOString();
 
-  teamId: string;
-  clubId: string;
-  sessionId: string;
+  teamId: string = '';
+  clubId: string = '';
+  sessionId: string = '';
 
   meets: Meet[] = [];
-  team: Team;
+  team: Team | undefined;
 
-  selectedSessionId: string;
+  selectedSessionId: string = '';
   memberships: sessionMembership[] = [];
 
-  sessionUserString: string;
+  sessionUserString: string = '';
 
   showTrainerCtrls: boolean = false;
-
-  @ViewChild(IonContent) content: IonContent;
 
   constructor(
     public modalController: ModalController,
@@ -51,15 +41,15 @@ export class ChatPage implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe((params) => {
-      this.teamId = params.get('teamId');
-      this.clubId = params.get('clubId');
-      this.sessionId = params.get('sessionId');
+      this.teamId = params.get('teamId') || '';
+      this.clubId = params.get('clubId') || '';
+      this.sessionId = params.get('sessionId') || '';
     });
 
     this.drs.syncTeam(this.teamId, this.clubId);
     this.drs.teams.subscribe((teams) => {
       this.team = teams.find((t) => t.uid === this.teamId);
-      this.showTrainerCtrls = this.team?.trainers.includes(this.sessionId);
+      this.showTrainerCtrls = this.team?.trainers.includes(this.sessionId) || false;
     });
 
     this.drs.syncMeetsForTeam(this.teamId, this.clubId).subscribe((meets) => {
@@ -85,13 +75,9 @@ export class ChatPage implements OnInit, AfterViewInit {
     });
     this.drs.sessionUsers.subscribe((sessionUsers) => {
       console.log(sessionUsers, 'sessions');
-      this.sessionUserString = sessionUsers[0].find((s) => s.uid === this.sessionId).name;
+      this.sessionUserString = sessionUsers[0].find((s) => s.uid === this.sessionId)?.name || '';
     });
   }
-  ngAfterViewInit() {
-    this.content.scrollToBottom(300);
-  }
-
   async addTraining() {
     const modal = await this.modalController.create({
       component: MeetCreateComponent,

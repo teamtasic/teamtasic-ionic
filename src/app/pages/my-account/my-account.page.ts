@@ -61,10 +61,10 @@ export class MyAccountPage implements OnInit {
     let user = this.drs.authUsers.value[0];
     if (user) {
       try {
-        user.username = this.username.value;
-        user.phoneNumber = this.phoneNumber.value;
-        user.address = this.address.value;
-        user.zipcode = this.zipcode.value;
+        user.username = this.username?.value;
+        user.phoneNumber = this.phoneNumber?.value;
+        user.address = this.address?.value;
+        user.zipcode = this.zipcode?.value;
         user.pushNotificationOptions = {
           enabled: this.notificationsEnabled,
           newTrainingNotifications: this.newTrainingNotifications,
@@ -108,16 +108,16 @@ export class MyAccountPage implements OnInit {
     return this.userData.get('zipcode');
   }
   get notificationsEnabled() {
-    return this.userData.get('notificationsEnabled').value;
+    return this.userData.get('notificationsEnabled')?.value;
   }
   get newTrainingNotifications() {
-    return this.userData.get('newTrainingNotifications').value;
+    return this.userData.get('newTrainingNotifications')?.value;
   }
   get trainingChangedNotifications() {
-    return this.userData.get('trainingChangedNotifications').value;
+    return this.userData.get('trainingChangedNotifications')?.value;
   }
   get trainingReminderNotifications() {
-    return this.userData.get('trainingReminderNotifications').value;
+    return this.userData.get('trainingReminderNotifications')?.value;
   }
 
   // UI Actions

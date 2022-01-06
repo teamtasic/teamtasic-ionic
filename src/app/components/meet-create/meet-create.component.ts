@@ -18,10 +18,10 @@ export class MeetCreateComponent implements OnInit {
 
   today: string = new Date(Date.now()).toISOString();
 
-  @Input() clubId: string;
-  @Input() teamId: string;
+  @Input() clubId: string = '';
+  @Input() teamId: string = '';
 
-  meetCreateGroup: FormGroup;
+  meetCreateGroup: FormGroup = this.fb.group({});
 
   ngOnInit() {
     this.meetCreateGroup = this.fb.group({
@@ -66,8 +66,8 @@ export class MeetCreateComponent implements OnInit {
       this.teamId,
       [],
       [],
-      this.meetComment.value,
-      this.meetDeadline.value
+      this.meetComment?.value,
+      this.meetDeadline?.value
     );
     await this.drs.createMeet(meet, this.clubId, this.teamId);
 

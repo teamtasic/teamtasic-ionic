@@ -19,8 +19,12 @@ import { NotificationService } from 'src/app/services/notification-service.servi
   styleUrls: ['./edit-session-user.component.scss'],
 })
 export class EditSessionUserComponent implements OnInit {
-  @Input() session: SessionUserData;
-  @Input() newSession: Boolean;
+  @Input() session: SessionUserData = new SessionUserData('', '', '', '', '', '', '', {
+    jsId: '',
+    ahvNumber: '',
+    ownsGA: false,
+  });
+  @Input() newSession: Boolean = false;
 
   dataFrom: FormGroup = this.fb.group({
     name: [''],

@@ -39,7 +39,7 @@ export class ClubDetailViewPage implements OnInit {
     uid: ['', [Validators.required]],
   });
 
-  clubId: string;
+  clubId: string = '';
   club: Club = new Club('', '', {}, [], []);
   teams = [];
 
@@ -48,14 +48,14 @@ export class ClubDetailViewPage implements OnInit {
       this.clubId = params.clubId;
       console.log(this.clubId);
       await this.drs.syncClub(this.clubId);
-      this.club = this.drs.clubs.value.find((c) => c.uid === this.clubId);
+      this.club = this.drs.clubs.value.find((c) => c.uid === this.clubId) as Club;
     });
 
     this.drs.clubs.subscribe((clubs) => {
-      this.club = clubs.find((c) => c.uid === this.clubId);
+      this.club = clubs.find((c) => c.uid === this.clubId) as Club;
     });
     this.drs.teams.subscribe((teams) => {
-      this.teams = teams.filter((t) => t.owner === this.clubId);
+      this.teams = teams.filter((t) => t.owner === this.clubId) as any;
     });
   }
 

@@ -13,19 +13,19 @@ export class LogicService {
 
   public adminData: AdminData = new AdminData([]);
 
-  private _userId: string;
+  private _userId: string = '';
   get userId(): string {
     return this._userId;
   }
   set userId(id: string) {
-    if (this._userId == undefined) {
+    if (this._userId == undefined || this._userId == '') {
       this._userId = id;
       // return;
     }
     console.warn('userId already set');
   }
   logout() {
-    this._userId = undefined;
+    this._userId = '';
   }
 
   async startSession() {

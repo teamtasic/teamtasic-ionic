@@ -9,8 +9,8 @@ import { DataRepositoryService } from 'src/app/services/data-repository.service'
   styleUrls: ['./session-user-view.component.scss'],
 })
 export class SessionUserViewComponent implements OnInit {
-  @Input() userId: string;
-  user: SessionUserData;
+  @Input() userId: string = '';
+  user: SessionUserData | undefined;
   constructor(public drs: DataRepositoryService, private modalController: ModalController) {}
 
   ngOnInit() {

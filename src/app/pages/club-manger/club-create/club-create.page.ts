@@ -13,7 +13,7 @@ import { NotificationService } from 'src/app/services/notification-service.servi
   styleUrls: ['./club-create.page.scss'],
 })
 export class ClubCreatePage implements OnInit {
-  clubCreateForm: FormGroup;
+  clubCreateForm: FormGroup = this.fb.group({});
   licenseTier: string = 'free';
 
   constructor(
@@ -45,7 +45,7 @@ export class ClubCreatePage implements OnInit {
     try {
       const club = new Club(
         '',
-        this.clubCreateForm.get('name').value,
+        this.clubCreateForm.get('name')?.value,
         { [this.drs.authUsers.value[0].uid]: this.drs.authUsers.value[0].username },
         [this.drs.authUsers.value[0].uid],
         [this.drs.authUsers.value[0].uid]
@@ -75,6 +75,6 @@ export class ClubCreatePage implements OnInit {
       ['nolimit', 2],
       ['free', 3],
     ]);
-    return _.get(this.license.value);
+    return _.get(this.license?.value);
   }
 }

@@ -16,7 +16,7 @@ import * as firebase from 'firebase';
   providedIn: 'root',
 })
 export class NotificationService {
-  token: Token = undefined;
+  token: Token = { value: '' };
 
   constructor(
     private toastController: ToastController,

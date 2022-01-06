@@ -45,7 +45,11 @@ export class MembershipsService {
         .toPromise()
         .then(async (doc) => {
           if (doc.exists) {
-            const data = doc.data();
+            const data = doc.data() as {
+              role: 'admin' | 'headcoach' | 'coach' | 'member';
+              clubId: string;
+              teamId: string;
+            };
             const role: 'admin' | 'headcoach' | 'coach' | 'member' = data['role'];
             const clubId = data['clubId'];
             const teamId = data['teamId'];
@@ -53,9 +57,9 @@ export class MembershipsService {
             this.drs
               .getClub(clubId)
               .toPromise()
-              .then((club) => {
+              .then((club: any) => {
                 if (role === 'admin') {
-                  club.admins.push(userId);
+                  club?.admins.push(userId);
                 }
                 club.names[userId] = name;
                 this.drs.updateClub(club, clubId);

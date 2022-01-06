@@ -20,7 +20,7 @@ export class LoginPage implements OnInit {
     SplashScreen.hide();
   }
 
-  loginform: FormGroup;
+  loginform: FormGroup = this.fb.group({});
 
   ngOnInit() {
     this.loginform = this.fb.group({

@@ -14,6 +14,8 @@
 
 <ion-content>
   <ion-list>
+    <tt-file-upload></tt-file-upload>
+
     <ion-list-header> Persönliche Daten </ion-list-header>
     <form [formGroup]="dataFrom">
       <ion-item>
@@ -66,7 +68,6 @@
         <ion-label position="stacked"> AHV Nummer - 756.xxxx.xxxx.xx</ion-label>
         <ion-input type="text" placeholder="AHV Nummer" formControlName="ahvnumber"></ion-input>
       </ion-item>
-
       <ion-card>
         <ion-card-header>
           <ion-card-title>

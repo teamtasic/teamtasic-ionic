@@ -10,9 +10,9 @@ import { DataRepositoryService } from 'src/app/services/data-repository.service'
   styleUrls: ['./admin-set-member-status.component.scss'],
 })
 export class AdminSetMemberStatusComponent implements OnInit {
-  @Input() sessionId: string;
-  @Input() meet: Meet;
-  @Input() team: Team;
+  @Input() sessionId: string = '';
+  @Input() meet: Meet | undefined;
+  @Input() team: Team | undefined;
   constructor(private drs: DataRepositoryService, private popoverController: PopoverController) {}
 
   ngOnInit() {}
@@ -20,14 +20,14 @@ export class AdminSetMemberStatusComponent implements OnInit {
   async setState(status: 'accepted' | 'declined' | 'unknown') {
     await this.drs
       .updateMeetStatus(
-        this.meet.clubId,
-        this.meet.teamId,
-        this.meet.uid,
+        this.meet?.clubId || '',
+        this.meet?.teamId || '',
+        this.meet?.uid || '',
         status,
         this.sessionId,
-        this.meet.comment,
-        this.meet.deadline,
-        this.meet.meetpoint
+        this.meet?.comment || '',
+        this.meet?.deadline || 0,
+        this.meet?.meetpoint || ''
       )
       .catch();
     this.popoverController.dismiss();
