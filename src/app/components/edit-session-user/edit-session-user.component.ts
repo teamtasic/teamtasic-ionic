@@ -91,7 +91,8 @@ export class EditSessionUserComponent implements OnInit {
           this.dataFrom.value.birthdate,
           this.dataFrom.value.phone,
           this.dataFrom.value.emergency,
-          { jsId: '', ahvNumber: '', ownsGA: false }
+          { jsId: '', ahvNumber: '', ownsGA: false },
+          `https://avatars.dicebear.com/api/initials/${this.dataFrom.value.surname} ${this.dataFrom.value.name}.svg`
         );
         this.drs.createSessionUser(this.session, this.drs.authUsers.value[0].uid);
       } else {
@@ -107,7 +108,8 @@ export class EditSessionUserComponent implements OnInit {
             jsId: this.dataFrom.value.jsnumber,
             ahvNumber: this.dataFrom.value.ahvnumber,
             ownsGA: false,
-          }
+          },
+          this.session.profilePictureUrl
         );
         this.drs.updateSessionUser(_sess, this.drs.authUsers.value[0].uid, this.session.uid);
       }
@@ -174,6 +176,12 @@ export class EditSessionUserComponent implements OnInit {
       .catch((error) => {
         this.ns.showToast(error.message);
       });
+  }
+
+  async photoUrlChanged(event: any) {
+    console.log(event);
+    await new Promise((resolve) => setTimeout(resolve, 4000));
+    this.session.profilePictureUrl = event.url;
   }
 }
 

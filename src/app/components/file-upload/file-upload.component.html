@@ -1,10 +1,16 @@
-<div class="form-group col-12">
+<ion-item>
   <input
     type="file"
-    id="file"
-    #userPhoto
+    class="file-input"
     (change)="onFileSelected($event)"
-    name="image"
-    autocomplete="off"
+    #fileUpload
+    [accept]="accept"
   />
-</div>
+
+  {{ name || 'Noch nichts hochgeladen' }}
+
+  <ion-button color="primary" (click)="fileUpload.click()" slot="end">
+    {{ promtText }}
+    <ion-icon slot="end" name="cloud-upload-outline"></ion-icon>
+  </ion-button>
+</ion-item>

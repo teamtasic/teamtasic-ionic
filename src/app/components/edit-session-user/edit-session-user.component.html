@@ -14,8 +14,6 @@
 
 <ion-content>
   <ion-list>
-    <tt-file-upload></tt-file-upload>
-
     <ion-list-header> Persönliche Daten </ion-list-header>
     <form [formGroup]="dataFrom">
       <ion-item>
@@ -81,6 +79,19 @@
           </ion-label>
         </ion-card-content>
       </ion-card>
+
+      <ion-list *ngIf="!newSession">
+        <tt-file-upload
+          (fileUploaded)="photoUrlChanged($event)"
+          [fileName]="session.uid"
+        ></tt-file-upload>
+        <ion-item>
+          <ion-avatar
+            ><img [src]="session.profilePictureUrl" />
+            >
+          </ion-avatar>
+        </ion-item>
+      </ion-list>
     </form>
 
     <ion-card *ngIf="!newSession">
