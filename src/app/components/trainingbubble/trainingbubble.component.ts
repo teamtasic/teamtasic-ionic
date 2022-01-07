@@ -16,7 +16,7 @@ export class TrainingbubbleComponent implements OnInit {
   @Input() isArchive: boolean | undefined;
 
   options: DateTimeFormatOptions = {
-    weekday: undefined,
+    weekday: 'short',
     year: 'numeric',
     month: 'short',
     day: 'numeric',
