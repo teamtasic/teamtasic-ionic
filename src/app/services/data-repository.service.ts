@@ -470,7 +470,8 @@ export class DataRepositoryService {
     sessionId: string,
     comment: string,
     deadline: number,
-    meetpoint: string
+    meetpoint: string,
+    comments: {}
   ) {
     await this.afs
       .collection(`clubs/${clubId}/teams/${teamId}/meets/`)
@@ -487,6 +488,7 @@ export class DataRepositoryService {
         comment: comment,
         deadline: deadline,
         meetpoint: meetpoint,
+        comments: comments,
       });
   }
   /**

@@ -29,6 +29,8 @@ export class Meet {
   acceptedUsers: string[] = [];
   declinedUsers: string[] = [];
 
+  comments: {};
+
   constructor(
     uid: string,
     title: string,
@@ -40,7 +42,8 @@ export class Meet {
     acceptedUsers: string[] = [],
     declinedUsers: string[] = [],
     comment: string,
-    deadline: number
+    deadline: number,
+    comments: {}
   ) {
     this.uid = uid;
     this.title = title;
@@ -53,6 +56,7 @@ export class Meet {
     this.declinedUsers = declinedUsers;
     this.comment = comment;
     this.deadline = deadline;
+    this.comments = comments;
   }
 
   get startTimestamp(): fb.default.firestore.Timestamp {
@@ -77,7 +81,8 @@ export class Meet {
         data.acceptedUsers || [],
         data.declinedUsers || [],
         data.comment || '',
-        data.deadline || 0
+        data.deadline || 0,
+        data.comments || {}
       );
     },
     toFirestore: function (meet: Meet) {
@@ -93,6 +98,7 @@ export class Meet {
         declinedUsers: meet.declinedUsers,
         comment: meet.comment,
         deadline: meet.deadline,
+        comments: meet.comments,
       };
     },
   };

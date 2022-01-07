@@ -21,7 +21,7 @@ export class Team {
     trainers: string[],
     headTrainers: string[],
     admins: string[],
-    owner?: string
+    owner: string
   ) {
     this.uid = uid;
 
@@ -49,7 +49,7 @@ export class Team {
         data.headTrainers || [],
         data.admins || [],
         // local querys are kinda important tho
-        snapshot.ref.parent.parent?.id
+        snapshot.ref.parent.parent?.id || ''
       );
     },
     toFirestore: function (team: Team) {
@@ -61,6 +61,7 @@ export class Team {
         trainers: team.trainers,
         headTrainers: team.headTrainers,
         admins: team.admins,
+        owner: team.owner,
       };
     },
   };

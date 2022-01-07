@@ -67,7 +67,8 @@ export class MeetCreateComponent implements OnInit {
       [],
       [],
       this.meetComment?.value,
-      this.meetDeadline?.value
+      this.meetDeadline?.value,
+      {}
     );
     await this.drs.createMeet(meet, this.clubId, this.teamId);
 
