@@ -31,8 +31,8 @@ export class MeetCreateComponent implements OnInit {
       meetEndTime: ['', [Validators.required]],
       meetComment: [''],
       meetDeadline: [
-        '1',
-        [Validators.required, Validators.min(1), Validators.max(14), Validators.pattern('[0-9]*')],
+        '0',
+        [Validators.required, Validators.min(-1), Validators.max(14), Validators.pattern('[0-9]*')],
       ],
     });
   }
