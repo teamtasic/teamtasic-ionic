@@ -32,7 +32,7 @@ export class ClubAddTeamPage implements OnInit {
   }
 
   async createTeam() {
-    const team = new Team('', this.teamName?.value, {}, [], [], [], []);
+    const team = new Team('', this.teamName?.value, {}, [], [], [], [], '');
     this.drs.createTeam(team, this.clubId);
 
     this.router.navigate(['/my-clubs/detail', this.clubId]);

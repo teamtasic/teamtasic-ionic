@@ -135,7 +135,8 @@ export class TrainingDetailViewComponent implements OnInit {
       this.sessionId,
       this.meetForm.value.comment,
       this.meetForm.value.deadline,
-      this.meetForm.value.meetpoint
+      this.meetForm.value.meetpoint,
+      this.meet?.comments || {}
     );
     this.modalController.dismiss();
   }

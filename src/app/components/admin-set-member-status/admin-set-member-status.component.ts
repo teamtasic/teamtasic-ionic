@@ -27,7 +27,8 @@ export class AdminSetMemberStatusComponent implements OnInit {
         this.sessionId,
         this.meet?.comment || '',
         this.meet?.deadline || 0,
-        this.meet?.meetpoint || ''
+        this.meet?.meetpoint || '',
+        this.meet?.comments || {}
       )
       .catch();
     this.popoverController.dismiss();
