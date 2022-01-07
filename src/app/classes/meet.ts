@@ -29,7 +29,7 @@ export class Meet {
   acceptedUsers: string[] = [];
   declinedUsers: string[] = [];
 
-  comments: {};
+  comments: { [key: string]: string };
 
   constructor(
     uid: string,

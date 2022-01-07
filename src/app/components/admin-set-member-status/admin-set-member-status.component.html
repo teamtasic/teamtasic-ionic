@@ -2,6 +2,12 @@
   <ion-list-header>
     {{ team.names[sessionId] }}
   </ion-list-header>
+  <ion-item *ngIf="meet.comments[sessionId]">
+    <ion-label position="stacked"> Kommentar: </ion-label>
+    <ion-label class="ion-text-wrap ion-text-sm">
+      {{ meet.comments[sessionId] }}
+    </ion-label>
+  </ion-item>
   <ion-item (click)="setState('accepted')">
     <ion-label> Kommt </ion-label>
   </ion-item>

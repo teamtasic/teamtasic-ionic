@@ -36,6 +36,7 @@ export class TrainingDetailViewComponent implements OnInit {
   members_else: string[] = [];
 
   meetForm: FormGroup = this.fb.group({});
+  commentForm: FormGroup = this.fb.group({});
 
   isOpenToChanges(a = false) {
     if (this.team?.headTrainers.includes(this.sessionId) && !a) return true;
@@ -53,6 +54,9 @@ export class TrainingDetailViewComponent implements OnInit {
       meetpoint: ['', Validators.required],
       comment: ['', Validators.required],
       deadline: ['', Validators.required],
+    });
+    this.commentForm = this.fb.group({
+      comment: ['', Validators.required],
     });
 
     this.drs.teams.subscribe((teams) => {
@@ -72,6 +76,9 @@ export class TrainingDetailViewComponent implements OnInit {
             meetpoint: [meet.meetpoint, Validators.required],
             comment: [meet.comment],
             deadline: [meet.deadline, Validators.required],
+          });
+          this.commentForm = this.fb.group({
+            comment: [meet.comments[this.sessionId] || '', []],
           });
         }
       });
@@ -126,6 +133,9 @@ export class TrainingDetailViewComponent implements OnInit {
   async save() {
     this.meet?.acceptedUsers.splice(this.meet?.acceptedUsers.indexOf(this.sessionId), 1);
     this.meet?.declinedUsers.splice(this.meet?.declinedUsers.indexOf(this.sessionId), 1);
+
+    if (!this.meet) return;
+    this.meet.comments[this.sessionId] = this.commentForm.value.comment;
 
     await this.drs.updateMeetStatus(
       this.clubId,

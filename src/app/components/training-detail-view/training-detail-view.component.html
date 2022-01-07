@@ -140,9 +140,20 @@
     </ion-card>
     <!-- my status section end -->
     <!-- start change my status section -->
+    <form [formGroup]="commentForm" *ngIf="stat.value != 'unknown'">
+      <ion-item>
+        <ion-label position="stacked">Kommentar zu meinem Status</ion-label>
+        <ion-input type="text" formControlName="comment"></ion-input>
+      </ion-item>
+    </form>
     <ion-grid>
       <ion-col>
-        <ion-segment [value]="status" (ionChange)="change($event)" [disabled]="!isOpenToChanges()">
+        <ion-segment
+          #stat
+          [value]="status"
+          (ionChange)="change($event)"
+          [disabled]="!isOpenToChanges()"
+        >
           <ion-segment-button value="accepted">
             <ion-icon name="checkmark-circle-outline"></ion-icon>
           </ion-segment-button>
@@ -155,6 +166,7 @@
         </ion-segment>
       </ion-col>
     </ion-grid>
+
     <!-- end change my status section -->
 
     <!-- other users section -->
@@ -193,7 +205,18 @@
                 </ion-text>
               </p>
             </ion-label>
-            <ion-badge color="success" slot="end">Kommt</ion-badge>
+            <ion-badge
+              color="success"
+              slot="end"
+              *ngIf="!meet.comments[cath] || !team.trainers.includes(sessionId); else comment"
+            >
+              Kommt
+            </ion-badge>
+            <ng-template #comment>
+              <ion-badge color="success" slot="end">
+                <ion-icon name="chatbubble-outline"></ion-icon>
+              </ion-badge>
+            </ng-template>
           </ion-item>
           <ion-item *ngFor="let cath of trainers_declined" (click)="openStatusModal($event, cath)">
             <ion-avatar slot="start">
@@ -209,7 +232,18 @@
                 </ion-text>
               </p>
             </ion-label>
-            <ion-badge color="danger" slot="end">Kommt nicht</ion-badge>
+            <ion-badge
+              color="danger"
+              slot="end"
+              *ngIf="!meet.comments[cath] || !team.trainers.includes(sessionId); else comment"
+            >
+              Kommt nicht
+            </ion-badge>
+            <ng-template #comment>
+              <ion-badge color="danger" slot="end">
+                <ion-icon name="chatbubble-outline"></ion-icon>
+              </ion-badge>
+            </ng-template>
           </ion-item>
           <ion-item *ngFor="let cath of trainers_else" (click)="openStatusModal($event, cath)">
             <ion-avatar slot="start">
@@ -257,7 +291,18 @@
                 </ion-text>
               </p>
             </ion-label>
-            <ion-badge color="success" slot="end">Kommt</ion-badge>
+            <ion-badge
+              color="success"
+              slot="end"
+              *ngIf="!meet.comments[cath] || !team.trainers.includes(sessionId); else comment"
+            >
+              Kommt
+            </ion-badge>
+            <ng-template #comment>
+              <ion-badge color="success" slot="end">
+                <ion-icon name="chatbubble-outline"></ion-icon>
+              </ion-badge>
+            </ng-template>
           </ion-item>
           <ion-item *ngFor="let cath of members_declined" (click)="openStatusModal($event, cath)">
             <ion-avatar slot="start">
@@ -273,7 +318,18 @@
                 </ion-text>
               </p>
             </ion-label>
-            <ion-badge color="danger" slot="end">Kommt nicht</ion-badge>
+            <ion-badge
+              color="danger"
+              slot="end"
+              *ngIf="!meet.comments[cath] || !team.trainers.includes(sessionId); else comment"
+            >
+              Kommt nicht
+            </ion-badge>
+            <ng-template #comment>
+              <ion-badge color="danger" slot="end">
+                <ion-icon name="chatbubble-outline"></ion-icon>
+              </ion-badge>
+            </ng-template>
           </ion-item>
           <ion-item *ngFor="let cath of members_else" (click)="openStatusModal($event, cath)">
             <ion-avatar slot="start">
