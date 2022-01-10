@@ -892,6 +892,16 @@ export class DataRepositoryService {
     this._meetUids = [];
   }
 
+  /** checks if the club has a license
+   * @since 2.4.0
+   * @memberof DataRepositoryService
+   * @param {string} clubId The id of the club
+   * @returns {Promise<boolean>} True if the club has a license
+   */
+  hasLicense(clubId: string): Promise<boolean> {
+    return new Promise<boolean>((resolve) => {});
+  }
+
   // HELPERS
   CollectionWithConverter(path: string, converter: any) {
     return this.afs.firestore.collection(path).withConverter(converter);

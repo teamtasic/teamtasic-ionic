@@ -17,39 +17,14 @@
   <!-- Create club form -->
 
   <ion-item>
-    <p>Um einen neuen Club zu erstellen, fülle bitte die folgenden Felder aus.</p>
+    <ion-label class="ion-text-wrap">
+      <p>Um einen neuen Club zu erstellen, fülle bitte die folgenden Felder aus.</p>
+    </ion-label>
   </ion-item>
   <form [formGroup]="clubCreateForm">
     <ion-item>
       <ion-input formControlName="name" placeholder="Name" type="text"></ion-input>
     </ion-item>
-
-    <ion-list>
-      <ion-radio-group formControlName="tier">
-        <ion-list-header>
-          <ion-label>Tier - select one</ion-label>
-        </ion-list-header>
-
-        <ion-item>
-          <p>Free, &infin; Teams</p>
-          <ion-radio slot="start" value="free"></ion-radio>
-        </ion-item>
-        <!-- <ion-item>
-          <p>Bare - 1 Team for 3 months, CHF 15.00</p>
-          <ion-radio slot="start" value="bare"></ion-radio>
-        </ion-item>
-
-        <ion-item>
-          <p>Standart - 5 Teams for 12 Months, CHF 120.00</p>
-          <ion-radio slot="start" value="standard"></ion-radio>
-        </ion-item>
-
-        <ion-item>
-          <p>NOLIMIT - &infin; Teams for 12 Months, CHF 250.00</p>
-          <ion-radio slot="start" value="nolimit"></ion-radio>
-        </ion-item> -->
-      </ion-radio-group>
-    </ion-list>
 
     <ion-item>
       <p>
@@ -64,6 +39,24 @@
       </p>
       <ion-checkbox color="primary" slot="start"></ion-checkbox>
     </ion-item> -->
+    <ion-item>
+      <ion-label position="stacked"
+        >Lizenzschlüssel <ion-text color="danger">*</ion-text></ion-label
+      >
+      <ion-input required formControlName="licenseKey" type="text"></ion-input>
+    </ion-item>
+    <ion-item *ngIf="clubCreateForm.invalid && clubCreateForm.touched" lines="none">
+      <ion-text color="danger" class="form-error"> Gültigen Lizenzschlüssel eingeben </ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label class="ion-text-wrap">
+        <p>
+          Lizenzschlüssel sind gratis bei uns erhältlich und können bei unserem Support bestellt
+          werden.
+        </p>
+      </ion-label>
+    </ion-item>
+
     <ion-row>
       <ion-col>
         <ion-button expand="block" (click)="createClub()" [disabled]="!clubCreateForm.valid">
@@ -73,7 +66,3 @@
     </ion-row>
   </form>
 </ion-content>
-
-<ion-footer>
-  <ion-toolbar></ion-toolbar>
-</ion-footer>

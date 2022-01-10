@@ -1,5 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
 import { Club } from 'src/app/classes/club';
@@ -33,7 +40,10 @@ export class ClubCreatePage implements OnInit {
     this.clubCreateForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
       tos: [false, [Validators.requiredTrue]],
-      tier: ['free', [Validators.required]],
+      licenseKey: [
+        '',
+        [Validators.required, Validators.minLength(3), isValidLicenseKeyValidator()],
+      ],
     });
   }
 
@@ -43,6 +53,8 @@ export class ClubCreatePage implements OnInit {
     });
     await loading.present();
     try {
+      if (!this.clubCreateForm.valid) throw new Error('Form is not valid');
+
       const club = new Club(
         '',
         this.clubCreateForm.get('name')?.value,
@@ -77,4 +89,10 @@ export class ClubCreatePage implements OnInit {
     ]);
     return _.get(this.license?.value);
   }
+}
+
+function isValidLicenseKeyValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    return control.value == 'FREEFORNOW' ? { invalidKey: { value: control.value } } : null;
+  };
 }
