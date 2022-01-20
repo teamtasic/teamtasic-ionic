@@ -83,7 +83,7 @@ export class MembershipsService {
                   team.users.push(userId);
                 }
                 team.names[userId] = name;
-                console.log('Team with new user: ', team);
+                // console.log('Team with new user: ', team);
                 this.drs.updateTeam(team, clubId, teamId);
                 resolve(undefined);
               });
