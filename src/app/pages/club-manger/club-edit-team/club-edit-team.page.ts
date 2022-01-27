@@ -82,9 +82,15 @@ export class ClubEditTeamPage implements OnInit {
       this.roles[userId] = 'admin';
     });
     console.log(this.roles);
-    this.membercode = await this.drs.getJoinCodeForTeam(this.teamId, this.clubId, 'member');
-    this.trainercode = await this.drs.getJoinCodeForTeam(this.teamId, this.clubId, 'coach');
-    this.headtrainercode = await this.drs.getJoinCodeForTeam(this.teamId, this.clubId, 'headcoach');
+    this.membercode =
+      'https://teamtasic.app/signup?code=' +
+      (await this.drs.getJoinCodeForTeam(this.teamId, this.clubId, 'member'));
+    this.trainercode =
+      'https://teamtasic.app/signup?code=' +
+      (await this.drs.getJoinCodeForTeam(this.teamId, this.clubId, 'coach'));
+    this.headtrainercode =
+      'https://teamtasic.app/signup?code=' +
+      (await this.drs.getJoinCodeForTeam(this.teamId, this.clubId, 'headcoach'));
   }
 
   roleStrings = {
