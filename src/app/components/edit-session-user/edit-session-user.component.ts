@@ -187,6 +187,7 @@ export class EditSessionUserComponent implements OnInit {
 
   async photoUrlChanged(event: any) {
     console.log(event);
+    this.session.profilePictureUrl = event.url;
     await new Promise((resolve) => setTimeout(resolve, 4000));
     this.session.profilePictureUrl = event.url;
   }

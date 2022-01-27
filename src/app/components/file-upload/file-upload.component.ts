@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { NotificationService } from 'src/app/services/notification-service.service';
-
+import { environment } from 'src/environments/environment';
 @Component({
   selector: 'tt-file-upload',
   templateUrl: './file-upload.component.html',
@@ -32,7 +32,7 @@ export class FileUploadComponent implements OnInit {
         .then(() => {
           this.ns.showToast('Datei erfolgreich hochgeladen');
           this.fileUploaded.emit({
-            url: `https://storage.cloud.google.com/teamtasic-dev.appspot.com/profiles/${this.fileName}_200x200`,
+            url: `https://storage.cloud.google.com/${environment.firebase.storageBucket}/profiles/${this.fileName}_200x200`,
           });
         })
         .catch((err) => {
