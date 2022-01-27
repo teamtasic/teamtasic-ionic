@@ -10,7 +10,11 @@ import {
 } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { AuthUserData } from '../classes/auth-user-data';
-import { SessionUserData, sessionMembership } from '../classes/session-user-data';
+import {
+  SessionUserData,
+  sessionMembership,
+  joinableMembership,
+} from '../classes/session-user-data';
 import { filter, map } from 'rxjs/operators';
 import * as fb from 'firebase';
 @Injectable({
@@ -298,6 +302,58 @@ export class DataRepositoryService {
             rval.push(membership);
           });
           resolve(rval);
+        });
+    });
+  }
+  /**
+   * Sync a auth Users join code
+   * @since 2.4.0
+   * @memberof DataRepositoryService
+   * @param {string} sessionUserId
+   * @return {Promise<joinableMembership>}
+   */
+  async syncSessionJoinCode(sessionUserId: string) {
+    return await new Promise<joinableMembership | undefined>((resolve) => {
+      // get join code
+      this.afs
+        .collection(this.CollectionWithConverter('authUsers', AuthUserData.converter))
+        .doc(sessionUserId)
+        .get()
+        .toPromise()
+        .then((doc) => {
+          let data = doc.data() as AuthUserData;
+          if (data && data.joinCode != '') {
+            this.afs
+              .collection('joinCodes')
+              .doc(data.joinCode)
+              .get()
+              .toPromise()
+              .then((doc) => {
+                if (doc.exists) {
+                  var code = doc.data() as {
+                    teamId: string;
+                    clubId: string;
+                    code: string;
+                    role: 'coach' | 'headcoach' | 'member';
+                  };
+                  code['code'] = doc.ref.id as string;
+                  console.log(code['teamId']);
+                  this.getTeam(code['teamId'], code['clubId']).then((team) => {
+                    resolve({
+                      teamId: team.uid,
+                      clubId: team.owner,
+                      displayName: team.name,
+                      code: code.code,
+                      role: code.role,
+                    } as joinableMembership);
+                  });
+                } else {
+                  console.log('[ JoinCode not found ]', doc);
+                }
+              });
+          } else {
+            resolve(undefined);
+          }
         });
     });
   }

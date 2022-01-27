@@ -78,3 +78,11 @@ export interface sessionMembership {
   displayName: string;
   role: 'admin' | 'headcoach' | 'coach' | 'member';
 }
+
+export interface joinableMembership {
+  teamId: string;
+  clubId: string;
+  displayName: string;
+  code: string;
+  role: 'admin' | 'headcoach' | 'coach' | 'member';
+}

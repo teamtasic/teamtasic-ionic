@@ -125,6 +125,13 @@
           Team beitreten
         </ion-button>
       </ion-item>
+      <ion-list-header *ngIf="joinableMembership"> Einladungen </ion-list-header>
+      <ion-item *ngIf="joinableMembership">
+        {{ joinableMembership.displayName }}
+        <ion-button slot="end" color="success" (click)="joinInvitation()">
+          Team beitreten
+        </ion-button>
+      </ion-item>
     </form>
 
     <ion-card *ngIf="!newSession">

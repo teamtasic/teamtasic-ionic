@@ -8,7 +8,11 @@ import {
   Validators,
 } from '@angular/forms';
 import { AlertController, ModalController } from '@ionic/angular';
-import { sessionMembership, SessionUserData } from 'src/app/classes/session-user-data';
+import {
+  joinableMembership,
+  sessionMembership,
+  SessionUserData,
+} from 'src/app/classes/session-user-data';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
 import { MembershipsService } from 'src/app/services/memberships.service';
 import { NotificationService } from 'src/app/services/notification-service.service';
@@ -42,6 +46,7 @@ export class EditSessionUserComponent implements OnInit {
   });
 
   memberships: sessionMembership[] = [];
+  joinableMembership: joinableMembership | undefined;
 
   constructor(
     private modalController: ModalController,
@@ -79,6 +84,8 @@ export class EditSessionUserComponent implements OnInit {
   }
   async init() {
     this.memberships = await this.drs.syncSessionMemberships(this.session.uid);
+
+    this.joinableMembership = await this.drs.syncSessionJoinCode(this.session.owner);
   }
   saveAndDismiss() {
     try {
@@ -124,8 +131,9 @@ export class EditSessionUserComponent implements OnInit {
     this.modalController.dismiss();
   }
   //MARK JOIN TEAM LEAVE TEAM
-  async joinTeam() {
+  async joinTeam(code?: string) {
     // confirm dialog
+    const _code = code || this.joinForm.value.code.trim();
 
     const alert = await this.alertController.create({
       header: 'Datenweitergabe erlauben',
@@ -145,10 +153,9 @@ export class EditSessionUserComponent implements OnInit {
         {
           text: 'Einverstanden',
           handler: () => {
-            const code = this.joinForm.value.code;
             this.joinForm.reset();
             this.mss
-              .joinUsingCode(code.trim(), this.session.uid, this.session.name)
+              .joinUsingCode(_code, this.session.uid, this.session.name)
               .then(() => {
                 this.ns.showToast('Team beigetreten');
                 this.init();
@@ -182,6 +189,15 @@ export class EditSessionUserComponent implements OnInit {
     console.log(event);
     await new Promise((resolve) => setTimeout(resolve, 4000));
     this.session.profilePictureUrl = event.url;
+  }
+  async joinInvitation() {
+    const code = this.joinableMembership?.code;
+    if (code) {
+      this.joinTeam(code);
+      let user = this.drs.authUsers.value[0];
+      user.joinCode = undefined;
+      this.drs.updateAuthUser(user, user.uid);
+    }
   }
 }
 
