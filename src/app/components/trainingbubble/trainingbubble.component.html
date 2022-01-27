@@ -7,10 +7,10 @@
       <ion-card>
         <ion-card-header>
           <ion-card-subtitle>
-            {{ meet.start.toLocaleString(undefined, options) }} -
-            {{ meet.end.toLocaleTimeString(undefined, optionsTime) }}
+            {{ meet?.start?.toLocaleString(undefined, options) }} -
+            {{ meet?.end?.toLocaleTimeString(undefined, optionsTime) }}
           </ion-card-subtitle>
-          <ion-card-title> {{ meet.title }} </ion-card-title>
+          <ion-card-title> {{ meet?.title }} </ion-card-title>
         </ion-card-header>
         <ion-card-content>
           <ion-grid>

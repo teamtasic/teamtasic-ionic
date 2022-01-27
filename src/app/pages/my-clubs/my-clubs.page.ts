@@ -16,7 +16,10 @@ export class MyClubsPage implements OnInit {
     private router: Router,
     public logic: LogicService
   ) {}
-  displayableClubs: Object[] = [];
+  displayableClubs: {
+    displayName: string;
+    club: string;
+  }[] = [];
 
   ngOnInit() {
     this.drs.clubs.subscribe((clubs) => {

@@ -43,7 +43,9 @@ export class Meet {
     declinedUsers: string[] = [],
     comment: string,
     deadline: number,
-    comments: {}
+    comments: {
+      [key: string]: string;
+    }
   ) {
     this.uid = uid;
     this.title = title;

@@ -13,6 +13,7 @@ import {
   tap,
 } from 'rxjs/operators';
 import { Club } from 'src/app/classes/club';
+import { Team } from 'src/app/classes/team';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
 import { LogicService } from 'src/app/services/logic.service';
 import { NotificationService } from 'src/app/services/notification-service.service';
@@ -41,7 +42,7 @@ export class ClubDetailViewPage implements OnInit {
 
   clubId: string = '';
   club: Club = new Club('', '', {}, [], []);
-  teams = [];
+  teams: Team[] = [];
 
   ngOnInit() {
     this.route.params.subscribe(async (params) => {

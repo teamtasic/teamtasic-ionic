@@ -10,7 +10,7 @@
       (ionChange)="sessionChanged($event)"
     >
       <ion-select-option
-        *ngFor="let sessionUser of (drs.sessionUsers | async)[0]"
+        *ngFor="let sessionUser of ((drs.sessionUsers | async) || [[]])[0]"
         [value]="sessionUser.uid"
         >{{sessionUser.name}}</ion-select-option
       >

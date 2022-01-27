@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-title
       >{{
-        meet.start.toLocaleDateString([], {
+        meet?.start?.toLocaleDateString([], {
           weekday: 'short',
           year: 'numeric',
           month: 'long',
@@ -15,7 +15,7 @@
     <ion-buttons slot="start">
       <ion-button (click)="dismiss()">Abbrechen</ion-button>
     </ion-buttons>
-    <ion-title>{{ meet.title }}</ion-title>
+    <ion-title>{{ meet?.title }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="save()" [disabled]="!isOpenToChanges()">Speichern</ion-button>
     </ion-buttons>
@@ -35,7 +35,7 @@
       <ion-item>
         <ion-note slot="start">Datum:</ion-note>
         <ion-label>{{
-          meet.start.toLocaleDateString([], {
+          meet?.start?.toLocaleDateString([], {
             weekday: 'short',
             year: 'numeric',
             month: 'long',
@@ -47,8 +47,8 @@
         <ion-note slot="start">Zeit:</ion-note>
 
         <ion-label>
-          {{ meet.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }} -
-          {{ meet.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}
+          {{ meet?.start?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }} -
+          {{ meet?.end?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}
         </ion-label>
       </ion-item>
       <ion-item>
@@ -58,19 +58,19 @@
           placeholder="Treffpunkt"
           required
           formControlName="meetpoint"
-          [readonly]="!team.headTrainers.includes(sessionId)"
+          [readonly]="!team?.headTrainers?.includes(sessionId)"
         ></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Bemerkungen</ion-label>
         <ion-textarea
           formControlName="comment"
-          [readonly]="!team.headTrainers.includes(sessionId)"
+          [readonly]="!team?.headTrainers?.includes(sessionId)"
           [rows]="4"
         >
         </ion-textarea>
       </ion-item>
-      <ion-item *ngIf="meet.deadline != 0">
+      <ion-item *ngIf="meet?.deadline != 0">
         <ion-label position="stacked"
           >Deadline - Eintragen bis X Tage vorher<ion-text color="danger">*</ion-text></ion-label
         >
@@ -78,7 +78,7 @@
           type="text"
           placeholder="Deadline"
           formControlName="deadline"
-          [readonly]="!team.headTrainers.includes(sessionId)"
+          [readonly]="!team?.headTrainers?.includes(sessionId)"
         ></ion-input>
       </ion-item>
     </form>
@@ -194,11 +194,11 @@
           >
             <ion-avatar slot="start">
               <img
-                [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'"
+                [src]="'https://avatars.dicebear.com/api/initials/' + team?.names[cath] + '.svg'"
               />
             </ion-avatar>
             <ion-label>
-              <h2>{{ team.names[cath] }}</h2>
+              <h2>{{ team?.names[cath] }}</h2>
               <p>
                 <ion-text color="primary">
                   <strong>Trainer</strong>
@@ -208,7 +208,10 @@
             <ion-badge
               color="success"
               slot="end"
-              *ngIf="!meet.comments[cath] || !team.trainers.includes(sessionId); else comment"
+              *ngIf="
+                (meet?.comments || {})[cath] !== undefined || !team?.trainers?.includes(sessionId);
+                else comment
+              "
             >
               Kommt
             </ion-badge>
@@ -221,11 +224,11 @@
           <ion-item *ngFor="let cath of trainers_declined" (click)="openStatusModal($event, cath)">
             <ion-avatar slot="start">
               <img
-                [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'"
+                [src]="'https://avatars.dicebear.com/api/initials/' + team?.names[cath] + '.svg'"
               />
             </ion-avatar>
             <ion-label>
-              <h2>{{ team.names[cath] }}</h2>
+              <h2>{{ team?.names[cath] }}</h2>
               <p>
                 <ion-text color="primary">
                   <strong>Trainer</strong>
@@ -235,7 +238,10 @@
             <ion-badge
               color="danger"
               slot="end"
-              *ngIf="!meet.comments[cath] || !team.trainers.includes(sessionId); else comment"
+              *ngIf="
+                (meet?.comments || {})[cath] !== undefined || !team?.trainers?.includes(sessionId);
+                else comment
+              "
             >
               Kommt nicht
             </ion-badge>
@@ -248,11 +254,11 @@
           <ion-item *ngFor="let cath of trainers_else" (click)="openStatusModal($event, cath)">
             <ion-avatar slot="start">
               <img
-                [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'"
+                [src]="'https://avatars.dicebear.com/api/initials/' + team?.names[cath] + '.svg'"
               />
             </ion-avatar>
             <ion-label>
-              <h2>{{ team.names[cath] }}</h2>
+              <h2>{{ team?.names[cath] }}</h2>
               <p>
                 <ion-text color="primary">
                   <strong>Trainer</strong>
@@ -280,11 +286,11 @@
           <ion-item *ngFor="let cath of members_accepted" (click)="openStatusModal($event, cath)">
             <ion-avatar slot="start">
               <img
-                [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'"
+                [src]="'https://avatars.dicebear.com/api/initials/' + team?.names[cath] + '.svg'"
               />
             </ion-avatar>
             <ion-label>
-              <h2>{{ team.names[cath] }}</h2>
+              <h2>{{ team?.names[cath] }}</h2>
               <p>
                 <ion-text color="primary">
                   <strong>Athlet</strong>
@@ -294,7 +300,10 @@
             <ion-badge
               color="success"
               slot="end"
-              *ngIf="!meet.comments[cath] || !team.trainers.includes(sessionId); else comment"
+              *ngIf="
+                (meet?.comments || {})[cath] !== undefined || !team?.trainers?.includes(sessionId);
+                else comment
+              "
             >
               Kommt
             </ion-badge>
@@ -307,11 +316,11 @@
           <ion-item *ngFor="let cath of members_declined" (click)="openStatusModal($event, cath)">
             <ion-avatar slot="start">
               <img
-                [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'"
+                [src]="'https://avatars.dicebear.com/api/initials/' + team?.names[cath] + '.svg'"
               />
             </ion-avatar>
             <ion-label>
-              <h2>{{ team.names[cath] }}</h2>
+              <h2>{{ team?.names[cath] }}</h2>
               <p>
                 <ion-text color="primary">
                   <strong>Athlet</strong>
@@ -321,7 +330,10 @@
             <ion-badge
               color="danger"
               slot="end"
-              *ngIf="!meet.comments[cath] || !team.trainers.includes(sessionId); else comment"
+              *ngIf="
+                (meet?.comments || {})[cath] !== undefined || !team?.trainers?.includes(sessionId);
+                else comment
+              "
             >
               Kommt nicht
             </ion-badge>
@@ -334,11 +346,11 @@
           <ion-item *ngFor="let cath of members_else" (click)="openStatusModal($event, cath)">
             <ion-avatar slot="start">
               <img
-                [src]="'https://avatars.dicebear.com/api/initials/' + team.names[cath] + '.svg'"
+                [src]="'https://avatars.dicebear.com/api/initials/' + team?.names[cath] + '.svg'"
               />
             </ion-avatar>
             <ion-label>
-              <h2>{{ team.names[cath] }}</h2>
+              <h2>{{ team?.names[cath] }}</h2>
               <p>
                 <ion-text color="primary">
                   <strong>Athlet</strong>
@@ -353,7 +365,7 @@
 
     <!-- end other users section -->
   </ion-list>
-  <div *ngIf="team.headTrainers.includes(sessionId)">
+  <div *ngIf="team?.headTrainers?.includes(sessionId)">
     <ion-list-header>
       <ion-label>Training bearbeiten</ion-label>
     </ion-list-header>

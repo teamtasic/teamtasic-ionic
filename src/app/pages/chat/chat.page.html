@@ -47,7 +47,7 @@
     vertical="bottom"
     horizontal="end"
     slot="fixed"
-    *ngIf="team?.headTrainers.includes(sessionId)"
+    *ngIf="team?.headTrainers?.includes(sessionId)"
   >
     <ion-fab-button (click)="addTraining()">
       <ion-icon name="add"></ion-icon>
@@ -66,7 +66,7 @@
       vertical="bottom"
       horizontal="end"
       slot="fixed"
-      *ngIf="team?.headTrainers.includes(sessionId)"
+      *ngIf="team?.headTrainers?.includes(sessionId)"
     >
       <ion-fab-button (click)="addTraining()">
         <ion-icon name="add"></ion-icon>
@@ -82,7 +82,7 @@
         [style.grid-column-start]="l+2"
         [style.grid-row-start]="1"
       >
-        {{ meet.start.toLocaleDateString(undefiend, { year: '2-digit', month: 'numeric', day:
+        {{ meet.start.toLocaleDateString(undefined, { year: '2-digit', month: 'numeric', day:
         'numeric' }) }}
         <span class="time">
           {{ meet.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }} - {{
@@ -98,7 +98,7 @@
           [style.grid-column-start]="1"
           [style.grid-row-start]="i+2"
         >
-          {{team.names[user]}}
+          {{team?.names[user]}}
         </div>
 
         <ng-container *ngFor="let m of meets; let mi = index">

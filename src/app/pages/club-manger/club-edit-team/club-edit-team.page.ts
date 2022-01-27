@@ -43,7 +43,9 @@ export class ClubEditTeamPage implements OnInit {
   teamId: string = '';
 
   team: Team | undefined;
-  roles: any = {};
+  roles: {
+    [key: string]: 'athlete' | 'trainer' | 'headTrainer' | 'admin';
+  } = {};
 
   membercode: string = '';
   trainercode: string = '';
