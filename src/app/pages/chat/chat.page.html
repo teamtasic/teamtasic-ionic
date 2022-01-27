@@ -75,7 +75,13 @@
 
     <div class="grid grid-header">
       <div class=""></div>
-      <div class="header" *ngFor="let meet of meets" (click)="presentModal(meet)">
+      <div
+        class="header"
+        *ngFor="let meet of meets; let l = index"
+        (click)="presentModal(meet)"
+        [style.grid-column-start]="l+2"
+        [style.grid-row-start]="1"
+      >
         {{ meet.start.toLocaleDateString(undefiend, { year: '2-digit', month: 'numeric', day:
         'numeric' }) }}
         <span class="time">
@@ -83,19 +89,26 @@
           meet.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}
         </span>
       </div>
-      <div *ngFor="let i of Array.from(Array(10 - meets.length).keys())"></div>
 
       <ng-container *ngFor="let user of sortedUsers; let i=index">
-        <div class="name" [class.odd]="i % 2 == 0" [class.user-himself]="i == 0">
+        <div
+          class="name"
+          [class.odd]="i % 2 == 0"
+          [class.user-himself]="i == 0"
+          [style.grid-column-start]="1"
+          [style.grid-row-start]="i+2"
+        >
           {{team.names[user]}}
         </div>
 
-        <ng-container *ngFor="let m of meets">
+        <ng-container *ngFor="let m of meets; let mi = index">
           <div
             class="status"
             *ngIf="m.acceptedUsers.includes(user)"
             [class.odd]="i % 2 == 0"
             [class.user-himself]="i == 0"
+            [style.grid-column-start]="mi+2"
+            [style.grid-row-start]="i+2"
           >
             <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
           </div>
@@ -104,6 +117,8 @@
             *ngIf="m.declinedUsers.includes(user)"
             [class.odd]="i % 2 == 0"
             [class.user-himself]="i == 0"
+            [style.grid-column-start]="mi+2"
+            [style.grid-row-start]="i+2"
           >
             <ion-icon name="close-circle-outline" color="danger"></ion-icon>
           </div>
@@ -112,15 +127,12 @@
             *ngIf="!(m.declinedUsers.includes(user) || m.acceptedUsers.includes(user))"
             [class.odd]="i % 2 == 0"
             [class.user-himself]="i == 0"
+            [style.grid-column-start]="mi+2"
+            [style.grid-row-start]="i+2"
           >
             <ion-icon name="help-circle-outline"></ion-icon>
           </div>
         </ng-container>
-
-        <div
-          *ngFor="let f of Array.from(Array(10 - meets.length).keys())"
-          [class.odd]="i % 2 == 0"
-        ></div>
       </ng-container>
     </div>
   </ion-content>
