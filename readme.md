@@ -1,6 +1,6 @@
 <p align="center">
   <a href="#">
-    <img alt="Teamtasic" src="https://raw.githubusercontent.com/teamtasic/teamtasic-ionic/version-v2.4.0/src/assets/icons/apple-touch-icon-180x180-precomposed.png" width="60" />
+    <img alt="Teamtasic" src="https://raw.githubusercontent.com/teamtasic/teamtasic-ionic/version-v2.5.0/src/assets/icons/apple-touch-icon-180x180-precomposed.png" width="60" />
   </a>
 </p>
 
