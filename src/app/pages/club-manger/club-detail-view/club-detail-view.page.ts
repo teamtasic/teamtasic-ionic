@@ -13,6 +13,7 @@ import {
   tap,
 } from 'rxjs/operators';
 import { Club } from 'src/app/classes/club';
+import { Team } from 'src/app/classes/team';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
 import { LogicService } from 'src/app/services/logic.service';
 import { NotificationService } from 'src/app/services/notification-service.service';
@@ -39,23 +40,23 @@ export class ClubDetailViewPage implements OnInit {
     uid: ['', [Validators.required]],
   });
 
-  clubId: string;
+  clubId: string = '';
   club: Club = new Club('', '', {}, [], []);
-  teams = [];
+  teams: Team[] = [];
 
   ngOnInit() {
     this.route.params.subscribe(async (params) => {
       this.clubId = params.clubId;
       console.log(this.clubId);
       await this.drs.syncClub(this.clubId);
-      this.club = this.drs.clubs.value.find((c) => c.uid === this.clubId);
+      this.club = this.drs.clubs.value.find((c) => c.uid === this.clubId) as Club;
     });
 
     this.drs.clubs.subscribe((clubs) => {
-      this.club = clubs.find((c) => c.uid === this.clubId);
+      this.club = clubs.find((c) => c.uid === this.clubId) as Club;
     });
     this.drs.teams.subscribe((teams) => {
-      this.teams = teams.filter((t) => t.owner === this.clubId);
+      this.teams = teams.filter((t) => t.owner === this.clubId) as any;
     });
   }
 

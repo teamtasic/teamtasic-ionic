@@ -5,7 +5,7 @@ export class Team {
 
   name: string;
 
-  names: Object;
+  names: any;
   users: string[];
   trainers: string[];
   headTrainers: string[];
@@ -21,7 +21,7 @@ export class Team {
     trainers: string[],
     headTrainers: string[],
     admins: string[],
-    owner?: string
+    owner: string
   ) {
     this.uid = uid;
 
@@ -31,23 +31,25 @@ export class Team {
     this.trainers = trainers;
     this.headTrainers = headTrainers;
     this.admins = admins;
-    this.owner = owner;
+    this.owner = owner || '';
   }
 
   static converter = {
     fromFirestore: function (snapshot: DocumentSnapshot<Team>) {
       const data = snapshot.data();
+      if (!data) {
+        return null;
+      }
       return new Team(
         snapshot.id,
-
-        data.name,
-        data.names,
-        data.users,
-        data.trainers,
-        data.headTrainers,
-        data.admins,
+        data.name || '',
+        data.names || {},
+        data.users || [],
+        data.trainers || [],
+        data.headTrainers || [],
+        data.admins || [],
         // local querys are kinda important tho
-        snapshot.ref.parent.parent.id
+        snapshot.ref.parent.parent?.id || ''
       );
     },
     toFirestore: function (team: Team) {
@@ -59,6 +61,7 @@ export class Team {
         trainers: team.trainers,
         headTrainers: team.headTrainers,
         admins: team.admins,
+        owner: team.owner,
       };
     },
   };

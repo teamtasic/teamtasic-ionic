@@ -10,7 +10,11 @@ import {
 } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { AuthUserData } from '../classes/auth-user-data';
-import { SessionUserData, sessionMembership } from '../classes/session-user-data';
+import {
+  SessionUserData,
+  sessionMembership,
+  joinableMembership,
+} from '../classes/session-user-data';
 import { filter, map } from 'rxjs/operators';
 import * as fb from 'firebase';
 @Injectable({
@@ -23,11 +27,13 @@ export class DataRepositoryService {
    *  Read behaviorsubs for incoming data from firestore
    *  @since 2.0.0
    */
-  private _clubs: BehaviorSubject<Club[]> = new BehaviorSubject([]);
-  private _teams: BehaviorSubject<Team[]> = new BehaviorSubject([]);
-  private _meets: BehaviorSubject<Meet[]> = new BehaviorSubject([]);
-  private _authUser: BehaviorSubject<AuthUserData[]> = new BehaviorSubject([]);
-  private _sessionUser: BehaviorSubject<SessionUserData[][]> = new BehaviorSubject([]);
+  private _clubs: BehaviorSubject<Club[]> = new BehaviorSubject([] as Club[]);
+  private _teams: BehaviorSubject<Team[]> = new BehaviorSubject([] as Team[]);
+  private _meets: BehaviorSubject<Meet[]> = new BehaviorSubject([] as Meet[]);
+  private _authUser: BehaviorSubject<AuthUserData[]> = new BehaviorSubject([] as AuthUserData[]);
+  private _sessionUser: BehaviorSubject<SessionUserData[][]> = new BehaviorSubject(
+    [] as SessionUserData[][]
+  );
   /** UID-Maps for keeping track of the indexes in the array
    *  @since 2.0.0
    */
@@ -77,7 +83,7 @@ export class DataRepositoryService {
                 this._clubsMap.set(uid, this._clubs.value.length - 1);
               }
             }
-            resolve(club);
+            resolve(club as Club);
           });
       }
     });
@@ -117,7 +123,7 @@ export class DataRepositoryService {
     }
     return await new Promise<Team>((resolve) => {
       this._teams.toPromise().then((teams) => {
-        resolve(teams[this._teamsMap.get(uid)]);
+        resolve(teams[this._teamsMap.get(uid) as number]);
       });
     });
   }
@@ -160,7 +166,7 @@ export class DataRepositoryService {
     }
     return await new Promise<Meet>((resolve) => {
       this._meets.toPromise().then((meets) => {
-        resolve(meets[this._meetsMap.get(uid)]);
+        resolve(meets[this._meetsMap.get(uid) as number]);
       });
     });
   }
@@ -217,7 +223,7 @@ export class DataRepositoryService {
     if (this._sessionUserUids.includes(uid)) {
       return await new Promise<SessionUserData[]>((resolve) => {
         this._sessionUser.toPromise().then((sessionUsers) => {
-          resolve(sessionUsers[this._sessionUserMap.get(uid)]);
+          resolve(sessionUsers[this._sessionUserMap.get(uid) as number]);
         });
       });
     } else {
@@ -236,7 +242,7 @@ export class DataRepositoryService {
               this._sessionUser.next([...this._sessionUser.value, ...sessionUsers]);
               this._sessionUserMap.set(uid, this._sessionUser.value.length - 1);
             } else {
-              let index = this._sessionUserMap.get(uid);
+              let index = this._sessionUserMap.get(uid) as number;
               this._sessionUser.value[index] = sessionUsers[0];
             }
             console.log('[ SessionUsers valueChanged ]', sessionUsers);
@@ -248,7 +254,7 @@ export class DataRepositoryService {
 
       return await new Promise<SessionUserData[]>((resolve) => {
         this._sessionUser.toPromise().then((sessionUsers) => {
-          resolve(sessionUsers[this._sessionUserMap.get(uid)]);
+          resolve(sessionUsers[this._sessionUserMap.get(uid) as number]);
         });
       });
     }
@@ -269,12 +275,12 @@ export class DataRepositoryService {
         .toPromise()
         .then((sessionMemberships) => {
           console.log('[ SessionMemberships valueChanged ]', sessionMemberships);
-          let rval = [];
+          let rval: any[] = [];
           sessionMemberships.forEach((doc) => {
             let team = doc.data() as Team;
             let membership: sessionMembership = {
               userId: sessionUserId,
-              clubId: doc.ref.parent.parent.id,
+              clubId: doc.ref.parent.parent?.id || '',
               teamId: doc.ref.id,
               displayName: team.name,
               role: 'member',
@@ -296,6 +302,58 @@ export class DataRepositoryService {
             rval.push(membership);
           });
           resolve(rval);
+        });
+    });
+  }
+  /**
+   * Sync a auth Users join code
+   * @since 2.4.0
+   * @memberof DataRepositoryService
+   * @param {string} sessionUserId
+   * @return {Promise<joinableMembership>}
+   */
+  async syncSessionJoinCode(sessionUserId: string) {
+    return await new Promise<joinableMembership | undefined>((resolve) => {
+      // get join code
+      this.afs
+        .collection(this.CollectionWithConverter('authUsers', AuthUserData.converter))
+        .doc(sessionUserId)
+        .get()
+        .toPromise()
+        .then((doc) => {
+          let data = doc.data() as AuthUserData;
+          if (data && data.joinCode != '') {
+            this.afs
+              .collection('joinCodes')
+              .doc(data.joinCode)
+              .get()
+              .toPromise()
+              .then((doc) => {
+                if (doc.exists) {
+                  var code = doc.data() as {
+                    teamId: string;
+                    clubId: string;
+                    code: string;
+                    role: 'coach' | 'headcoach' | 'member';
+                  };
+                  code['code'] = doc.ref.id as string;
+                  console.log(code['teamId']);
+                  this.getTeam(code['teamId'], code['clubId']).then((team) => {
+                    resolve({
+                      teamId: team.uid,
+                      clubId: team.owner,
+                      displayName: team.name,
+                      code: code.code,
+                      role: code.role,
+                    } as joinableMembership);
+                  });
+                } else {
+                  console.log('[ JoinCode not found ]', doc);
+                }
+              });
+          } else {
+            resolve(undefined);
+          }
         });
     });
   }
@@ -375,6 +433,7 @@ export class DataRepositoryService {
    * @since 2.0.0
    * @memberof DataRepositoryService
    * @param {AuthUserData} authUser
+   * @param {string} uid
    * @returns {Promise<string>}
    */
   createAuthUser(authUser: AuthUserData, uid: string) {
@@ -467,7 +526,8 @@ export class DataRepositoryService {
     sessionId: string,
     comment: string,
     deadline: number,
-    meetpoint: string
+    meetpoint: string,
+    comments: {}
   ) {
     await this.afs
       .collection(`clubs/${clubId}/teams/${teamId}/meets/`)
@@ -484,6 +544,7 @@ export class DataRepositoryService {
         comment: comment,
         deadline: deadline,
         meetpoint: meetpoint,
+        comments: comments,
       });
   }
   /**
@@ -685,7 +746,7 @@ export class DataRepositoryService {
         .collection(this.CollectionWithConverter('clubs', Club.converter))
         .ref.where('admins', 'array-contains', adminId)
         .get()
-        .then((querySnapshot: QuerySnapshot<Club>) => {
+        .then((querySnapshot: QuerySnapshot<Club> | any) => {
           console.log(querySnapshot);
           resolve(querySnapshot.docs.map((doc: DocumentSnapshot<Club>) => doc.id));
         });
@@ -707,7 +768,7 @@ export class DataRepositoryService {
         .valueChanges()
         .subscribe((querySnapshot) => {
           var res: Team[] = [];
-          querySnapshot.forEach((team: Team) => {
+          querySnapshot.forEach((team: Team | any) => {
             if (team) {
               res.push(team);
               console.log('[ Team valueChanged ]', team);
@@ -751,7 +812,7 @@ export class DataRepositoryService {
         )
         .get()
         .toPromise()
-        .then((querySnapshot: QuerySnapshot<Team>) => {
+        .then((querySnapshot: QuerySnapshot<Team> | any) => {
           resolve(querySnapshot.docs.map((doc: DocumentSnapshot<Team>) => doc.id));
         });
     });
@@ -771,7 +832,7 @@ export class DataRepositoryService {
         this.CollectionWithConverter(`clubs/${clubId}/teams/${teamId}/meets`, Meet.converter)
       )
       .ref.get()
-      .then((querySnapshot: QuerySnapshot<Meet>) => {
+      .then((querySnapshot: QuerySnapshot<Meet> | any) => {
         return querySnapshot.docs.map((doc: DocumentSnapshot<Meet>) => doc.id);
       });
   }
@@ -803,7 +864,7 @@ export class DataRepositoryService {
         .collection(this.CollectionWithConverter('authUsers', AuthUserData.converter))
         .ref.doc(authUserId)
         .get()
-        .then((doc: DocumentSnapshot<AuthUserData>) => {
+        .then((doc: DocumentSnapshot<AuthUserData> | any) => {
           resolve(doc.exists);
         });
     });
@@ -831,7 +892,7 @@ export class DataRepositoryService {
         .where('role', '==', role)
         .limit(1)
         .get()
-        .then((querySnapshot: QuerySnapshot<Object>) => {
+        .then((querySnapshot: QuerySnapshot<Object> | any) => {
           if (querySnapshot.docs.length == 1) {
             console.log('[ JoinCode ]', querySnapshot.docs[0].data(), querySnapshot.docs[0].id);
             resolve(querySnapshot.docs[0].id);
@@ -858,7 +919,7 @@ export class DataRepositoryService {
         .doc(sessionUserId)
         .get()
         .toPromise()
-        .then((doc: DocumentSnapshot<SessionUserData>) => {
+        .then((doc: any | DocumentSnapshot<SessionUserData>) => {
           if (doc.exists) {
             resolve(doc.data() as SessionUserData);
           } else {
@@ -866,6 +927,35 @@ export class DataRepositoryService {
           }
         });
     });
+  }
+
+  /** resets drs after logout */
+  reset() {
+    this._clubs.next([]);
+    this._clubsMap.clear();
+    this._teams.next([]);
+    this._teamsMap.clear();
+    this._sessionUser.next([]);
+    this._sessionUserMap.clear();
+    this._authUser.next([]);
+    this._authUserMap.clear();
+    this._meets.next([]);
+    this._meetsMap.clear();
+    this._clubsUids = [];
+    this._teamUids = [];
+    this._sessionUserUids = [];
+    this._authUserUids = [];
+    this._meetUids = [];
+  }
+
+  /** checks if the club has a license
+   * @since 2.4.0
+   * @memberof DataRepositoryService
+   * @param {string} clubId The id of the club
+   * @returns {Promise<boolean>} True if the club has a license
+   */
+  hasLicense(clubId: string): Promise<boolean> {
+    return new Promise<boolean>((resolve) => {});
   }
 
   // HELPERS

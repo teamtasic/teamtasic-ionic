@@ -9,7 +9,7 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['tabs.page.scss'],
 })
 export class TabsPage {
-  @ViewChild(IonTabs) tabs: IonTabs;
+  @ViewChild(IonTabs) tabs: IonTabs | undefined;
   selected = '';
 
   constructor(
@@ -21,6 +21,6 @@ export class TabsPage {
   ngOnInit() {}
 
   setSelectedTab() {
-    this.selected = this.tabs.getSelected();
+    this.selected = this.tabs?.getSelected() || 'tab2';
   }
 }

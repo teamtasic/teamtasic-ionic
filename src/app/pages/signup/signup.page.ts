@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 @Component({
   selector: 'app-signup',
@@ -7,14 +8,17 @@ import { AuthService } from 'src/app/services/auth.service';
   styleUrls: ['./signup.page.scss'],
 })
 export class SignupPage implements OnInit {
-  constructor(private fb: FormBuilder, private auth: AuthService) {}
+  constructor(private fb: FormBuilder, private auth: AuthService, private route: ActivatedRoute) {}
 
-  signupform: FormGroup;
+  signupform: FormGroup = this.fb.group({});
+
+  joinCode: string = '';
 
   ngOnInit() {
     this.signupform = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
+      surname: ['', [Validators.required, Validators.minLength(3)]],
       name: ['', [Validators.required, Validators.minLength(3)]],
       // tos
       tos: [false, [Validators.requiredTrue]],
@@ -22,18 +26,24 @@ export class SignupPage implements OnInit {
       address: ['', Validators.required],
       zipcode: ['', Validators.required],
     });
+
+    this.route.queryParams.subscribe((params) => {
+      this.joinCode = params.code;
+      console.log('Found joincode: ', this.joinCode);
+    });
   }
 
   async signUp() {
     console.log(this.signupform.value);
 
     await this.auth.createUser(
-      this.email.value,
-      this.password.value,
-      this.name.value,
-      this.phoneNumber.value,
-      this.address.value,
-      this.zipcode.value
+      this.email?.value,
+      this.password?.value,
+      `${this.surname?.value} ${this.name?.value}`,
+      this.phoneNumber?.value,
+      this.address?.value,
+      this.zipcode?.value,
+      this.joinCode
     );
   }
 
@@ -54,5 +64,8 @@ export class SignupPage implements OnInit {
   }
   get zipcode() {
     return this.signupform.get('zipcode');
+  }
+  get surname() {
+    return this.signupform.get('surname');
   }
 }

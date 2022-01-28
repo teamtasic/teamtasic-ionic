@@ -15,11 +15,11 @@
   </ion-header>
   <ion-item>
     <ion-label>
-      <h2>{{(drs.authUsers | async)[0].username}}</h2>
+      <h2>{{(drs.authUsers | async)![0].username}}</h2>
     </ion-label>
     <ion-avatar slot="start">
       <img
-        [src]="'https://avatars.dicebear.com/api/initials/'+ (drs.authUsers | async)[0].username + '.svg'"
+        [src]="'https://avatars.dicebear.com/api/initials/'+ (((drs.authUsers | async) || [{username: ''}])[0]).username + '.svg'"
       />
     </ion-avatar>
   </ion-item>
@@ -36,7 +36,7 @@
     <ion-item
       button
       detail
-      *ngFor="let sessionUser of (drs.sessionUsers | async)[0]"
+      *ngFor="let sessionUser of ((drs.sessionUsers | async) || [[]])[0]"
       (click)="openSessionEditor(sessionUser)"
     >
       <ion-label> {{sessionUser.name}} </ion-label>

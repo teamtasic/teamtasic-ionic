@@ -1,6 +1,6 @@
 {
   "name": "teamtasic-ionic",
-  "version": "2.0.0",
+  "version": "2.4.0",
   "author": "jesseb0rn",
   "homepage": "https://teamtasic.ch/",
   "scripts": {
@@ -10,7 +10,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "lab": "ionic serve --no-open --lab"
+    "lab": "ionic serve --no-open --lab --external --host 0.0.0.0",
+    "prodlab": "ionic serve --no-open --lab --external --host 0.0.0.0 --prod"
   },
   "private": true,
   "dependencies": {

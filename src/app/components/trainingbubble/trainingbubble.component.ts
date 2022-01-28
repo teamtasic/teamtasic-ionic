@@ -9,14 +9,14 @@ import { TrainingDetailViewComponent } from '../training-detail-view/training-de
   styleUrls: ['./trainingbubble.component.scss'],
 })
 export class TrainingbubbleComponent implements OnInit {
-  @Input() meet: Meet;
-  @Input() sessionId: string;
-  @Input() teamId: string;
-  @Input() clubId: string;
+  @Input() meet: Meet | undefined;
+  @Input() sessionId: string = '';
+  @Input() teamId: string = '';
+  @Input() clubId: string = '';
   @Input() isArchive: boolean | undefined;
 
   options: DateTimeFormatOptions = {
-    weekday: undefined,
+    weekday: 'short',
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -38,8 +38,8 @@ export class TrainingbubbleComponent implements OnInit {
 
   ngOnInit() {
     if (!this.isArchive) {
-      this.buttonColor = this.meet.acceptedUsers.includes(this.sessionId) ? 'success' : 'primary';
-      this.buttonColor = this.meet.declinedUsers.includes(this.sessionId)
+      this.buttonColor = this.meet?.acceptedUsers.includes(this.sessionId) ? 'success' : 'primary';
+      this.buttonColor = this.meet?.declinedUsers.includes(this.sessionId)
         ? 'danger'
         : this.buttonColor;
     }

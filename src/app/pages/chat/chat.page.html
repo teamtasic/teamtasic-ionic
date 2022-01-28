@@ -1,30 +1,34 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Chat</ion-title>
     <ion-back-button slot="start"></ion-back-button>
-    <ion-buttons slot="end" *ngIf="showTrainerCtrls">
+    <ion-buttons slot="end">
       <ion-button
         [routerLink]="'../../../../chat-archive/'+ sessionId + '/' + clubId + '/' + teamId"
+        *ngIf="showTrainerCtrls"
       >
         <ion-icon slot="icon-only" name="archive-outline"></ion-icon>
       </ion-button>
       <ion-button
         [routerLink]="'../../../../addressbook/'+ sessionId + '/' + clubId + '/' + teamId"
+        *ngIf="showTrainerCtrls"
       >
         <ion-icon slot="icon-only" name="people-circle-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="toggleGrid()" *ngIf="gridAvailable">
+        <ion-icon slot="icon-only" name="grid-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
   <ion-toolbar>
     <!-- <ion-title> - </ion-title> -->
     <ion-breadcrumbs>
-      <ion-breadcrumb> {{sessionUserString}} </ion-breadcrumb>
       <ion-breadcrumb> {{team?.name}} </ion-breadcrumb>
+      <ion-breadcrumb> Chat</ion-breadcrumb>
     </ion-breadcrumbs>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content *ngIf="!gridMode; else gridView">
   <ion-text *ngIf="meets.length == 0" class="ion-text-center" color="medium">
     <p>
       <i> Es sind noch keine Trainings eingetragen. </i>
@@ -40,10 +44,10 @@
   ></trainingbubble>
 
   <ion-fab
-    vertical="top"
+    vertical="bottom"
     horizontal="end"
     slot="fixed"
-    *ngIf="team?.headTrainers.includes(sessionId)"
+    *ngIf="team?.headTrainers?.includes(sessionId)"
   >
     <ion-fab-button (click)="addTraining()">
       <ion-icon name="add"></ion-icon>
@@ -51,26 +55,85 @@
   </ion-fab>
 </ion-content>
 
-<!-- Chat footer/toolbar removed in 2.0.0-->
-<!-- <ion-footer>
-  <ion-toolbar>
-    <ion-buttons slot="end">
-      <ion-button>
-        <ion-icon name="send"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-buttons slot="start">
-      <ion-button>
+<ng-template #gridView>
+  <ion-content>
+    <ion-text *ngIf="meets.length == 0" class="ion-text-center" color="medium">
+      <p>
+        <i> Es sind noch keine Trainings eingetragen. </i>
+      </p>
+    </ion-text>
+    <ion-fab
+      vertical="bottom"
+      horizontal="end"
+      slot="fixed"
+      *ngIf="team?.headTrainers?.includes(sessionId)"
+    >
+      <ion-fab-button (click)="addTraining()">
         <ion-icon name="add"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    {{msg.value?.lenght}}
-    <ion-textarea
-      #msg
-      enterkeyhint="send"
-      spellcheck="true"
-      autogrow="true"
-      rows="2"
-    ></ion-textarea>
-  </ion-toolbar>
-</ion-footer> -->
+      </ion-fab-button>
+    </ion-fab>
+
+    <div class="grid grid-header">
+      <div class=""></div>
+      <div
+        class="header"
+        *ngFor="let meet of meets; let l = index"
+        (click)="presentModal(meet)"
+        [style.grid-column-start]="l+2"
+        [style.grid-row-start]="1"
+      >
+        {{ meet.start.toLocaleDateString(undefined, { year: '2-digit', month: 'numeric', day:
+        'numeric' }) }}
+        <span class="time">
+          {{ meet.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }} - {{
+          meet.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}
+        </span>
+      </div>
+
+      <ng-container *ngFor="let user of sortedUsers; let i=index">
+        <div
+          class="name"
+          [class.odd]="i % 2 == 0"
+          [class.user-himself]="i == 0"
+          [style.grid-column-start]="1"
+          [style.grid-row-start]="i+2"
+        >
+          {{team?.names[user]}}
+        </div>
+
+        <ng-container *ngFor="let m of meets; let mi = index">
+          <div
+            class="status"
+            *ngIf="m.acceptedUsers.includes(user)"
+            [class.odd]="i % 2 == 0"
+            [class.user-himself]="i == 0"
+            [style.grid-column-start]="mi+2"
+            [style.grid-row-start]="i+2"
+          >
+            <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
+          </div>
+          <div
+            class="status"
+            *ngIf="m.declinedUsers.includes(user)"
+            [class.odd]="i % 2 == 0"
+            [class.user-himself]="i == 0"
+            [style.grid-column-start]="mi+2"
+            [style.grid-row-start]="i+2"
+          >
+            <ion-icon name="close-circle-outline" color="danger"></ion-icon>
+          </div>
+          <div
+            class="status"
+            *ngIf="!(m.declinedUsers.includes(user) || m.acceptedUsers.includes(user))"
+            [class.odd]="i % 2 == 0"
+            [class.user-himself]="i == 0"
+            [style.grid-column-start]="mi+2"
+            [style.grid-row-start]="i+2"
+          >
+            <ion-icon name="help-circle-outline"></ion-icon>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+  </ion-content>
+</ng-template>

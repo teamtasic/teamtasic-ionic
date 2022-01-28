@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { ChatArchivePageRoutingModule } from './chat-archive-routing.module';
 
 import { ChatArchivePage } from './chat-archive.page';
-import { TrainingbubbleModuleModule } from 'src/app/components/trainingbubble-module/trainingbubble-module.module';
+import { TrainingbubbleModuleModule } from 'src/app/components/trainingbubble/trainingbubble-module.module';
 
 @NgModule({
   imports: [

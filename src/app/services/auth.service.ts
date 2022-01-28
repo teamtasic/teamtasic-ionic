@@ -18,7 +18,8 @@ export class AuthService {
     username: string,
     phoneNumber: string,
     address: string,
-    zip: string
+    zip: string,
+    joinCode?: string
   ) {
     await this.fba
       .createUserWithEmailAndPassword(email, pw)
@@ -26,23 +27,34 @@ export class AuthService {
         var user = userCredential.user;
         if (user) {
           user.sendEmailVerification();
-        }
-        let userData = new AuthUserData('', username, email, phoneNumber, address, zip, {
-          enabled: false,
-          newTrainingNotifications: true,
-          trainingChangedNotifications: true,
-          trainingReminderNotifications: true,
-        });
-        await this.drs.createAuthUser(userData, user.uid);
-        // alert succesfull signup
-        const alert = await this.alertController.create({
-          header: 'Erfloglreich registriert',
-          subHeader: 'Wir haben dir eine Email gesendet, überprüfe deinen SPAM-Ordner',
-          buttons: ['Ok'],
-        });
-        await alert.present();
+          let userData = new AuthUserData(
+            '',
+            username,
+            email,
+            phoneNumber,
+            address,
+            zip,
+            {
+              enabled: false,
+              newTrainingNotifications: true,
+              trainingChangedNotifications: true,
+              trainingReminderNotifications: true,
+            },
+            joinCode
+          );
+          await this.drs.createAuthUser(userData, user.uid);
+          // alert succesfull signup
+          const alert = await this.alertController.create({
+            header: 'Erfloglreich registriert',
+            subHeader: 'Wir haben dir eine Email gesendet, überprüfe deinen SPAM-Ordner',
+            buttons: ['Ok'],
+          });
+          await alert.present();
 
-        await alert.onDidDismiss();
+          await alert.onDidDismiss();
+        } else {
+          this.ns.showToast('Fehler: FBU ist null - Überprüfe deine Internetverbindung');
+        }
       })
       .catch((error) => {
         console.warn('[ 🔑 createUser ]', 'createUser failed.');
@@ -50,12 +62,12 @@ export class AuthService {
       });
   }
 
-  async login(user, pw) {
+  async login(user: string, pw: string) {
     console.log('[ 🔑 login ]', 'Signing in with email and password');
     this.fba
       .signInWithEmailAndPassword(user, pw)
       .then(async (user) => {
-        console.log('[ 🔑 login ]', 'User logged in:', user.user.uid);
+        console.log('[ 🔑 login ]', 'User logged in:', user.user?.uid);
         return { state: true, error: '' };
       })
       .catch((error) => {
@@ -67,6 +79,8 @@ export class AuthService {
   }
   async logout() {
     await this.fba.signOut();
+    this.router.navigateByUrl('/', { replaceUrl: true });
+    this.drs.reset();
   }
   constructor(
     private router: Router,
@@ -89,9 +103,10 @@ export class AuthService {
         });
         await this.logic.startSession();
       } else {
-        ng.run(() => {
-          this.router.navigateByUrl('/', { replaceUrl: true });
-        });
+        //! todo: check where user is on page
+        // ng.run(() => {
+        //   this.router.navigateByUrl('/', { replaceUrl: true });
+        // });
       }
     });
   }
@@ -105,7 +120,7 @@ export class AuthService {
     if (email) {
       const user = await this.fba.currentUser;
       try {
-        await user.updateEmail(email);
+        await user?.updateEmail(email);
         this.ns.showToast('Email wurde erfolgreich geändert');
       } catch (error) {
         this.ns.showToast(`Fehler: ${error.message}`);

@@ -2,7 +2,9 @@ export class Club {
   uid: string;
 
   name: string;
-  names: Object;
+  names: {
+    [key: string]: string;
+  };
   admins: string[];
   members: string[];
 
@@ -16,7 +18,7 @@ export class Club {
   constructor(uid: string, name: string, names: Object, admins: string[], members: string[]) {
     this.uid = uid;
     this.name = name;
-    this.names = names;
+    this.names = names as { [key: string]: string };
     this.admins = admins;
     this.members = members;
   }

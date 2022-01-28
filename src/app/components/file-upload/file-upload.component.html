@@ -1,0 +1,16 @@
+<ion-item>
+  <input
+    type="file"
+    class="file-input"
+    (change)="onFileSelected($event)"
+    #fileUpload
+    [accept]="accept"
+  />
+
+  {{ name || 'Noch nichts hochgeladen' }}
+
+  <ion-button color="primary" (click)="fileUpload.click()" slot="end">
+    {{ promtText }}
+    <ion-icon slot="end" name="cloud-upload-outline"></ion-icon>
+  </ion-button>
+</ion-item>

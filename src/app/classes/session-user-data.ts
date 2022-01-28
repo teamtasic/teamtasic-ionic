@@ -8,6 +8,12 @@ export class SessionUserData {
   birthdate: string;
   phoneNumber: string;
   emergencyContact: string;
+  otherData: {
+    jsId: string;
+    ahvNumber: string;
+    ownsGA: boolean;
+  };
+  profilePictureUrl: string = '';
 
   constructor(
     uid: string,
@@ -16,7 +22,13 @@ export class SessionUserData {
     email: string,
     birthdate: string,
     phoneNumber: string,
-    emergencyContact: string
+    emergencyContact: string,
+    otherData: {
+      jsId: string;
+      ahvNumber: string;
+      ownsGA: boolean;
+    },
+    profilePictureUrl: string = ''
   ) {
     this.uid = uid;
     this.owner = owner;
@@ -25,6 +37,8 @@ export class SessionUserData {
     this.birthdate = birthdate;
     this.phoneNumber = phoneNumber;
     this.emergencyContact = emergencyContact;
+    this.otherData = otherData;
+    this.profilePictureUrl = profilePictureUrl;
   }
 
   static converter = {
@@ -37,7 +51,9 @@ export class SessionUserData {
         data.email,
         data.birthdate,
         data.phoneNumber,
-        data.emergencyContact
+        data.emergencyContact,
+        data.otherData || { jsId: '', ahvNumber: '', ownsGA: false },
+        data.profilePictureUrl || `https://avatars.dicebear.com/api/initials/${data.name}.svg`
       );
     },
     toFirestore(data: SessionUserData): any {
@@ -48,6 +64,8 @@ export class SessionUserData {
         birthdate: data.birthdate,
         phoneNumber: data.phoneNumber,
         emergencyContact: data.emergencyContact,
+        otherData: data.otherData,
+        profilePictureUrl: data.profilePictureUrl,
       };
     },
   };
@@ -58,5 +76,13 @@ export interface sessionMembership {
   clubId: string;
   userId: string;
   displayName: string;
+  role: 'admin' | 'headcoach' | 'coach' | 'member';
+}
+
+export interface joinableMembership {
+  teamId: string;
+  clubId: string;
+  displayName: string;
+  code: string;
   role: 'admin' | 'headcoach' | 'coach' | 'member';
 }
