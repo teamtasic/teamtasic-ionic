@@ -20,7 +20,8 @@
 <ion-header>
   <ion-toolbar>
     <ion-avatar slot="start" (click)="openMenu()" class="header-selector-avatar">
-      <img [src]="'https://avatars.dicebear.com/api/initials/'+ selectedSession?.name +'.svg'" />
+      <!-- <img [src]="'https://avatars.dicebear.com/api/initials/'+ selectedSession?.name +'.svg'" /> -->
+      <img [src]="selectedSession?.profilePictureUrl" />
     </ion-avatar>
     <ion-title>Teams</ion-title>
   </ion-toolbar>
@@ -30,9 +31,7 @@
   <!-- All the chats are here -->
   <ng-template #noTeams>
     <ion-text class="ion-text-center" color="medium">
-      <p>
-        <i> Du bist noch in keinem Team <br />/ Wähle ein Team aus </i>
-      </p>
+      <p>Du bist noch in keinem Team</p>
     </ion-text>
   </ng-template>
 
@@ -54,7 +53,11 @@
 </ion-content>
 
 <ion-menu side="start" menuId="menu" contentId="menu">
-  <ion-header></ion-header>
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Benutzer</ion-title>
+    </ion-toolbar>
+  </ion-header>
   <ion-content>
     <ion-list class="session-list">
       <ion-item
@@ -63,7 +66,7 @@
       >
         <ion-label> <h2>{{sessionUser.name}}</h2> </ion-label>
         <ion-avatar slot="start" class="header-selector-avatar">
-          <img [src]="'https://avatars.dicebear.com/api/initials/'+ sessionUser.name +'.svg'" />
+          <img [src]="sessionUser.profilePictureUrl" />
         </ion-avatar>
       </ion-item>
     </ion-list>

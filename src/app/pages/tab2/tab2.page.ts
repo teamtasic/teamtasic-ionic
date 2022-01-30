@@ -24,11 +24,11 @@ export class Tab2Page implements OnInit {
 
   memberships: sessionMembership[] = [];
 
-  async sessionChanged(sessionId: string) {
+  async sessionChanged(sessionId: string, navigateForSingle: boolean = true) {
     this.selectedSessionId = sessionId;
 
     this.memberships = await this.drs.syncSessionMemberships(this.selectedSessionId);
-    if (this.memberships.length == 1) {
+    if (this.memberships.length == 1 && navigateForSingle) {
       this.router.navigate([
         '/tabs/tab2/chat',
         this.selectedSessionId,
@@ -40,7 +40,7 @@ export class Tab2Page implements OnInit {
       this.drs.syncClub(m.clubId);
     });
     this.selectedSession = this.drs.sessionUsers.getValue()[0].find((s) => s.uid == sessionId);
-    this.menu.toggle('menu');
+    this.menu.close('menu');
   }
   ngOnInit() {
     this.drs.authUsers.subscribe(async (users) => {
@@ -52,6 +52,7 @@ export class Tab2Page implements OnInit {
       if (sessions.length > 0) {
         this.selectedSession = sessions[0][0];
         this.selectedSessionId = this.selectedSession?.uid;
+        this.sessionChanged(this.selectedSessionId, false);
       }
     });
   }
