@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController, Platform, ToastController } from '@ionic/angular';
 import { Capacitor } from '@capacitor/core';
 
 import {
@@ -24,34 +24,9 @@ export class NotificationService {
     private afs: AngularFirestore,
     private drs: DataRepositoryService
   ) {
-    // On success, we should be able to receive notifications
-    PushNotifications.addListener('registration', async (token: Token) => {
-      console.log('[ 🔔 PUSH NOTIFICATIONS ] Push registration success, token: ' + token.value);
-      // Send the token to your server so it can use it to send push notifications to this device
-      this.token = token;
-    });
-
-    // Some issue with our setup and push will not work
-    PushNotifications.addListener('registrationError', (error: any) => {
-      console.warn('[ 🔔 PUSH NOTIFICATIONS ] Error on registration: ' + JSON.stringify(error));
-    });
-
-    // Show us the notification payload if the app is open on our device
-    PushNotifications.addListener(
-      'pushNotificationReceived',
-      (notification: PushNotificationSchema) => {
-        // alert('Push received: ' + JSON.stringify(notification));
-      }
-    );
-
-    // Method called when tapping on a notification
-    PushNotifications.addListener(
-      'pushNotificationActionPerformed',
-      (notification: ActionPerformed) => {
-        // alert('Push action performed: ' + JSON.stringify(notification));
-        // Open messages here
-      }
-    );
+    if (Capacitor.isNativePlatform()) {
+      this.registerPushListeners();
+    }
   }
 
   async showToast(message: string) {
@@ -140,5 +115,35 @@ export class NotificationService {
     } catch (err) {
       console.warn('[ 🔔 PUSH NOTIFICATIONS ] Error registering:', err);
     }
+  }
+  registerPushListeners() {
+    // On success, we should be able to receive notifications
+    PushNotifications.addListener('registration', async (token: Token) => {
+      console.log('[ 🔔 PUSH NOTIFICATIONS ] Push registration success, token: ' + token.value);
+      // Send the token to your server so it can use it to send push notifications to this device
+      this.token = token;
+    });
+
+    // Some issue with our setup and push will not work
+    PushNotifications.addListener('registrationError', (error: any) => {
+      console.warn('[ 🔔 PUSH NOTIFICATIONS ] Error on registration: ' + JSON.stringify(error));
+    });
+
+    // Show us the notification payload if the app is open on our device
+    PushNotifications.addListener(
+      'pushNotificationReceived',
+      (notification: PushNotificationSchema) => {
+        // alert('Push received: ' + JSON.stringify(notification));
+      }
+    );
+
+    // Method called when tapping on a notification
+    PushNotifications.addListener(
+      'pushNotificationActionPerformed',
+      (notification: ActionPerformed) => {
+        // alert('Push action performed: ' + JSON.stringify(notification));
+        // Open messages here
+      }
+    );
   }
 }
