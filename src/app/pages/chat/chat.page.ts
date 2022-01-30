@@ -36,6 +36,7 @@ export class ChatPage implements OnInit {
   gridMode = false;
 
   sortedUsers: string[] = [];
+  lastTrainerIndex: number = 0;
 
   constructor(
     public modalController: ModalController,
@@ -62,6 +63,7 @@ export class ChatPage implements OnInit {
       this.team?.trainers.forEach((trainerId) => {
         this.sortedUsers.push(trainerId);
       });
+      this.lastTrainerIndex = this.sortedUsers.length - 1;
       this.team?.users.forEach((userId) => {
         if (!this.team?.trainers.includes(userId)) {
           this.sortedUsers.push(userId);

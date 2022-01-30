@@ -35,15 +35,25 @@
     }
     position: sticky;
     top: 0;
-    z-index: 998;
+    z-index: 997;
+  }
+  .cover {
+    z-index: 999;
+    left: 0;
+    top: 0;
+    position: sticky;
+    background-color: var(--ion-color-light-tint);
+  }
+  .trainer {
+    border-bottom: 2px solid var(--ion-color-dark);
   }
   .name {
     padding-left: 4px;
     justify-content: start;
     position: sticky;
     left: 0;
-    background-color: var(--ion-background-color);
-    z-index: 999;
+    background-color: var(--ion-color-light-tint);
+    z-index: 998;
   }
   .user-himself {
     background-color: var(--ion-color-dark);
@@ -53,6 +63,10 @@
   .user-himself:first-of-type {
     border-left: 2px solid var(--ion-color-dark);
   }
+  .trainer:last-of-type {
+    border-top: 2px solid var(--ion-color-dark);
+  }
+
   .odd {
     background-color: var(--ion-color-light);
   }
@@ -62,5 +76,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: var(--ion-color-light-tint);
   }
 }

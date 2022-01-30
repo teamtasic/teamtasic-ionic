@@ -74,7 +74,7 @@
     </ion-fab>
 
     <div class="grid grid-header">
-      <div class=""></div>
+      <div class="cover"></div>
       <div
         class="header"
         *ngFor="let meet of meets; let l = index"
@@ -83,7 +83,7 @@
         [style.grid-row-start]="1"
       >
         {{ meet.start.toLocaleDateString(undefined, { year: '2-digit', month: 'numeric', day:
-        'numeric' }) }}
+        'numeric' }) }} <br />
         <span class="time">
           {{ meet.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }} - {{
           meet.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}
@@ -95,6 +95,7 @@
           class="name"
           [class.odd]="i % 2 == 0"
           [class.user-himself]="i == 0"
+          [class.trainer]="team?.trainers?.includes(user) && i == lastTrainerIndex"
           [style.grid-column-start]="1"
           [style.grid-row-start]="i+2"
         >
@@ -107,6 +108,7 @@
             *ngIf="m.acceptedUsers.includes(user)"
             [class.odd]="i % 2 == 0"
             [class.user-himself]="i == 0"
+            [class.trainer]="team?.trainers?.includes(user) && i == lastTrainerIndex"
             [style.grid-column-start]="mi+2"
             [style.grid-row-start]="i+2"
           >
@@ -117,6 +119,7 @@
             *ngIf="m.declinedUsers.includes(user)"
             [class.odd]="i % 2 == 0"
             [class.user-himself]="i == 0"
+            [class.trainer]="team?.trainers?.includes(user) && i == lastTrainerIndex"
             [style.grid-column-start]="mi+2"
             [style.grid-row-start]="i+2"
           >
@@ -127,6 +130,7 @@
             *ngIf="!(m.declinedUsers.includes(user) || m.acceptedUsers.includes(user))"
             [class.odd]="i % 2 == 0"
             [class.user-himself]="i == 0"
+            [class.trainer]="team?.trainers?.includes(user) && i == lastTrainerIndex"
             [style.grid-column-start]="mi+2"
             [style.grid-row-start]="i+2"
           >
