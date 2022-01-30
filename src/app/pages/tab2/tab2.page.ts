@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
+import { MenuController } from '@ionic/angular';
 import { Observable } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { sessionMembership, SessionUserData } from 'src/app/classes/session-user-data';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
 import { MembershipsService } from 'src/app/services/memberships.service';
@@ -11,18 +13,19 @@ import { MembershipsService } from 'src/app/services/memberships.service';
   styleUrls: ['tab2.page.scss'],
 })
 export class Tab2Page implements OnInit {
+  selectedSession: SessionUserData | undefined;
   constructor(
     public drs: DataRepositoryService,
-    private mms: MembershipsService,
-    public router: Router
+    public router: Router,
+    private menu: MenuController
   ) {}
 
   selectedSessionId: string = '';
 
   memberships: sessionMembership[] = [];
 
-  async sessionChanged(event: any) {
-    this.selectedSessionId = event.detail.value;
+  async sessionChanged(sessionId: string) {
+    this.selectedSessionId = sessionId;
 
     this.memberships = await this.drs.syncSessionMemberships(this.selectedSessionId);
     if (this.memberships.length == 1) {
@@ -36,11 +39,19 @@ export class Tab2Page implements OnInit {
     this.memberships.forEach((m) => {
       this.drs.syncClub(m.clubId);
     });
+    this.selectedSession = this.drs.sessionUsers.getValue()[0].find((s) => s.uid == sessionId);
+    this.menu.toggle('menu');
   }
   ngOnInit() {
     this.drs.authUsers.subscribe(async (users) => {
       if (users.length > 0) {
         this.drs.syncSessionUsers(users[0].uid);
+      }
+    });
+    this.drs.sessionUsers.pipe(take(2)).subscribe((sessions) => {
+      if (sessions.length > 0) {
+        this.selectedSession = sessions[0][0];
+        this.selectedSessionId = this.selectedSession?.uid;
       }
     });
   }
@@ -50,5 +61,9 @@ export class Tab2Page implements OnInit {
     } catch {
       return '';
     }
+  }
+  openMenu() {
+    this.menu.enable(true, 'menu');
+    this.menu.open('menu');
   }
 }
