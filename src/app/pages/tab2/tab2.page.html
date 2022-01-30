@@ -21,7 +21,9 @@
   <ion-toolbar>
     <ion-avatar slot="start" (click)="openMenu()" class="header-selector-avatar">
       <!-- <img [src]="'https://avatars.dicebear.com/api/initials/'+ selectedSession?.name +'.svg'" /> -->
-      <img [src]="selectedSession?.profilePictureUrl" />
+      <img
+        [src]="selectedSession?.profilePictureUrl || 'https://avatars.dicebear.com/api/initials/'+'-' +'.svg?background=%23000000'"
+      />
     </ion-avatar>
     <ion-title>Teams</ion-title>
   </ion-toolbar>
