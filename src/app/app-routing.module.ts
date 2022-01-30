@@ -7,15 +7,18 @@ const routes: Routes = [
   {
     path: 'login',
     loadChildren: () => import('./pages/login/login.module').then((m) => m.LoginPageModule),
+    canLoad: [AutologinGuard],
   },
   {
     path: 'tabs',
     loadChildren: () => import('./pages/tabs/tabs.module').then((m) => m.TabsPageModule),
+    canLoad: [AuthGuard],
   },
   {
     path: 'reset',
     loadChildren: () =>
       import('./pages/reset-password/reset-password.module').then((m) => m.ResetPasswordPageModule),
+    canLoad: [AutologinGuard],
   },
   {
     path: 'signup',
@@ -67,21 +70,18 @@ const routes: Routes = [
         ],
       },
     ],
+    canLoad: [AuthGuard],
   },
   {
     path: 'my-account',
     loadChildren: () =>
       import('./pages/my-account/my-account.module').then((m) => m.MyAccountPageModule),
+    canLoad: [AuthGuard],
   },
   {
     path: 'privacy-policy',
     loadChildren: () =>
       import('./pages/privacy-policy/privacy-policy.module').then((m) => m.PrivacyPolicyPageModule),
-  },
-  {
-    path: 'signup-and-join',
-    redirectTo: '/login',
-    pathMatch: 'full',
   },
   {
     path: '',
