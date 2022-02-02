@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { Injectable, NgZone } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -90,7 +91,8 @@ export class AuthService {
     public alertController: AlertController,
     private ng: NgZone,
     public ns: NotificationService,
-    private logic: LogicService
+    private logic: LogicService,
+    private location: Location
   ) {
     this.fba.onAuthStateChanged(async (user) => {
       console.log('[ 🔑 AuthService ]', 'AuthStateChanged:', user);
@@ -98,15 +100,18 @@ export class AuthService {
         console.log('[ 🔑 login ]', 'Signed in succsessfully, starting session');
         this.logic.userId = user.uid;
         this.ns.registerPushNotifications(user.uid);
-        ng.run(() => {
-          this.router.navigateByUrl('/tabs/tab2');
-        });
         await this.logic.startSession();
-      } else {
-        //! todo: check where user is on page
-        // ng.run(() => {
-        //   this.router.navigateByUrl('/', { replaceUrl: true });
-        // });
+        if (this.route.snapshot.queryParams.joining)
+          ng.run(() => {
+            this.location.back();
+          });
+        else {
+          if (this.router.url.indexOf('/join') === -1) {
+            ng.run(() => {
+              this.router.navigateByUrl('/tabs/tab2');
+            });
+          }
+        }
       }
     });
   }

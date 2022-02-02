@@ -66,25 +66,33 @@ export class MembershipsService {
               });
             if (role != 'admin') {
               this.drs.getTeam(teamId, clubId).then((team) => {
-                console.log(team);
-                if (role == 'headcoach' && team.headTrainers.indexOf(userId) == -1) {
+                // remove the user from the team
+                const hi = team.headTrainers.indexOf(userId);
+                const ti = team.trainers.indexOf(userId);
+                const ui = team.users.indexOf(userId);
+                if (hi != -1) {
+                  team.headTrainers.splice(hi, 1);
+                }
+                if (ti != -1) {
+                  team.trainers.splice(ti, 1);
+                }
+                if (ui != -1) {
+                  team.users.splice(ui, 1);
+                }
+
+                if (role == 'headcoach') {
                   team.headTrainers.push(userId);
                 }
-                if (
-                  (role == 'coach' || role == 'headcoach') &&
-                  team.trainers.indexOf(userId) == -1
-                ) {
+                if (role == 'coach' || role == 'headcoach') {
                   team.trainers.push(userId);
                 }
-                if (
-                  (role == 'member' || role == 'coach' || role == 'headcoach') &&
-                  team.users.indexOf(userId) == -1
-                ) {
+                if (role == 'member' || role == 'coach' || role == 'headcoach') {
                   team.users.push(userId);
                 }
                 team.names[userId] = name;
-                // console.log('Team with new user: ', team);
+
                 this.drs.updateTeam(team, clubId, teamId);
+
                 resolve(undefined);
               });
             }

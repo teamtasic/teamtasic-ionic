@@ -36,6 +36,8 @@ export class ClubEditTeamPage implements OnInit {
     public loadingController: LoadingController
   ) {}
 
+  codePrefix: string = 'https://teamtasic.app/join/';
+
   editGroup: FormGroup = this.fb.group({});
   addGroup: FormGroup = this.fb.group({});
 
@@ -85,14 +87,11 @@ export class ClubEditTeamPage implements OnInit {
     });
     console.log(this.roles);
     this.membercode =
-      'https://teamtasic.app/signup?code=' +
-      (await this.drs.getJoinCodeForTeam(this.teamId, this.clubId, 'member'));
+      this.codePrefix + (await this.drs.getJoinCodeForTeam(this.teamId, this.clubId, 'member'));
     this.trainercode =
-      'https://teamtasic.app/signup?code=' +
-      (await this.drs.getJoinCodeForTeam(this.teamId, this.clubId, 'coach'));
+      this.codePrefix + (await this.drs.getJoinCodeForTeam(this.teamId, this.clubId, 'coach'));
     this.headtrainercode =
-      'https://teamtasic.app/signup?code=' +
-      (await this.drs.getJoinCodeForTeam(this.teamId, this.clubId, 'headcoach'));
+      this.codePrefix + (await this.drs.getJoinCodeForTeam(this.teamId, this.clubId, 'headcoach'));
   }
 
   roleStrings = {

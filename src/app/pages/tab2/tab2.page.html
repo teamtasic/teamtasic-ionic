@@ -1,22 +1,3 @@
-<!-- <ion-header>
-  <ion-toolbar>
-    <ion-title>Teams</ion-title>
-  </ion-toolbar>
-
-  <ion-toolbar>
-    <ion-select
-      interface="action-sheet"
-      placeholder="Benutzer bitte auswählen"
-      (ionChange)="sessionChanged($event)"
-    >
-      <ion-select-option
-        *ngFor="let sessionUser of ((drs.sessionUsers | async) || [[]])[0]"
-        [value]="sessionUser.uid"
-        >{{sessionUser.name}}</ion-select-option
-      >
-    </ion-select>
-  </ion-toolbar>
-</ion-header> -->
 <ion-header>
   <ion-toolbar>
     <ion-avatar slot="start" (click)="openMenu()" class="header-selector-avatar">

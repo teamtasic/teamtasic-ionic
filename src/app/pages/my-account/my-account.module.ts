@@ -10,6 +10,7 @@ import { MyAccountPage } from './my-account.page';
 import { Clipboard } from '@capacitor/clipboard';
 import { EditSessionUserComponent } from 'src/app/components/edit-session-user/edit-session-user.component';
 import { FileUploadModule } from 'src/app/components/file-upload/file-upload.module';
+import { EditSessionUserModule } from 'src/app/components/edit-session-user/edit-session-user.module';
 
 @NgModule({
   imports: [
@@ -19,7 +20,8 @@ import { FileUploadModule } from 'src/app/components/file-upload/file-upload.mod
     IonicModule,
     MyAccountPageRoutingModule,
     FileUploadModule,
+    EditSessionUserModule,
   ],
-  declarations: [MyAccountPage, EditSessionUserComponent],
+  declarations: [MyAccountPage],
 })
 export class MyAccountPageModule {}

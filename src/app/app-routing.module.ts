@@ -23,6 +23,7 @@ const routes: Routes = [
   {
     path: 'signup',
     loadChildren: () => import('./pages/signup/signup.module').then((m) => m.SignupPageModule),
+    canLoad: [AutologinGuard],
   },
   {
     path: 'my-clubs',
@@ -82,6 +83,10 @@ const routes: Routes = [
     path: 'privacy-policy',
     loadChildren: () =>
       import('./pages/privacy-policy/privacy-policy.module').then((m) => m.PrivacyPolicyPageModule),
+  },
+  {
+    path: 'join/:joinCode',
+    loadChildren: () => import('./pages/join/join.module').then((m) => m.JoinPageModule),
   },
   {
     path: '',

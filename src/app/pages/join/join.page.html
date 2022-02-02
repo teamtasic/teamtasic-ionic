@@ -1,0 +1,58 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Team beitreten</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ng-container *ngIf="!(afs.user | async)">
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <ion-text>
+            Bitte registriere dich oder melde dich an, um diesem Team beizutreten.
+          </ion-text>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <ion-button
+            expand="block"
+            routerLink="/login"
+            [queryParams]="{joining: true}"
+            color="light"
+            >Einloggen</ion-button
+          >
+        </ion-col>
+        <ion-col>
+          <ion-button expand="block" routerLink="/signup" [queryParams]="{joining: true}"
+            >Registrieren</ion-button
+          >
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ng-container>
+  <ng-container *ngIf="(afs.user | async)">
+    <form [formGroup]="sessionSelectionForm">
+      <ion-list formArrayName="sessions">
+        <ion-item *ngFor="let sessionUser of ((drs.sessionUsers | async) || [[]])[0]; index as i">
+          <ion-label>
+            <h2>{{sessionUser.name}}</h2>
+          </ion-label>
+          <ion-avatar slot="start" class="header-selector-avatar">
+            <img [src]="sessionUser.profilePictureUrl" />
+          </ion-avatar>
+          <ion-checkbox slot="end" [formControlName]="i"></ion-checkbox>
+        </ion-item>
+        <ion-item button detail (click)="openSessenEditorNew()">
+          <ion-label> Neuen Zugang erstellen </ion-label>
+        </ion-item>
+        <ion-row>
+          <ion-col>
+            <ion-button expand="block" (click)="joinTeams()"> Team beitreten</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-list>
+    </form>
+  </ng-container>
+</ion-content>
