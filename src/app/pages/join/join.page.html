@@ -33,8 +33,14 @@
     </ion-grid>
   </ng-container>
   <ng-container *ngIf="(afs.user | async)">
+    <ion-list> </ion-list>
     <form [formGroup]="sessionSelectionForm">
       <ion-list formArrayName="sessions">
+        <ion-progress-bar
+          type="indeterminate"
+          *ngIf="!((drs.sessionUsers | async) || [[]])[0]"
+        ></ion-progress-bar>
+
         <ion-item *ngFor="let sessionUser of ((drs.sessionUsers | async) || [[]])[0]; index as i">
           <ion-label>
             <h2>{{sessionUser.name}}</h2>
