@@ -94,21 +94,25 @@ export class JoinPage implements OnInit {
         {
           text: 'Einverstanden',
           handler: () => {
-            this.drs.sessionUsers.value[0].forEach((user, index) => {
-              if (this.sessionSelectionForm.controls['sessions'].value[index]) {
-                this.mss
-                  .joinUsingCode(this.route.snapshot.params['joinCode'], user.uid, user.name)
-                  .then(() => {
-                    this.ns.showToast('Team beigetreten');
-                    this.router.navigate(['/tabs/tab2']);
-                  })
-                  .catch((error) => {
-                    this.ns.showToast(
-                      error.message || 'Team konnte nicht beigetreten werden. Stimmt der Code?'
-                    );
-                  });
-              }
-            });
+            try {
+              this.drs.sessionUsers.value[0].forEach((user, index) => {
+                if (this.sessionSelectionForm.controls['sessions'].value[index]) {
+                  this.mss.joinUsingCode(
+                    this.route.snapshot.params['joinCode'],
+                    user.uid,
+                    user.name
+                  );
+                }
+              });
+            } catch (e) {
+              this.ns.showToast(
+                e.message || 'Team konnte nicht beigetreten werden. Stimmt der Code?'
+              );
+              console.log(e);
+            } finally {
+              this.ns.showToast('Team beigetreten');
+              this.router.navigate(['/tabs/tab2']);
+            }
           },
         },
       ],
