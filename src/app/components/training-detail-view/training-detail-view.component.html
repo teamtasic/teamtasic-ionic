@@ -209,7 +209,9 @@
               color="success"
               slot="end"
               *ngIf="
-                (meet?.comments || {})[cath] === undefined || !team?.trainers?.includes(sessionId);
+                (meet?.comments || {})[cath] === '' ||
+                  (meet?.comments || {})[cath] === undefined ||
+                  !team?.trainers?.includes(sessionId);
                 else comment
               "
             >
@@ -239,7 +241,9 @@
               color="danger"
               slot="end"
               *ngIf="
-                (meet?.comments || {})[cath] === undefined || !team?.trainers?.includes(sessionId);
+                (meet?.comments || {})[cath] === '' ||
+                  (meet?.comments || {})[cath] === undefined ||
+                  !team?.trainers?.includes(sessionId);
                 else comment
               "
             >
@@ -301,7 +305,9 @@
               color="success"
               slot="end"
               *ngIf="
-                (meet?.comments || {})[cath] === undefined || !team?.trainers?.includes(sessionId);
+                (meet?.comments || {})[cath] === '' ||
+                  (meet?.comments || {})[cath] === undefined ||
+                  !team?.trainers?.includes(sessionId);
                 else comment
               "
             >
@@ -331,7 +337,9 @@
               color="danger"
               slot="end"
               *ngIf="
-                (meet?.comments || {})[cath] === undefined || !team?.trainers?.includes(sessionId);
+                (meet?.comments || {})[cath] === '' ||
+                  (meet?.comments || {})[cath] === undefined ||
+                  !team?.trainers?.includes(sessionId);
                 else comment
               "
             >
