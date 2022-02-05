@@ -1,52 +1,61 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Team beitreten</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
+  <ion-list class="title">
+    <ion-item lines="none">
+      <ion-text>
+        <h2>Willkommen bei Teamtasic,</h2>
+        <p>Schön, dass du da bist.</p>
+      </ion-text>
+    </ion-item>
+  </ion-list>
+
   <ng-container *ngIf="!(afs.user | async)">
-    <ion-grid>
-      <ion-row>
-        <ion-col>
-          <ion-text>
-            Bitte registriere dich oder melde dich an, um diesem Team beizutreten.
-          </ion-text>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col>
-          <ion-button
-            expand="block"
-            routerLink="/login"
-            [queryParams]="{joining: true}"
-            color="light"
-            >Einloggen</ion-button
-          >
-        </ion-col>
-        <ion-col>
-          <ion-button expand="block" routerLink="/signup" [queryParams]="{joining: true}"
-            >Registrieren</ion-button
-          >
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+    <ion-list class="sign-list">
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <p>Bitte registriere dich oder melde dich an, um diesem Team beizutreten.</p>
+          <br />
+          <p>Wenn du ein Kind registrierst, trägst du hier <u>deine</u> Informationen ein.</p>
+        </ion-label>
+      </ion-item>
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-button
+              expand="block"
+              routerLink="/login"
+              [queryParams]="{joining: true}"
+              color="light"
+              >Einloggen</ion-button
+            >
+          </ion-col>
+          <ion-col>
+            <ion-button expand="block" routerLink="/signup" [queryParams]="{joining: true}"
+              >Registrieren</ion-button
+            >
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-list>
   </ng-container>
+
   <ng-container *ngIf="(afs.user | async)">
     <form [formGroup]="sessionSelectionForm">
-      <ion-list formArrayName="sessions">
+      <ion-list formArrayName="sessions" class="list">
         <ion-progress-bar
           type="indeterminate"
           *ngIf="!((drs.sessionUsers | async) || [[]])[0]"
         ></ion-progress-bar>
 
-        <ion-item class="ion-text-wrap">
-          <ion-label>
+        <ion-item>
+          <ion-label
+            class="ion-text-wrap"
+            *ngIf="((drs.sessionUsers | async) || [[]])[0]?.length > 0"
+          >
             <p>Um dem Team beizutreten, wähle unten einen Zugang oder erstelle einen neuen.</p>
           </ion-label>
         </ion-item>
 
-        <ion-item *ngFor="let sessionUser of ((drs.sessionUsers | async) || [[]])[0]; index as i">
+        <ion-item *ngFor="let sessionUser of listedUsers; index as i">
           <ion-label>
             <h2>{{sessionUser.name}}</h2>
           </ion-label>
@@ -55,8 +64,15 @@
           </ion-avatar>
           <ion-checkbox slot="end" [formControlName]="i"></ion-checkbox>
         </ion-item>
-        <ion-item button detail (click)="openSessenEditorNew()">
-          <ion-label> Neuen Zugang erstellen </ion-label>
+        <ion-item button detail (click)="openSessionEditorSelf()" class="ion-margin-top">
+          <ion-label class="ion-text-wrap">
+            Neuen Zugang aus Anmeldedaten (für mich selbst)</ion-label
+          >
+        </ion-item>
+        <ion-item button detail (click)="openSessionEditorNew()" class="ion-margin-bottom">
+          <ion-label class="ion-text-wrap">
+            Neuen Zugang erstellen (für ein Kind / Drittperson)
+          </ion-label>
         </ion-item>
         <ion-row>
           <ion-col>

@@ -84,10 +84,11 @@ const routes: Routes = [
     loadChildren: () =>
       import('./pages/privacy-policy/privacy-policy.module').then((m) => m.PrivacyPolicyPageModule),
   },
-  {
-    path: 'join',
-    redirectTo: 'join/4gr3DNHhh2TqtF0Im3ax',
-  },
+  // {
+  //   path: '',
+  //   redirectTo: 'join/4gr3DNHhh2TqtF0Im3ax',
+  //   pathMatch: 'full',
+  // },
   {
     path: 'join/:joinCode',
     loadChildren: () => import('./pages/join/join.module').then((m) => m.JoinPageModule),

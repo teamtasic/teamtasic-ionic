@@ -36,6 +36,8 @@ export class JoinPage implements OnInit {
     sessions: this.fb.array([]),
   });
 
+  listedUsers: SessionUserData[] = [];
+
   ngOnInit() {
     try {
       this.drs.syncSessionUsers(this.drs.authUsers.getValue()[0].uid);
@@ -49,6 +51,7 @@ export class JoinPage implements OnInit {
       }
     });
     this.drs.sessionUsers.subscribe((_users) => {
+      console.log('sessionUsersssss', _users);
       let users = _users[0];
       if (users?.length > 0) {
         this.sessionSelectionForm = this.fb.group({
@@ -56,6 +59,7 @@ export class JoinPage implements OnInit {
         });
       }
       console.log(this.sessionSelectionForm);
+      this.listedUsers = users;
     });
     this.sessionSelectionForm.controls['sessions'].valueChanges.subscribe((value) => {
       console.log(value);
@@ -63,12 +67,23 @@ export class JoinPage implements OnInit {
   }
 
   // UI Actions
-  async openSessenEditorNew() {
+  async openSessionEditorNew() {
     const modal = await this.modalController.create({
       component: EditSessionUserComponent,
       swipeToClose: true,
       componentProps: {
         newSession: true,
+      },
+    });
+    await modal.present();
+  }
+  async openSessionEditorSelf() {
+    const modal = await this.modalController.create({
+      component: EditSessionUserComponent,
+      swipeToClose: true,
+      componentProps: {
+        newSession: true,
+        fromAuthUser: this.drs.authUsers.getValue()[0],
       },
     });
     await modal.present();

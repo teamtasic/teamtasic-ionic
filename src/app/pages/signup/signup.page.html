@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title> Sign up </ion-title>
+    <ion-title> Registrieren </ion-title>
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
@@ -10,7 +10,7 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Sign up</ion-title>
+      <ion-title size="large"> Registrieren </ion-title>
     </ion-toolbar>
   </ion-header>
 
@@ -18,23 +18,33 @@
   <form [formGroup]="signupform" (submit)="signUp()">
     <ion-item>
       <ion-label position="stacked">Vorname<ion-text color="danger">*</ion-text></ion-label>
-      <ion-input type="text" required formControlName="surname"></ion-input>
+      <ion-input type="text" required formControlName="surname" placeholder="Vorname"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label position="stacked">Name <ion-text color="danger">*</ion-text></ion-label>
-      <ion-input type="text" required formControlName="name"></ion-input>
+      <ion-input type="text" required formControlName="name" placeholder="Nachname"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label position="stacked">Email <ion-text color="danger">*</ion-text></ion-label>
-      <ion-input type="email" required formControlName="email"></ion-input>
+      <ion-input type="email" required formControlName="email" placeholder="Email"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label position="stacked">Passwort <ion-text color="danger">*</ion-text></ion-label>
-      <ion-input type="password" required formControlName="password"></ion-input>
+      <ion-input
+        type="password"
+        required
+        formControlName="password"
+        placeholder="Passwort"
+      ></ion-input>
     </ion-item>
     <ion-item>
       <ion-label position="stacked">Telefonnummer<ion-text color="danger">*</ion-text></ion-label>
-      <ion-input type="text" formControlName="phoneNumber" placeholder="Telefonnummer"></ion-input>
+      <ion-input
+        type="text"
+        formControlName="phoneNumber"
+        placeholder="Telefonnummer"
+        placeholder="Telefonnummer"
+      ></ion-input>
     </ion-item>
 
     <ion-item>
@@ -50,14 +60,11 @@
 
     <ion-item>
       <ion-checkbox formControlName="tos" slot="start"> </ion-checkbox>
-      <ion-label> Ich stimme den AGB zu. <ion-text color="danger">*</ion-text></ion-label>
+      <ion-label class="ion-text-wrap">
+        Ich stimme den AGB zu. <ion-text color="danger">*</ion-text></ion-label
+      >
     </ion-item>
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title> Um einem Team beizutreten, </ion-card-title>
-      </ion-card-header>
-      <ion-card-content> erstelle in den Einstellungen zuerst einen Benutzer. </ion-card-content>
-    </ion-card>
+
     <ion-row>
       <ion-col>
         <ion-button type="submit" expand="block" [disabled]="signupform.invalid"

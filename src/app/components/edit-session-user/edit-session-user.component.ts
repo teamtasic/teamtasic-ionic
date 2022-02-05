@@ -8,6 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { AlertController, ModalController } from '@ionic/angular';
+import { AuthUserData } from 'src/app/classes/auth-user-data';
 import {
   joinableMembership,
   sessionMembership,
@@ -29,6 +30,7 @@ export class EditSessionUserComponent implements OnInit {
     ownsGA: false,
   });
   @Input() newSession: Boolean = false;
+  @Input() fromAuthUser: AuthUserData | undefined;
 
   dataFrom: FormGroup = this.fb.group({
     name: [''],
@@ -58,8 +60,35 @@ export class EditSessionUserComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    console.log(this.session, this.newSession);
-    if (this.newSession) {
+    if (this.fromAuthUser) {
+      this.session = new SessionUserData(
+        '',
+        this.fromAuthUser.uid,
+        this.fromAuthUser.username,
+        this.fromAuthUser.email,
+        '',
+        this.fromAuthUser.phoneNumber,
+        '',
+        {
+          jsId: '',
+          ahvNumber: '',
+          ownsGA: false,
+        }
+      );
+      this.dataFrom = this.fb.group({
+        name: [
+          `${this.session.name.split(' ')[1] || ''} ${this.session.name.split(' ')[2] || ''}` || '',
+          Validators.required,
+        ],
+        surname: [this.session.name.split(' ')[0] || '', Validators.required],
+        email: [this.session.email || '', Validators.required],
+        birthdate: [this.session.birthdate || '', Validators.required],
+        phone: [this.session.phoneNumber || '', Validators.required],
+        emergency: [this.session.emergencyContact || '', Validators.required],
+        jsnumber: [this.session.otherData.jsId],
+        ahvnumber: [this.session.otherData.ahvNumber, []],
+      });
+    } else if (this.newSession) {
       this.session = new SessionUserData('', this.drs.authUsers.value[0].uid, '', '', '', '', '', {
         jsId: '',
         ahvNumber: '',
