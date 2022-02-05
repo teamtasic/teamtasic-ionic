@@ -24,7 +24,7 @@
     </ion-avatar>
   </ion-item>
 
-  <ion-list>
+  <ion-list class="ion-margin-top ion-margin-bottom">
     <ion-list-header> Meine Zugänge </ion-list-header>
     <ion-item>
       <ion-label class="ion-text-wrap">
@@ -47,7 +47,7 @@
     </ion-item>
   </ion-list>
 
-  <ion-list>
+  <ion-list class="ion-margin-top ion-margin-bottom">
     <ion-list-header> Meine Daten </ion-list-header>
     <form [formGroup]="userData">
       <ion-item>
@@ -114,7 +114,8 @@
         </ion-col>
       </ion-row>
     </form>
-
+  </ion-list>
+  <ion-list class="ion-margin-top ion-margin-bottom">
     <ion-list-header> Sicherheit </ion-list-header>
     <ion-item detail button (click)="changePassword()">
       <ion-label>Passwort ändern</ion-label>
