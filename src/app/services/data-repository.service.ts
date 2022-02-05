@@ -243,7 +243,9 @@ export class DataRepositoryService {
               this._sessionUserMap.set(uid, this._sessionUser.value.length - 1);
             } else {
               let index = this._sessionUserMap.get(uid) as number;
-              this._sessionUser.value[index] = sessionUsers[0];
+              let old = this._sessionUser.value;
+              old[index] = sessionUsers[0];
+              this._sessionUser.next(old);
             }
             console.log('[ SessionUsers valueChanged ]', sessionUsers);
           },
