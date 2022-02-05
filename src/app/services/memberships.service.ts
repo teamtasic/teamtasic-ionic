@@ -54,48 +54,46 @@ export class MembershipsService {
             const clubId = data['clubId'];
             const teamId = data['teamId'];
             console.log('Code resolved to: ', role, clubId, teamId);
-            this.drs
-              .getClub(clubId)
-              .toPromise()
-              .then((club: any) => {
-                if (role === 'admin') {
-                  club?.admins.push(userId);
-                }
-                club.names[userId] = name;
-                this.drs.updateClub(club, clubId);
-              });
-            if (role != 'admin') {
-              this.drs.getTeam(teamId, clubId).then((team) => {
-                // remove the user from the team
-                const hi = team.headTrainers.indexOf(userId);
-                const ti = team.trainers.indexOf(userId);
-                const ui = team.users.indexOf(userId);
-                if (hi != -1) {
-                  team.headTrainers.splice(hi, 1);
-                }
-                if (ti != -1) {
-                  team.trainers.splice(ti, 1);
-                }
-                if (ui != -1) {
-                  team.users.splice(ui, 1);
-                }
+            this.drs.getClub(clubId).then(async (club: any) => {
+              if (role === 'admin') {
+                club?.admins.push(userId);
+              }
+              club.names[userId] = name;
+              await this.drs.updateClub(club, clubId);
 
-                if (role == 'headcoach') {
-                  team.headTrainers.push(userId);
-                }
-                if (role == 'coach' || role == 'headcoach') {
-                  team.trainers.push(userId);
-                }
-                if (role == 'member' || role == 'coach' || role == 'headcoach') {
-                  team.users.push(userId);
-                }
-                team.names[userId] = name;
+              if (role != 'admin') {
+                this.drs.getTeam(teamId, clubId).then(async (team) => {
+                  // remove the user from the team
+                  const hi = team.headTrainers.indexOf(userId);
+                  const ti = team.trainers.indexOf(userId);
+                  const ui = team.users.indexOf(userId);
+                  if (hi != -1) {
+                    team.headTrainers.splice(hi, 1);
+                  }
+                  if (ti != -1) {
+                    team.trainers.splice(ti, 1);
+                  }
+                  if (ui != -1) {
+                    team.users.splice(ui, 1);
+                  }
 
-                this.drs.updateTeam(team, clubId, teamId);
+                  if (role == 'headcoach') {
+                    team.headTrainers.push(userId);
+                  }
+                  if (role == 'coach' || role == 'headcoach') {
+                    team.trainers.push(userId);
+                  }
+                  if (role == 'member' || role == 'coach' || role == 'headcoach') {
+                    team.users.push(userId);
+                  }
+                  team.names[userId] = name;
 
-                resolve(undefined);
-              });
-            }
+                  await this.drs.updateTeam(team, clubId, teamId);
+                  console.log('joined');
+                  resolve(undefined);
+                });
+              }
+            });
           } else {
             reject('Invalid code');
           }

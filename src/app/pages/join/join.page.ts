@@ -93,17 +93,22 @@ export class JoinPage implements OnInit {
         },
         {
           text: 'Einverstanden',
-          handler: () => {
+          handler: async () => {
             try {
-              this.drs.sessionUsers.value[0].forEach((user, index) => {
+              for (const [index, user] of this.drs.sessionUsers.getValue()[0].entries()) {
                 if (this.sessionSelectionForm.controls['sessions'].value[index]) {
-                  this.mss.joinUsingCode(
+                  console.log(user);
+                  await this.mss.joinUsingCode(
                     this.route.snapshot.params['joinCode'],
                     user.uid,
                     user.name
                   );
                 }
-              });
+              }
+
+              // this.drs.sessionUsers.value[0].forEach(async (user, index) => {
+
+              // });
             } catch (e) {
               this.ns.showToast(
                 e.message || 'Team konnte nicht beigetreten werden. Stimmt der Code?'

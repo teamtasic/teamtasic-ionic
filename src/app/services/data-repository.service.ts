@@ -461,7 +461,7 @@ export class DataRepositoryService {
     return await this.afs
       .collection(this.CollectionWithConverter('clubs', Club.converter))
       .doc(clubId)
-      .update(club)
+      .set(club)
       .then(() => {
         this.syncClub(clubId);
       });
@@ -700,13 +700,23 @@ export class DataRepositoryService {
    * @returns {Observable<Club>}
    */
   getClub(clubId: string) {
-    this.syncClub(clubId);
-    // pipe internal clubs to an observable containing the club of type Observable<Club>
-    return this._clubs.pipe(
-      map((clubs: Club[]) => {
-        return clubs.find((club: Club) => club.uid === clubId);
-      })
-    );
+    return new Promise<Club>((resolve, reject) => {
+      this.afs
+        .collection(this.CollectionWithConverter('clubs', Club.converter))
+        .doc(clubId)
+        .get()
+        .toPromise()
+        .then((doc) => {
+          if (doc.exists) {
+            resolve(doc.data() as Club);
+          } else {
+            reject(new Error('Club does not exist'));
+          }
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
   }
   /**
    * Sync a team and subscribe to changes

@@ -33,13 +33,18 @@
     </ion-grid>
   </ng-container>
   <ng-container *ngIf="(afs.user | async)">
-    <ion-list> </ion-list>
     <form [formGroup]="sessionSelectionForm">
       <ion-list formArrayName="sessions">
         <ion-progress-bar
           type="indeterminate"
           *ngIf="!((drs.sessionUsers | async) || [[]])[0]"
         ></ion-progress-bar>
+
+        <ion-item class="ion-text-wrap">
+          <ion-label>
+            <p>Um dem Team beizutreten, wähle unten einen Zugang oder erstelle einen neuen.</p>
+          </ion-label>
+        </ion-item>
 
         <ion-item *ngFor="let sessionUser of ((drs.sessionUsers | async) || [[]])[0]; index as i">
           <ion-label>
@@ -55,7 +60,13 @@
         </ion-item>
         <ion-row>
           <ion-col>
-            <ion-button expand="block" (click)="joinTeams()"> Team beitreten</ion-button>
+            <ion-button
+              expand="block"
+              (click)="joinTeams()"
+              [disabled]="!this.sessionSelectionForm.controls['sessions'].value.includes(true)"
+            >
+              Team beitreten</ion-button
+            >
           </ion-col>
         </ion-row>
       </ion-list>
