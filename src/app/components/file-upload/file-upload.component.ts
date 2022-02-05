@@ -32,7 +32,7 @@ export class FileUploadComponent implements OnInit {
         .then(() => {
           this.ns.showToast('Datei erfolgreich hochgeladen');
           this.fileUploaded.emit({
-            url: `https://storage.cloud.google.com/${environment.firebase.storageBucket}/profiles/${this.fileName}_200x200`,
+            url: `https://storage.googleapis.com/${environment.firebase.storageBucket}/profiles/${this.fileName}_200x200`,
           });
         })
         .catch((err) => {
