@@ -36,7 +36,7 @@ export class MembershipsService {
       resolve(ref.id);
     });
   }
-  joinUsingCode(code: string, userId: string, name: string) {
+  joinUsingCode(code: string, userId: string, name: string, profilePictureUrl: string) {
     return new Promise<void>(async (resolve, reject) => {
       this.afs
         .collection('joinCodes')
@@ -87,6 +87,7 @@ export class MembershipsService {
                     team.users.push(userId);
                   }
                   team.names[userId] = name;
+                  team.profilePictureUrls[userId] = profilePictureUrl;
 
                   await this.drs.updateTeam(team, clubId, teamId);
                   console.log('joined');

@@ -137,7 +137,7 @@ export class ClubEditTeamPage implements OnInit {
 
   async presentActionSheet(userId: string) {
     const actionSheet = await this.actionSheetController.create({
-      header: this.team?.names[userId].name,
+      header: this.team?.names[userId] || '',
       buttons: [
         {
           text: 'Entfernen',

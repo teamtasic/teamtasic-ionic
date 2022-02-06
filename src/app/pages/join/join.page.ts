@@ -116,7 +116,8 @@ export class JoinPage implements OnInit {
                   await this.mss.joinUsingCode(
                     this.route.snapshot.params['joinCode'],
                     user.uid,
-                    user.name
+                    user.name,
+                    user.profilePictureUrl
                   );
                 }
               }

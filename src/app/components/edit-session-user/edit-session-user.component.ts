@@ -116,7 +116,7 @@ export class EditSessionUserComponent implements OnInit {
 
     this.joinableMembership = await this.drs.syncSessionJoinCode(this.session.owner);
   }
-  saveAndDismiss() {
+  async saveAndDismiss() {
     try {
       if (this.newSession) {
         this.session = new SessionUserData(
@@ -148,6 +148,12 @@ export class EditSessionUserComponent implements OnInit {
           this.session.profilePictureUrl
         );
         this.drs.updateSessionUser(_sess, this.drs.authUsers.value[0].uid, this.session.uid);
+
+        for (const membership of this.memberships) {
+          let team = await this.drs.getTeam(membership.teamId, membership.clubId);
+          team.profilePictureUrls[this.session.uid] = this.session.profilePictureUrl;
+          await this.drs.updateTeam(team, membership.clubId, membership.teamId);
+        }
       }
       this.ns.requestPushPermission();
       this.ns.registerPushNotifications(this.drs.authUsers.value[0].uid);
@@ -184,7 +190,12 @@ export class EditSessionUserComponent implements OnInit {
           handler: () => {
             this.joinForm.reset();
             this.mss
-              .joinUsingCode(_code, this.session.uid, this.session.name)
+              .joinUsingCode(
+                _code,
+                this.session.uid,
+                this.session.name,
+                this.session.profilePictureUrl
+              )
               .then(() => {
                 this.ns.showToast('Team beigetreten');
                 this.init();

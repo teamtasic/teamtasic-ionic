@@ -30,7 +30,7 @@
         <p>{{roleStrings[roles[member]]}}</p>
       </ion-label>
       <ion-avatar slot="start">
-        <img [src]="'https://avatars.dicebear.com/api/initials/'+ (team?.names[member]) +'.svg'" />
+        <img [src]="team?.profilePictureUrls[member]" />
       </ion-avatar>
       <ion-button slot="end" fill="clear" color="medium" (click)="presentActionSheet(member)">
         <ion-icon slot="icon-only" name="ellipsis-horizontal-circle-outline"></ion-icon>

@@ -5,23 +5,33 @@ export class Team {
 
   name: string;
 
-  names: any;
+  names: {
+    [key: string]: string;
+  };
   users: string[];
   trainers: string[];
   headTrainers: string[];
   admins: string[];
   owner: string;
+  profilePictureUrls: {
+    [key: string]: string;
+  };
 
   constructor(
     uid: string,
 
     name: string,
-    names: Object,
+    names: {
+      [key: string]: string;
+    },
     users: string[],
     trainers: string[],
     headTrainers: string[],
     admins: string[],
-    owner: string
+    owner: string,
+    profilePictureUrls: {
+      [key: string]: string;
+    }
   ) {
     this.uid = uid;
 
@@ -32,6 +42,7 @@ export class Team {
     this.headTrainers = headTrainers;
     this.admins = admins;
     this.owner = owner || '';
+    this.profilePictureUrls = profilePictureUrls;
   }
 
   static converter = {
@@ -40,7 +51,7 @@ export class Team {
       if (!data) {
         return null;
       }
-      return new Team(
+      let t = new Team(
         snapshot.id,
         data.name || '',
         data.names || {},
@@ -49,8 +60,17 @@ export class Team {
         data.headTrainers || [],
         data.admins || [],
         // local querys are kinda important tho
-        snapshot.ref.parent.parent?.id || ''
+        snapshot.ref.parent.parent?.id || '',
+        data.profilePictureUrls || {}
       );
+      for (const uid in t.names) {
+        if (t.profilePictureUrls[uid]) {
+          continue;
+        }
+        t.profilePictureUrls[uid] = `https://avatars.dicebear.com/api/initials/${t.names[uid]}.svg`;
+      }
+      console.log(t);
+      return t;
     },
     toFirestore: function (team: Team) {
       return {
@@ -62,6 +82,7 @@ export class Team {
         headTrainers: team.headTrainers,
         admins: team.admins,
         owner: team.owner,
+        profilePictureUrls: team.profilePictureUrls,
       };
     },
   };
