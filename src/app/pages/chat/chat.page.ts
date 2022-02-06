@@ -39,6 +39,8 @@ export class ChatPage implements OnInit {
   sortedUsers: string[] = [];
   lastTrainerIndex: number = 0;
 
+  loading = false;
+
   /**
    * Filter mode
    * 0: only future
@@ -99,6 +101,7 @@ export class ChatPage implements OnInit {
     });
   }
   init(meets: Meet[]) {
+    this.loading = true;
     console.log(meets, 'sorting...');
     let m = meets;
     m.sort((a, b) => {
@@ -119,6 +122,9 @@ export class ChatPage implements OnInit {
       this.drs.syncMeet(meet.uid, this.clubId, this.teamId);
     });
     this.meets = m;
+    new Promise((resolve) => setTimeout(resolve, 1000)).then(() => {
+      this.loading = false;
+    });
   }
 
   async addTraining() {
@@ -159,6 +165,7 @@ export class ChatPage implements OnInit {
         {
           text: 'Zukünftige Termine',
           icon: 'play-forward-outline',
+          role: this.filterMode === 0 ? 'selected' : '',
           handler: () => {
             this.filterMode = 0;
           },
@@ -166,6 +173,7 @@ export class ChatPage implements OnInit {
         {
           text: 'Vergangene Termine',
           icon: 'play-back-outline',
+          role: this.filterMode === 2 ? 'selected' : '',
           handler: () => {
             this.filterMode = 2;
           },
@@ -173,6 +181,7 @@ export class ChatPage implements OnInit {
         {
           text: 'Alle',
           icon: 'apps-outline',
+          role: this.filterMode === 1 ? 'selected' : '',
           handler: () => {
             this.filterMode = 1;
           },
