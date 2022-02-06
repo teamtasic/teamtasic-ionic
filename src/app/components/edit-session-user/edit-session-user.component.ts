@@ -229,6 +229,11 @@ export class EditSessionUserComponent implements OnInit {
       this.drs.updateAuthUser(user, user.uid);
     }
   }
+  async deleteUser() {
+    this.drs.deleteSessionUser(this.session.uid);
+    this.modalController.dismiss();
+    this.ns.showToast('Zugang gelöscht');
+  }
 }
 
 /**

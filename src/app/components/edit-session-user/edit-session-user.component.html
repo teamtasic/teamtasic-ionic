@@ -134,16 +134,26 @@
       </ion-item>
     </form>
 
-    <ion-card *ngIf="!newSession">
-      <ion-card-header>
-        <ion-card-title>
-          <ion-text color="primary"> Etwas nicht geklappt? </ion-text>
-        </ion-card-title>
-        <ion-card-content>
-          Überprüfe ob du den kompletten Code eingegeben hast. (Besonders 0 und O, l & I). Kopiere
-          den Code idealerweise.
-        </ion-card-content>
-      </ion-card-header>
-    </ion-card>
+    <ion-item *ngIf="!newSession && memberships?.length != 0" class="ion-margin-top" lines="none">
+      <ion-label class="ion-text-wrap">
+        <ion-text color="danger">
+          Um diesen Zugang zu löschen, verlasse zuerst bitte alle Teams.
+        </ion-text>
+      </ion-label>
+    </ion-item>
+    <ion-grid *ngIf="!newSession">
+      <ion-row>
+        <ion-col>
+          <ion-button
+            (click)="deleteUser()"
+            expand="block"
+            color="danger"
+            [disabled]="memberships?.length > 0"
+          >
+            Zugang löschen
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
   </ion-list>
 </ion-content>
