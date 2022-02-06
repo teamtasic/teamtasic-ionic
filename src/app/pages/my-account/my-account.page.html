@@ -39,6 +39,9 @@
       *ngFor="let sessionUser of ((drs.sessionUsers | async) || [[]])[0]"
       (click)="openSessionEditor(sessionUser)"
     >
+      <ion-avatar slot="start">
+        <img [src]="sessionUser.profilePictureUrl" />
+      </ion-avatar>
       <ion-label> {{sessionUser.name}} </ion-label>
     </ion-item>
 
