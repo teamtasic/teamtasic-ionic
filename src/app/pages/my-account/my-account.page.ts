@@ -46,16 +46,7 @@ export class MyAccountPage implements OnInit {
       trainingReminderNotifications: [user.pushNotificationOptions.trainingReminderNotifications],
     });
 
-    this.userData.valueChanges.subscribe((data) => {
-      if (data.notificationsEnabled) {
-        this.enPushNotifications();
-      }
-    });
-
     this.drs.syncSessionUsers(this.drs.authUsers.value[0].uid);
-    this.drs.sessionUsers.subscribe((users) => {
-      console.log(users);
-    });
   }
   async saveUserData() {
     let user = this.drs.authUsers.value[0];

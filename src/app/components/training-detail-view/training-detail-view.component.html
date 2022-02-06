@@ -23,13 +23,7 @@
 </ion-header>
 <ion-content>
   <!-- not open to changes -->
-  <ion-card *ngIf="!isOpenToChanges(true)">
-    <ion-card-header>
-      <ion-card-title>
-        <ion-text color="primary"> Anmeldefrist abgelaufen </ion-text>
-      </ion-card-title>
-    </ion-card-header>
-  </ion-card>
+
   <ion-list>
     <form [formGroup]="meetForm">
       <ion-item>
@@ -146,26 +140,33 @@
         <ion-input type="text" formControlName="comment"></ion-input>
       </ion-item>
     </form>
-    <ion-grid>
-      <ion-col>
-        <ion-segment
-          #stat
-          [value]="status"
-          (ionChange)="change($event)"
-          [disabled]="!isOpenToChanges()"
-        >
-          <ion-segment-button value="accepted">
-            <ion-icon name="checkmark-circle-outline"></ion-icon>
-          </ion-segment-button>
-          <ion-segment-button value="declined">
-            <ion-icon name="close-circle-outline"></ion-icon>
-          </ion-segment-button>
-          <ion-segment-button value="unknown">
-            <ion-icon name="help-circle-outline"></ion-icon>
-          </ion-segment-button>
-        </ion-segment>
-      </ion-col>
-    </ion-grid>
+
+    <ion-list>
+      <ion-list-header *ngIf="!isOpenToChanges(true)">
+        <ion-text color="primary"> Anmeldefrist abgelaufen </ion-text>
+      </ion-list-header>
+
+      <ion-grid>
+        <ion-col>
+          <ion-segment
+            #stat
+            [value]="status"
+            (ionChange)="change($event)"
+            [disabled]="!isOpenToChanges()"
+          >
+            <ion-segment-button value="accepted">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+            </ion-segment-button>
+            <ion-segment-button value="declined">
+              <ion-icon name="close-circle-outline"></ion-icon>
+            </ion-segment-button>
+            <ion-segment-button value="unknown">
+              <ion-icon name="help-circle-outline"></ion-icon>
+            </ion-segment-button>
+          </ion-segment>
+        </ion-col>
+      </ion-grid>
+    </ion-list>
 
     <!-- end change my status section -->
 
@@ -373,7 +374,7 @@
 
     <!-- end other users section -->
   </ion-list>
-  <div *ngIf="team?.headTrainers?.includes(sessionId)">
+  <ion-list *ngIf="team?.headTrainers?.includes(sessionId)" class="ion-margin-vertical">
     <ion-list-header>
       <ion-label>Training bearbeiten</ion-label>
     </ion-list-header>
@@ -382,5 +383,5 @@
         <ion-button (click)="delete()" expand="block" color="danger">Löschen</ion-button>
       </ion-col>
     </ion-row>
-  </div>
+  </ion-list>
 </ion-content>

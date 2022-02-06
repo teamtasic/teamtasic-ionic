@@ -69,7 +69,7 @@
       <ion-card>
         <ion-card-header>
           <ion-card-title>
-            <ion-label> Erklärung AHV- & J+S-Nummer </ion-label>
+            <ion-label> AHV- & J+S-Nummer </ion-label>
           </ion-card-title>
         </ion-card-header>
         <ion-card-content>
@@ -80,7 +80,7 @@
         </ion-card-content>
       </ion-card>
 
-      <ion-list *ngIf="!newSession">
+      <ion-list *ngIf="!newSession" lines="none">
         <tt-file-upload
           (fileUploaded)="photoUrlChanged($event)"
           [fileName]="session.uid"
@@ -93,20 +93,6 @@
         </ion-item>
       </ion-list>
     </form>
-
-    <ion-card *ngIf="!newSession">
-      <ion-card-header>
-        <ion-card-title>
-          <ion-text color="danger">
-            Das Beitreten und verlassen von Teams wird sofort gespeichert.
-          </ion-text>
-        </ion-card-title>
-        <ion-card-content>
-          Um ein Team zu verlassen, klicken Sie auf das entsprechende Symbol. Um ein Team zu
-          betreten benutze bitte den Code den du von deinem Administrator erhältst.
-        </ion-card-content>
-      </ion-card-header>
-    </ion-card>
 
     <ion-list-header *ngIf="!newSession"> Mitgliedschaften </ion-list-header>
 

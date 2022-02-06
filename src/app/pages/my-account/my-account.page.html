@@ -13,19 +13,24 @@
       <ion-title size="large">Mein Account</ion-title>
     </ion-toolbar>
   </ion-header>
-  <ion-item>
-    <ion-label>
-      <h2>{{(drs.authUsers | async)![0].username}}</h2>
-    </ion-label>
-    <ion-avatar slot="start">
-      <img
-        [src]="'https://avatars.dicebear.com/api/initials/'+ (((drs.authUsers | async) || [{username: ''}])[0]).username + '.svg'"
-      />
-    </ion-avatar>
-  </ion-item>
 
-  <ion-list class="ion-margin-top ion-margin-bottom">
-    <ion-list-header> Meine Zugänge </ion-list-header>
+  <ion-list class="ion-margin-vertical">
+    <ion-item lines="none">
+      <ion-label>
+        <ion-text>
+          <h2>{{(drs.authUsers | async)![0].username || ''}}</h2>
+        </ion-text>
+      </ion-label>
+      <ion-avatar slot="start">
+        <img
+          [src]="'https://avatars.dicebear.com/api/initials/'+ (((drs.authUsers | async) || [{username: ''}])[0]).username + '.svg'"
+        />
+      </ion-avatar>
+    </ion-item>
+  </ion-list>
+
+  <ion-list class="ion-margin-vertical">
+    <ion-list-header> Zugänge </ion-list-header>
     <ion-item>
       <ion-label class="ion-text-wrap">
         Teamtasic unterstützt es, für einen Account mehrere Personen zu erfassen. (z.B. für Eltern
@@ -50,8 +55,8 @@
     </ion-item>
   </ion-list>
 
-  <ion-list class="ion-margin-top ion-margin-bottom">
-    <ion-list-header> Meine Daten </ion-list-header>
+  <ion-list class="ion-margin-vertical">
+    <ion-list-header> Daten </ion-list-header>
     <form [formGroup]="userData">
       <ion-item>
         <ion-label position="stacked">Benutzername</ion-label>
@@ -71,7 +76,7 @@
         <ion-label position="stacked">Adresse</ion-label>
         <ion-input type="text" formControlName="address" placeholder="Adresse"></ion-input>
       </ion-item>
-      <ion-item>
+      <ion-item class="ion-margin-bottom">
         <ion-label position="stacked">Postleitzahl, Stadt</ion-label>
         <ion-input
           type="text"
@@ -79,25 +84,26 @@
           placeholder="Postleizahl, Stadt"
         ></ion-input>
       </ion-item>
-      <ion-list-header> Push-Benachrichtigungen </ion-list-header>
+
+      <ion-list-header class="ion-margin-top"> Benachrichtigungen </ion-list-header>
       <ion-item>
-        <ion-label>Push-Benachrichtigungen</ion-label>
+        <ion-label class="ion-text-wrap">Push-Benachrichtigungen</ion-label>
         <ion-toggle formControlName="notificationsEnabled"></ion-toggle>
       </ion-item>
       <ion-item *ngIf="userData?.value.notificationsEnabled">
-        <ion-label> Neues Training eingetragen </ion-label>
+        <ion-label class="ion-text-wrap"> Neues Training eingetragen </ion-label>
         <ion-toggle formControlName="newTrainingNotifications"></ion-toggle>
       </ion-item>
       <ion-item *ngIf="userData?.value.notificationsEnabled">
-        <ion-label> Termin von Trainer bearbeitet </ion-label>
+        <ion-label class="ion-text-wrap"> Termin von Trainer bearbeitet </ion-label>
         <ion-toggle formControlName="trainingChangedNotifications"></ion-toggle>
       </ion-item>
       <ion-item *ngIf="userData?.value.notificationsEnabled">
-        <ion-label> Trainingshinweis </ion-label>
+        <ion-label class="ion-text-wrap"> Trainingshinweis </ion-label>
         <ion-toggle formControlName="trainingReminderNotifications"></ion-toggle>
       </ion-item>
 
-      <ion-row>
+      <ion-row class="ion-margin-top">
         <ion-col>
           <ion-button expand="block" (click)="saveUserData()" [disabled]="userData.invalid">
             Änderungen speichern</ion-button

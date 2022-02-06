@@ -122,7 +122,7 @@ export class ChatPage implements OnInit {
       this.drs.syncMeet(meet.uid, this.clubId, this.teamId);
     });
     this.meets = m;
-    new Promise((resolve) => setTimeout(resolve, 1000)).then(() => {
+    new Promise((resolve) => setTimeout(resolve, 200)).then(() => {
       this.loading = false;
     });
   }

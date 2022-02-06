@@ -20,6 +20,8 @@
     <ion-item button routerLink="/my-account" routerLinkActive="active" detail>
       <ion-label>Mein Konto verwalten</ion-label>
     </ion-item>
+  </ion-list>
+  <ion-list class="ion-margin-vertical">
     <ion-list-header>
       <ion-label>Technischer Support</ion-label>
     </ion-list-header>
@@ -30,9 +32,15 @@
       <ion-label>Kontakt</ion-label>
     </ion-item>
   </ion-list>
-  <ion-list class="ion-margin-top ion-margin-bottom">
-    <ion-button (click)="logout()" expand="block" color="danger"> Ausloggen </ion-button>
+
+  <ion-list class="ion-margin-vertical">
+    <ion-row>
+      <ion-col>
+        <ion-button (click)="logout()" expand="block" color="danger"> Ausloggen </ion-button>
+      </ion-col>
+    </ion-row>
   </ion-list>
+
   <ion-list class="ion-margin-top">
     <ion-item>
       <ion-label>Version</ion-label>
