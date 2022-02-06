@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Capacitor } from '@capacitor/core';
-import { IonContent, ModalController } from '@ionic/angular';
+import { ActionSheetController, IonContent, ModalController } from '@ionic/angular';
 import { Meet } from 'src/app/classes/meet';
 import { sessionMembership } from 'src/app/classes/session-user-data';
 import { Team } from 'src/app/classes/team';
@@ -24,6 +24,7 @@ export class ChatPage implements OnInit {
   sessionId: string = '';
 
   meets: Meet[] = [];
+  origMeets: Meet[] = [];
   team: Team | undefined;
 
   selectedSessionId: string = '';
@@ -38,8 +39,19 @@ export class ChatPage implements OnInit {
   sortedUsers: string[] = [];
   lastTrainerIndex: number = 0;
 
+  /**
+   * Filter mode
+   * 0: only future
+   * 1: all
+   * 2: only past
+   * @type {(0 | 1 | 2)}
+   * @memberof ChatPage
+   */
+  filterMode: 0 | 1 | 2 = 0;
+
   constructor(
     public modalController: ModalController,
+    public actionSheetController: ActionSheetController,
     private fb: FormBuilder,
     public drs: DataRepositoryService,
     public activatedRoute: ActivatedRoute,
@@ -72,19 +84,8 @@ export class ChatPage implements OnInit {
     });
 
     this.drs.syncMeetsForTeam(this.teamId, this.clubId).subscribe((meets) => {
-      console.log(meets, 'sorting...');
-      let m = meets;
-      m.sort((a, b) => {
-        return (a.start as any) - (b.start as any);
-      });
-      // filter out meets starting in the past
-      m = m.filter((meet) => {
-        return (meet.start as any) > Date.now() - 1000 * 60 * 30;
-      });
-      m.forEach((meet) => {
-        this.drs.syncMeet(meet.uid, this.clubId, this.teamId);
-      });
-      this.meets = m;
+      this.origMeets = meets;
+      this.init(meets);
     });
 
     this.drs.authUsers.subscribe(async (users) => {
@@ -97,6 +98,29 @@ export class ChatPage implements OnInit {
       this.sessionUserString = sessionUsers[0].find((s) => s.uid === this.sessionId)?.name || '';
     });
   }
+  init(meets: Meet[]) {
+    console.log(meets, 'sorting...');
+    let m = meets;
+    m.sort((a, b) => {
+      return (a.start as any) - (b.start as any);
+    });
+    // filter out meets starting in the past
+    if (this.filterMode === 0) {
+      m = m.filter((meet) => {
+        return (meet.start as any) > Date.now() - 1000 * 60 * 30;
+      });
+    } else if (this.filterMode === 2) {
+      m = m.filter((meet) => {
+        return (meet.start as any) < Date.now() - 1000 * 60 * 30;
+      });
+    }
+
+    m.forEach((meet) => {
+      this.drs.syncMeet(meet.uid, this.clubId, this.teamId);
+    });
+    this.meets = m;
+  }
+
   async addTraining() {
     const modal = await this.modalController.create({
       component: MeetCreateComponent,
@@ -125,5 +149,39 @@ export class ChatPage implements OnInit {
     });
 
     await modal.present();
+  }
+
+  async setFilterMode() {
+    console.log('setFilterMode');
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Filter',
+      buttons: [
+        {
+          text: 'Zukünftige Termine',
+          icon: 'play-forward-outline',
+          handler: () => {
+            this.filterMode = 0;
+          },
+        },
+        {
+          text: 'Vergangene Termine',
+          icon: 'play-back-outline',
+          handler: () => {
+            this.filterMode = 2;
+          },
+        },
+        {
+          text: 'Alle',
+          icon: 'apps-outline',
+          handler: () => {
+            this.filterMode = 1;
+          },
+        },
+      ],
+    });
+    await actionSheet.present();
+
+    await actionSheet.onDidDismiss();
+    this.init(this.origMeets);
   }
 }

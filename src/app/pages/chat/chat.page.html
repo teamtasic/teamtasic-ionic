@@ -2,11 +2,8 @@
   <ion-toolbar>
     <ion-back-button slot="start"></ion-back-button>
     <ion-buttons slot="end">
-      <ion-button
-        [routerLink]="'../../../../chat-archive/'+ sessionId + '/' + clubId + '/' + teamId"
-        *ngIf="showTrainerCtrls"
-      >
-        <ion-icon slot="icon-only" name="archive-outline"></ion-icon>
+      <ion-button *ngIf="showTrainerCtrls" (click)="setFilterMode()">
+        <ion-icon slot="icon-only" name="filter"></ion-icon>
       </ion-button>
       <ion-button
         [routerLink]="'../../../../addressbook/'+ sessionId + '/' + clubId + '/' + teamId"
