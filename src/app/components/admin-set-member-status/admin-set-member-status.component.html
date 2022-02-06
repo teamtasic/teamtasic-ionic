@@ -1,6 +1,6 @@
 <ion-list>
   <ion-list-header>
-    {{ team?.names[sessionId] || 'unknown' }}
+    {{ team?.names[sessionId] ?? 'unknown' }}
   </ion-list-header>
   <ion-item *ngIf="(meet?.comments || {})[sessionId] !== undefined">
     <ion-label position="stacked"> Kommentar: </ion-label>

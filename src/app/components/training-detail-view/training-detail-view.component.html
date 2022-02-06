@@ -347,7 +347,7 @@
               <img [src]="team?.profilePictureUrls[cath]" />
             </ion-avatar>
             <ion-label>
-              <h2>{{ team?.names[cath] }}</h2>
+              <h2>{{ team?.names[cath] || '' }}</h2>
               <p>
                 <ion-text color="primary">
                   <strong>Athlet</strong>

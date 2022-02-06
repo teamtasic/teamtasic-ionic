@@ -5,17 +5,13 @@ export class Team {
 
   name: string;
 
-  names: {
-    [key: string]: string;
-  };
+  names: any;
   users: string[];
   trainers: string[];
   headTrainers: string[];
   admins: string[];
   owner: string;
-  profilePictureUrls: {
-    [key: string]: string;
-  };
+  profilePictureUrls: any;
 
   constructor(
     uid: string,

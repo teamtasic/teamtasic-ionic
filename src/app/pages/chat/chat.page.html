@@ -97,7 +97,7 @@
           [style.grid-column-start]="1"
           [style.grid-row-start]="i+2"
         >
-          {{team?.names[user]}}
+          {{team?.names[user] || '-'}}
         </div>
 
         <ng-container *ngFor="let m of meets; let mi = index">

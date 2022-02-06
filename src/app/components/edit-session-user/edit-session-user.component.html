@@ -127,7 +127,7 @@
             (click)="deleteUser()"
             expand="block"
             color="danger"
-            [disabled]="memberships?.length > 0"
+            [disabled]="(memberships?.length ?? 0) > 0"
           >
             Zugang löschen
           </ion-button>

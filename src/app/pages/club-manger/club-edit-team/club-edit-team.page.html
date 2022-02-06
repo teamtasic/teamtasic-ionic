@@ -26,11 +26,11 @@
 
     <ion-item *ngFor="let member of team?.users">
       <ion-label>
-        <h2>{{team?.names[member]}}</h2>
+        <h2>{{team?.names[member] || ''}}</h2>
         <p>{{roleStrings[roles[member]]}}</p>
       </ion-label>
       <ion-avatar slot="start">
-        <img [src]="team?.profilePictureUrls[member]" />
+        <img [src]="team?.profilePictureUrls[member] || ''" />
       </ion-avatar>
       <ion-button slot="end" fill="clear" color="medium" (click)="presentActionSheet(member)">
         <ion-icon slot="icon-only" name="ellipsis-horizontal-circle-outline"></ion-icon>
