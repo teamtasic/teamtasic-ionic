@@ -29,13 +29,6 @@ const routes: Routes = [
                 (m) => m.AddressbookPageModule
               ),
           },
-          {
-            path: 'chat-archive',
-            loadChildren: () =>
-              import('../../pages/chat-archive/chat-archive.module').then(
-                (m) => m.ChatArchivePageModule
-              ),
-          },
         ],
       },
       // {
