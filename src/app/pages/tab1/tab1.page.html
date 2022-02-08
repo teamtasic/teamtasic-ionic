@@ -1,0 +1,53 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Home</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Home</ion-title>
+      <ion-buttons slot="end">
+        <ion-button>
+          <ion-icon name="notifications-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-list class="ion-margin-vertical">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-label>Meine Termine</ion-label>
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item button detail lines="none" routerLink="/tabs/tab2">
+          <ion-label> Zu meinen Teams </ion-label>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-label>Updates</ion-label>
+        </ion-card-title>
+        <ion-card-subtitle>
+          <ion-label>Version 2.6.0</ion-label>
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <p>- Neue Homepage</p>
+        <p>- Profilbilder</p>
+        <p>- Neue Einstellungen</p>
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
+</ion-content>
+
+<!-- <ion-footer>
+  <ion-toolbar> </ion-toolbar>
+</ion-footer> -->
