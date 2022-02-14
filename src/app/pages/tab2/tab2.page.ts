@@ -6,6 +6,7 @@ import { take } from 'rxjs/operators';
 import { sessionMembership, SessionUserData } from 'src/app/classes/session-user-data';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
 import { MembershipsService } from 'src/app/services/memberships.service';
+import { VersionService } from 'src/app/services/version.service';
 
 @Component({
   selector: 'app-tab2',
@@ -17,7 +18,8 @@ export class Tab2Page implements OnInit {
   constructor(
     public drs: DataRepositoryService,
     public router: Router,
-    private menu: MenuController
+    private menu: MenuController,
+    private versionService: VersionService
   ) {}
 
   selectedSessionId: string = '';

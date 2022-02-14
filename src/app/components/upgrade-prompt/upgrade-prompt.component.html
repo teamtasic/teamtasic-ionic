@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Aktualisierung</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-align-items-center">
+  <ion-list>
+    <ion-item lines="none">
+      <ion-icon name="information-circle-outline" slot="start"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <!-- erklärungstext wesshalb updates -->
+        <p>Von Zeit zu Zeit wird das Programm aktualisiert.</p>
+        <p>
+          Je nach dem welche Version du benutzt, kann es nun sein, dass diese nicht mehr mit der
+          neuesten Version kompatibel ist.
+        </p>
+        <p>
+          Wir geben unser Bestes, dich nicht zu einem Update zu zwingen, manchmal ist dies aber
+          nötig, z.B. jetzt.
+        </p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
+
+<ion-footer>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-button
+          expand="block"
+          *ngIf="platform == 'ios'"
+          href="https://apps.apple.com/us/app/teamtasic/id1588914453"
+          >Aktualisieren</ion-button
+        >
+        <ion-button
+          expand="block"
+          *ngIf="platform == 'android'"
+          href="https://play.google.com/store/apps/details?id=app.teamtasic.ionic.android"
+          >Aktualisieren</ion-button
+        >
+        <ion-button expand="block" *ngIf="platform == 'web'" color="danger" class="ion-text-wrap"
+          >Web durch schliessen des Tabs aktualisieren</ion-button
+        >
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-footer>

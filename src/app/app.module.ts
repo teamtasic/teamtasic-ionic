@@ -17,6 +17,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ServiceWorkerModule } from '@angular/service-worker';
 
 import { HttpClientModule } from '@angular/common/http';
+import { UpgradePromptModule } from './components/upgrade-prompt/upgrade-prompt.module';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -37,6 +38,7 @@ import { HttpClientModule } from '@angular/common/http';
     }),
     AngularFireStorageModule,
     HttpClientModule,
+    UpgradePromptModule,
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
