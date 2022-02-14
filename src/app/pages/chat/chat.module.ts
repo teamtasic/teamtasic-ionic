@@ -10,6 +10,7 @@ import { ChatPage } from './chat.page';
 import { TextbubbleComponent } from 'src/app/components/textbubble/textbubble.component';
 import { MeetCreateComponent } from 'src/app/components/meet-create/meet-create.component';
 import { TrainingbubbleModuleModule } from 'src/app/components/trainingbubble/trainingbubble-module.module';
+import { MeetCreateModule } from 'src/app/components/meet-create/meet-create.module';
 
 @NgModule({
   imports: [
@@ -19,7 +20,8 @@ import { TrainingbubbleModuleModule } from 'src/app/components/trainingbubble/tr
     IonicModule,
     ChatPageRoutingModule,
     TrainingbubbleModuleModule,
+    MeetCreateModule,
   ],
-  declarations: [ChatPage, TextbubbleComponent, MeetCreateComponent],
+  declarations: [ChatPage, TextbubbleComponent],
 })
 export class ChatPageModule {}

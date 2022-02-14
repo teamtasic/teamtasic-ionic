@@ -21,20 +21,50 @@ export class MeetCreateComponent implements OnInit {
   @Input() clubId: string = '';
   @Input() teamId: string = '';
 
+  @Input() templateMeet: Meet | undefined;
+
   meetCreateGroup: FormGroup = this.fb.group({});
 
   ngOnInit() {
-    this.meetCreateGroup = this.fb.group({
-      meetName: ['', [Validators.required]],
-      meetLocation: ['', [Validators.required]],
-      meetDate: ['', [Validators.required]],
-      meetEndTime: ['', [Validators.required]],
-      meetComment: [''],
-      meetDeadline: [
-        '0',
-        [Validators.required, Validators.min(-1), Validators.max(14), Validators.pattern('[0-9]*')],
-      ],
-    });
+    if (this.templateMeet) {
+      var tzoffset = new Date().getTimezoneOffset() * 60000;
+      var startDate = new Date(this.templateMeet.start.getTime() - tzoffset);
+      var endDate = new Date(this.templateMeet.end.getTime() - tzoffset);
+
+      this.meetCreateGroup = this.fb.group({
+        meetName: [this.templateMeet.title, [Validators.required]],
+        meetLocation: [this.templateMeet.meetpoint, [Validators.required]],
+        meetDate: [startDate.toISOString(), [Validators.required]],
+        meetEndTime: [endDate.toISOString(), [Validators.required]],
+        meetComment: [this.templateMeet.comment],
+        meetDeadline: [
+          this.templateMeet.deadline,
+          [
+            Validators.required,
+            Validators.min(-1),
+            Validators.max(14),
+            Validators.pattern('[0-9]*'),
+          ],
+        ],
+      });
+    } else {
+      this.meetCreateGroup = this.fb.group({
+        meetName: ['', [Validators.required]],
+        meetLocation: ['', [Validators.required]],
+        meetDate: ['', [Validators.required]],
+        meetEndTime: ['', [Validators.required]],
+        meetComment: [''],
+        meetDeadline: [
+          '0',
+          [
+            Validators.required,
+            Validators.min(-1),
+            Validators.max(14),
+            Validators.pattern('[0-9]*'),
+          ],
+        ],
+      });
+    }
   }
 
   async createMeet() {

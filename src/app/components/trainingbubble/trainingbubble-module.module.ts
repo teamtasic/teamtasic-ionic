@@ -5,9 +5,10 @@ import { IonicModule } from '@ionic/angular';
 import { TrainingDetailViewComponent } from '../training-detail-view/training-detail-view.component';
 import { AdminSetMemberStatusComponent } from '../admin-set-member-status/admin-set-member-status.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MeetCreateModule } from '../meet-create/meet-create.module';
 
 @NgModule({
-  imports: [CommonModule, IonicModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, FormsModule, ReactiveFormsModule, MeetCreateModule],
   declarations: [
     TrainingbubbleComponent,
     TrainingDetailViewComponent,

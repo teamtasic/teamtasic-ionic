@@ -364,11 +364,16 @@
   </ion-list>
   <ion-list *ngIf="team?.headTrainers?.includes(sessionId)" class="ion-margin-vertical">
     <ion-list-header>
-      <ion-label>Training bearbeiten</ion-label>
+      <ion-label>Mutationen</ion-label>
     </ion-list-header>
     <ion-row>
       <ion-col>
         <ion-button (click)="delete()" expand="block" color="danger">Löschen / Absagen</ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-button (click)="copy()" expand="block" color="primary">Kopieren</ion-button>
       </ion-col>
     </ion-row>
   </ion-list>

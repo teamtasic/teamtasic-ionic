@@ -6,6 +6,7 @@ import { Team } from 'src/app/classes/team';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
 import { NotificationService } from 'src/app/services/notification-service.service';
 import { AdminSetMemberStatusComponent } from '../admin-set-member-status/admin-set-member-status.component';
+import { MeetCreateComponent } from '../meet-create/meet-create.component';
 
 @Component({
   selector: 'app-training-detail-view',
@@ -174,6 +175,18 @@ export class TrainingDetailViewComponent implements OnInit {
       ],
     });
     await alert.present();
+  }
+  async copy() {
+    const modal = await this.modalController.create({
+      component: MeetCreateComponent,
+      componentProps: {
+        clubId: this.clubId,
+        teamId: this.teamId,
+        templateMeet: this.meet,
+      },
+    });
+    await modal.present();
+    await modal.onDidDismiss();
   }
 
   status: 'accepted' | 'declined' | 'unknown' | undefined = 'unknown';
