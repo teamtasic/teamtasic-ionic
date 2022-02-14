@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Team, TeamData } from 'src/app/classes/team';
+import { Team } from 'src/app/classes/team';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
 
 @Component({
@@ -32,7 +32,19 @@ export class ClubAddTeamPage implements OnInit {
   }
 
   async createTeam() {
-    const team = new Team('', this.teamName?.value, {}, [], [], [], [], '', {});
+    const team = new Team(
+      '',
+      this.teamName?.value,
+      {},
+      [],
+      [],
+      [],
+      [],
+      '',
+      {},
+      Team.roleNamesDefault,
+      []
+    );
     this.drs.createTeam(team, this.clubId);
 
     this.router.navigate(['/my-clubs/detail', this.clubId]);

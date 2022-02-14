@@ -65,10 +65,11 @@ export class ClubEditTeamPage implements OnInit {
     });
 
     this.editGroup = this.fb.group({
-      name: [
-        this.drs.teams.value.find((team) => team.uid == this.teamId)?.name,
-        [Validators.required],
-      ],
+      name: [this.team?.name, [Validators.required]],
+      athlete: [this.team?.roleNames['athlete'], [Validators.required]],
+      trainer: [this.team?.roleNames['trainer'], [Validators.required]],
+      athletes: [this.team?.roleNames['athletes'], [Validators.required]],
+      trainers: [this.team?.roleNames['trainers'], [Validators.required]],
     });
   }
   async teamChanged(team: Team) {
@@ -145,6 +146,17 @@ export class ClubEditTeamPage implements OnInit {
           icon: 'trash',
           handler: this.removeMember.bind(this, userId),
         },
+        {
+          text: 'Verstecken',
+          role: 'destructive',
+          icon: 'eye-off-outline',
+          handler: this.hideMember.bind(this, userId),
+        },
+        {
+          text: 'Zeigen',
+          icon: 'eye-outline',
+          handler: this.showMember.bind(this, userId),
+        },
 
         {
           text: 'Cancel',
@@ -159,7 +171,6 @@ export class ClubEditTeamPage implements OnInit {
   }
 
   async removeMember(userId: string) {
-    console.log('remove', userId);
     if (this.team?.admins.indexOf(userId) == -1) {
       this.mms
         .leaveFromTeam(userId, this.teamId, this.clubId)
@@ -182,6 +193,50 @@ export class ClubEditTeamPage implements OnInit {
     } else {
       this.ns.showToast(
         'Du kannst keine Admins entfernen. (Momentan. Bitte kontaktiere den Support)'
+      );
+    }
+  }
+  async hideMember(userId: string) {
+    if (this.team?.hiddenMembers.indexOf(userId) == -1) {
+      this.team?.hiddenMembers.push(userId);
+      this.drs.updateTeam(
+        this.team || new Team('', '', {}, [], [], [], [], '', {}, Team.roleNamesDefault, []),
+        this.clubId,
+        this.teamId
+      );
+    }
+  }
+  async showMember(userId: string) {
+    if (this.team?.hiddenMembers.indexOf(userId) != -1) {
+      this.team?.hiddenMembers.splice(this.team?.hiddenMembers.indexOf(userId), 1);
+      this.drs.updateTeam(
+        this.team || new Team('', '', {}, [], [], [], [], '', {}, Team.roleNamesDefault, []),
+        this.clubId,
+        this.teamId
+      );
+    }
+  }
+
+  async saveChanges() {
+    if (this.team) {
+      [
+        this.team.name,
+        this.team.roleNames['athlete'],
+        this.team.roleNames['athletes'],
+        this.team.roleNames['trainer'],
+        this.team.roleNames['trainers'],
+      ] = [
+        this.editGroup.value.name,
+        this.editGroup.value.athlete,
+        this.editGroup.value.athletes,
+        this.editGroup.value.trainer,
+        this.editGroup.value.trainers,
+      ];
+
+      this.drs.updateTeam(
+        this.team || new Team('', '', {}, [], [], [], [], '', {}, Team.roleNamesDefault, []),
+        this.clubId,
+        this.teamId
       );
     }
   }

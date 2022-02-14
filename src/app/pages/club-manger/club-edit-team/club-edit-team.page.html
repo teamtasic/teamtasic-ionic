@@ -27,7 +27,10 @@
     <ion-item *ngFor="let member of team?.users">
       <ion-label>
         <h2>{{team?.names[member] || ''}}</h2>
-        <p>{{roleStrings[roles[member]]}}</p>
+        <p>
+          {{roleStrings[roles[member]] + (team?.hiddenMembers.includes(member) ? ' (Versteckt)' :
+          '')}}
+        </p>
       </ion-label>
       <ion-avatar slot="start">
         <img [src]="team?.profilePictureUrls[member] || ''" />
@@ -36,49 +39,74 @@
         <ion-icon slot="icon-only" name="ellipsis-horizontal-circle-outline"></ion-icon>
       </ion-button>
     </ion-item>
+
+    <ion-list-header> Mitglied hinzufügen </ion-list-header>
+    <!-- form for adding members -->
+    <ion-item>
+      <ion-label class="ion-text-wrap">
+        <ion-text color="danger"> ACHTUNG! </ion-text>
+        Jeder mit dem Link kann deinem Team beitreten.
+      </ion-label>
+    </ion-item>
+
+    <ion-item (click)="addMember()">
+      <ion-note slot="start"> Mitglieder </ion-note>
+      <ion-label color="primary"> {{membercode}} </ion-label>
+    </ion-item>
+    <ion-item (click)="addTrainer()">
+      <ion-note slot="start"> Trainer </ion-note>
+      <ion-label color="primary"> {{trainercode}} </ion-label>
+    </ion-item>
+    <ion-item (click)="addHeadcoach()">
+      <ion-note slot="start"> Cheftrainer </ion-note>
+      <ion-label color="primary"> {{headtrainercode}} </ion-label>
+    </ion-item>
+
+    <ion-list-header class="ion-margin-top"> Rollentitel </ion-list-header>
+
+    <ion-list>
+      <ion-item>
+        <ion-input
+          placeholder="Einzelnes Mitglied"
+          type="text"
+          formControlName="athlete"
+        ></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          placeholder="Mehrzahl Mitglieder"
+          type="text"
+          formControlName="athletes"
+        ></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          placeholder="Einzelner Trainer"
+          type="text"
+          formControlName="trainer"
+        ></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          placeholder="Mehrzahl Trainer"
+          type="text"
+          formControlName="trainers"
+        ></ion-input>
+      </ion-item>
+    </ion-list>
+
+    <ion-list-header class="ion-margin-top"> Speichern </ion-list-header>
+    <ion-row>
+      <ion-col>
+        <ion-button color="primary" expand="block" (click)="saveChanges()">
+          Änderungen speichern</ion-button
+        >
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-button color="danger" expand="block" disabled> Team löschen</ion-button>
+      </ion-col>
+    </ion-row>
   </form>
-
-  <ion-list-header> Mitglied hinzufügen </ion-list-header>
-  <!-- form for adding members -->
-  <ion-item>
-    <ion-label class="ion-text-wrap">
-      <ion-text color="danger"> ACHTUNG! </ion-text>
-      Jeder mit dem Link kann deinem Team beitreten.
-    </ion-label>
-  </ion-item>
-
-  <ion-item (click)="addMember()">
-    <ion-note slot="start"> Mitglieder </ion-note>
-    <ion-label color="primary"> {{membercode}} </ion-label>
-  </ion-item>
-  <ion-item (click)="addTrainer()">
-    <ion-note slot="start"> Trainer </ion-note>
-    <ion-label color="primary"> {{trainercode}} </ion-label>
-  </ion-item>
-  <ion-item (click)="addHeadcoach()">
-    <ion-note slot="start"> Cheftrainer </ion-note>
-    <ion-label color="primary"> {{headtrainercode}} </ion-label>
-  </ion-item>
-
-  <!-- <ion-row>
-    <ion-col>
-      <ion-button expand="block" (click)="addMember()" color="primary">
-        Mitglied hinzufügen
-      </ion-button>
-      <ion-button expand="block" (click)="addTrainer()" color="secondary">
-        Trainer hinzufügen
-      </ion-button>
-      <ion-button expand="block" (click)="addHeadcoach()" color="dark">
-        Cheftrainer hinzufügen
-      </ion-button>
-    </ion-col>
-  </ion-row> -->
-
-  <ion-list-header> Team löschen </ion-list-header>
-  <ion-item class="ion-text-wrap"> </ion-item>
-  <ion-row>
-    <ion-col>
-      <ion-button color="danger" expand="block" disabled> Team löschen</ion-button>
-    </ion-col>
-  </ion-row>
 </ion-content>
