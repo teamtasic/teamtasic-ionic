@@ -151,6 +151,7 @@ export class EditSessionUserComponent implements OnInit {
 
         for (const membership of this.memberships) {
           let team = await this.drs.getTeam(membership.teamId, membership.clubId);
+          team.names[this.session.uid] = this.session.name;
           team.profilePictureUrls[this.session.uid] = this.session.profilePictureUrl;
           await this.drs.updateTeam(team, membership.clubId, membership.teamId);
         }
