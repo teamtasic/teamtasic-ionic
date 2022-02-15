@@ -75,12 +75,16 @@ export class ChatPage implements OnInit {
       this.sortedUsers = [];
       this.sortedUsers.push(this.sessionId);
       this.team?.trainers.forEach((trainerId) => {
-        this.sortedUsers.push(trainerId);
+        if (!this.team?.hiddenMembers.includes(trainerId)) {
+          this.sortedUsers.push(trainerId);
+        }
       });
       this.lastTrainerIndex = this.sortedUsers.length - 1;
       this.team?.users.forEach((userId) => {
-        if (!this.team?.trainers.includes(userId)) {
-          this.sortedUsers.push(userId);
+        if (!this.team?.hiddenMembers.includes(userId)) {
+          if (!this.team?.trainers.includes(userId)) {
+            this.sortedUsers.push(userId);
+          }
         }
       });
     });

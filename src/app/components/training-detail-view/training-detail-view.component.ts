@@ -103,21 +103,25 @@ export class TrainingDetailViewComponent implements OnInit {
         return !usersToRemove.has(name);
       });
       usersWOtrainers.forEach((uid) => {
-        if (this.meet?.acceptedUsers.includes(uid)) {
-          this.members_accepted.push(uid);
-        } else if (this.meet?.declinedUsers.includes(uid)) {
-          this.members_declined.push(uid);
-        } else {
-          this.members_else.push(uid);
+        if (!this.team?.hiddenMembers.includes(uid)) {
+          if (this.meet?.acceptedUsers.includes(uid)) {
+            this.members_accepted.push(uid);
+          } else if (this.meet?.declinedUsers.includes(uid)) {
+            this.members_declined.push(uid);
+          } else {
+            this.members_else.push(uid);
+          }
         }
       });
       this.team.trainers.forEach((uid) => {
-        if (this.meet?.acceptedUsers.includes(uid)) {
-          this.trainers_accepted.push(uid);
-        } else if (this.meet?.declinedUsers.includes(uid)) {
-          this.trainers_declined.push(uid);
-        } else {
-          this.trainers_else.push(uid);
+        if (!this.team?.hiddenMembers.includes(uid)) {
+          if (this.meet?.acceptedUsers.includes(uid)) {
+            this.trainers_accepted.push(uid);
+          } else if (this.meet?.declinedUsers.includes(uid)) {
+            this.trainers_declined.push(uid);
+          } else {
+            this.trainers_else.push(uid);
+          }
         }
       });
       console.log(this.trainers_else);
