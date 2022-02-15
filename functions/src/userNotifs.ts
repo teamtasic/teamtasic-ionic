@@ -73,8 +73,8 @@ exports.newTrainingCreated = functions
                 ) {
                   const payload = {
                     notification: {
-                      title: `Neues Training - ${meet?.start.toDate().toLocaleDateString('de-CH')}`,
-                      body: `[ ${teamName} ] Neues Training erstellt`,
+                      title: `Neuer Termin - ${meet?.start.toDate().toLocaleDateString('de-CH')}`,
+                      body: `[ ${teamName} ] Neuer Termin erstellt`,
                     },
                     apns: {
                       payload: {
@@ -182,8 +182,8 @@ exports.trainingChanged = functions
                 ) {
                   const payload = {
                     notification: {
-                      title: `Training bearbeitet `,
-                      body: `[ ${teamName} ] Das Training am ${meet?.start
+                      title: `Termin bearbeitet `,
+                      body: `[ ${teamName} ] Der Termin am ${meet?.start
                         .toDate()
                         .toLocaleDateString('de-CH')} wurde bearbeitet`,
                     },
