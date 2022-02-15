@@ -61,5 +61,13 @@
       </div>
     </div>
   </form>
-  <ion-item></ion-item>
+  <form class="ion-margin-vertical" [formGroup]="teamSelectionForm">
+    <ion-list formArrayName="teams">
+      <ion-list-header> Teams </ion-list-header>
+      <ion-item *ngFor="let team of teams; index as i">
+        {{ team.name }}
+        <ion-checkbox slot="end" [formControlName]="i"></ion-checkbox>
+      </ion-item>
+    </ion-list>
+  </form>
 </ion-content>

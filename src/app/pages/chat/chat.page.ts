@@ -135,6 +135,7 @@ export class ChatPage implements OnInit {
     const modal = await this.modalController.create({
       component: MeetCreateComponent,
       componentProps: {
+        sessionId: this.sessionId,
         teamId: this.teamId,
         clubId: this.clubId,
       },

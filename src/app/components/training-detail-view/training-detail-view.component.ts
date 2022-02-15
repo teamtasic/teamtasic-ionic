@@ -186,6 +186,7 @@ export class TrainingDetailViewComponent implements OnInit {
       componentProps: {
         clubId: this.clubId,
         teamId: this.teamId,
+        sessionId: this.sessionId,
         templateMeet: this.meet,
       },
     });

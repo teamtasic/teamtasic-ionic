@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { Meet } from 'src/app/classes/meet';
+import { Team } from 'src/app/classes/team';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
 
 @Component({
@@ -16,14 +17,20 @@ export class MeetCreateComponent implements OnInit {
     private modalController: ModalController
   ) {}
 
+  teamSelectionForm: FormGroup = this.fb.group({
+    teams: this.fb.array([]),
+  });
+
   today: string = new Date(Date.now()).toISOString();
 
   @Input() clubId: string = '';
   @Input() teamId: string = '';
-
+  @Input() sessionId: string = '';
   @Input() templateMeet: Meet | undefined;
 
   meetCreateGroup: FormGroup = this.fb.group({});
+
+  teams: Team[] = [];
 
   ngOnInit() {
     if (this.templateMeet) {
@@ -65,43 +72,56 @@ export class MeetCreateComponent implements OnInit {
         ],
       });
     }
+    this.drs.teams.subscribe((teams) => {
+      for (let team of teams) {
+        if (team.headTrainers.includes(this.sessionId)) {
+          this.teams?.push(team);
+        }
+      }
+      this.teamSelectionForm = this.fb.group({
+        teams: this.fb.array(this.teams.map((team) => new FormControl(team.uid == this.teamId))),
+      });
+    });
   }
 
   async createMeet() {
-    let date: Date = new Date(Date.parse(this.meetCreateGroup.value.meetDate));
-    let end: Date = new Date(Date.parse(this.meetCreateGroup.value.meetEndTime));
+    for (const [index, team] of this.teams.entries()) {
+      if (this.teamSelectionForm.controls['teams'].value[index]) {
+        let date: Date = new Date(Date.parse(this.meetCreateGroup.value.meetDate));
+        let end: Date = new Date(Date.parse(this.meetCreateGroup.value.meetEndTime));
 
-    let startDate = new Date(
-      date.getFullYear(),
-      date.getMonth(),
-      date.getDate(),
-      date.getHours(),
-      date.getMinutes()
-    );
-    let endDate = new Date(
-      date.getFullYear(),
-      date.getMonth(),
-      date.getDate(),
-      end.getHours(),
-      end.getMinutes()
-    );
+        let startDate = new Date(
+          date.getFullYear(),
+          date.getMonth(),
+          date.getDate(),
+          date.getHours(),
+          date.getMinutes()
+        );
+        let endDate = new Date(
+          date.getFullYear(),
+          date.getMonth(),
+          date.getDate(),
+          end.getHours(),
+          end.getMinutes()
+        );
 
-    let meet = new Meet(
-      '',
-      this.meetCreateGroup.value.meetName,
-      startDate,
-      endDate,
-      this.meetCreateGroup.value.meetLocation,
-      this.clubId,
-      this.teamId,
-      [],
-      [],
-      this.meetComment?.value,
-      this.meetDeadline?.value,
-      {}
-    );
-    await this.drs.createMeet(meet, this.clubId, this.teamId);
-
+        let meet = new Meet(
+          '',
+          this.meetCreateGroup.value.meetName,
+          startDate,
+          endDate,
+          this.meetCreateGroup.value.meetLocation,
+          team.owner,
+          team.uid,
+          [],
+          [],
+          this.meetComment?.value,
+          this.meetDeadline?.value,
+          {}
+        );
+        await this.drs.createMeet(meet, team.owner, team.uid);
+      }
+    }
     this.modalController.dismiss();
   }
   dismiss() {
