@@ -28,13 +28,25 @@
       <ion-label>
         <h2>{{team?.names[member] || ''}}</h2>
         <p>
-          {{roleStrings[roles[member]] + (team?.hiddenMembers.includes(member) ? ' (Versteckt)' :
+          {{roleStrings[roles[member]] + (team?.hiddenMembers?.includes(member) ? ' (Versteckt)' :
           '')}}
         </p>
       </ion-label>
       <ion-avatar slot="start">
         <img [src]="team?.profilePictureUrls[member] || ''" />
       </ion-avatar>
+      <ion-icon
+        slot="end"
+        *ngIf="team?.hiddenMembers?.includes(member)"
+        name="eye-off-outline"
+        color="danger"
+      ></ion-icon>
+      <ion-icon
+        slot="end"
+        *ngIf="!team?.hiddenMembers?.includes(member)"
+        name="eye-outline"
+        color="success"
+      ></ion-icon>
       <ion-button slot="end" fill="clear" color="medium" (click)="presentActionSheet(member)">
         <ion-icon slot="icon-only" name="ellipsis-horizontal-circle-outline"></ion-icon>
       </ion-button>
