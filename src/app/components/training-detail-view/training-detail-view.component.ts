@@ -28,7 +28,21 @@ export class TrainingDetailViewComponent implements OnInit {
   @Input() sessionId: string = '';
   @Input() teamId: string = '';
   @Input() clubId: string = '';
-  @Input() meet: Meet = new Meet('', '', new Date(0), new Date(0), '', '', '', [], [], '', 0, {});
+  @Input() meet: Meet = new Meet(
+    '',
+    '',
+    new Date(0),
+    new Date(0),
+    '',
+    '',
+    '',
+    [],
+    [],
+    '',
+    0,
+    {},
+    false
+  );
   team: Team | undefined;
   //presentational fields
   trainers_accepted: string[] = [];

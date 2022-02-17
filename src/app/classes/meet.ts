@@ -31,6 +31,8 @@ export class Meet {
 
   comments: { [key: string]: string };
 
+  provisionally: boolean;
+
   constructor(
     uid: string,
     title: string,
@@ -45,7 +47,8 @@ export class Meet {
     deadline: number,
     comments: {
       [key: string]: string;
-    }
+    },
+    provisionally: boolean
   ) {
     this.uid = uid;
     this.title = title;
@@ -59,6 +62,7 @@ export class Meet {
     this.comment = comment;
     this.deadline = deadline;
     this.comments = comments;
+    this.provisionally = provisionally;
   }
 
   get startTimestamp(): fb.default.firestore.Timestamp {
@@ -84,7 +88,8 @@ export class Meet {
         data.declinedUsers || [],
         data.comment || '',
         data.deadline || 0,
-        data.comments || {}
+        data.comments || {},
+        data.provisionally || false
       );
     },
     toFirestore: function (meet: Meet) {
@@ -101,6 +106,7 @@ export class Meet {
         comment: meet.comment,
         deadline: meet.deadline,
         comments: meet.comments,
+        provisionally: meet.provisionally,
       };
     },
   };
