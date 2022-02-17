@@ -47,7 +47,6 @@ export class ClubDetailViewPage implements OnInit {
   ngOnInit() {
     this.route.params.subscribe(async (params) => {
       this.clubId = params.clubId;
-      console.log(this.clubId);
       await this.drs.syncClub(this.clubId);
       this.club = this.drs.clubs.value.find((c) => c.uid === this.clubId) as Club;
     });

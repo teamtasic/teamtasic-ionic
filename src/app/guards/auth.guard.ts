@@ -4,16 +4,17 @@ import { Observable } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { map, filter, take } from 'rxjs/operators';
 import { AngularFireAuth } from '@angular/fire/auth';
+import { LogService } from '../services/log-service.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthGuard implements CanLoad, CanActivate {
-  constructor(private afs: AngularFireAuth, private router: Router) {}
+  constructor(private afs: AngularFireAuth, private router: Router, private logger: LogService) {}
   canLoad(): Observable<boolean> | boolean {
     return this.afs.user.pipe(
       map((user) => {
-        console.log('GUARD:', user);
+        this.logger.info('[ GUARD ]', user);
         if (user) {
           return true;
         } else {
@@ -25,19 +26,6 @@ export class AuthGuard implements CanLoad, CanActivate {
     // return true;
   }
   canActivate(): Observable<boolean> | boolean {
-    // return this.auth.isAuthenticated.pipe(
-    //   // prettier-ignore
-    //   filter(val => val !== null),
-    //   take(1),
-    //   map((isAuthenitcated, i) => {
-    //     console.log('GUARD:', isAuthenitcated);
-    //     console.log('INDEX: ', i);
-    //     if (!isAuthenitcated) {
-    //       this.router.navigateByUrl('/login');
-    //     }
-    //     return isAuthenitcated;
-    //   })
-    // );
     return true;
   }
 }

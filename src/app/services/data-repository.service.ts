@@ -17,11 +17,12 @@ import {
 } from '../classes/session-user-data';
 import { filter, map } from 'rxjs/operators';
 import * as fb from 'firebase';
+import { LogService } from './log-service.service';
 @Injectable({
   providedIn: 'root',
 })
 export class DataRepositoryService {
-  constructor(private afs: AngularFirestore) {}
+  constructor(private afs: AngularFirestore, private logger: LogService) {}
 
   /**
    *  Read behaviorsubs for incoming data from firestore
@@ -72,7 +73,7 @@ export class DataRepositoryService {
           .valueChanges()
           .subscribe((club) => {
             if (club) {
-              console.log('[ Club valueChanged ]', club);
+              this.logger.info('[ Club valueChanged ]', club);
               const index = this._clubsMap.get(uid);
               if (index !== undefined) {
                 let cs = this._clubs.value;
@@ -107,7 +108,7 @@ export class DataRepositoryService {
         .valueChanges()
         .subscribe((team) => {
           if (team) {
-            console.log('[ Team valueChanged ]', team);
+            this.logger.info('[ Team valueChanged ]', team);
             var key = `${clubId}:${uid}`;
             const index = this._teamsMap.get(key);
             if (index !== undefined) {
@@ -150,7 +151,7 @@ export class DataRepositoryService {
         .valueChanges()
         .subscribe((meet) => {
           if (meet) {
-            console.log('[ Meet valueChanged ]', meet);
+            this.logger.info('[ Meet valueChanged ]', meet);
             var key = `${clubId}:${teamId}:${uid}`;
             const index = this._meetsMap.get(key);
             if (index !== undefined) {
@@ -190,7 +191,7 @@ export class DataRepositoryService {
           .valueChanges()
           .subscribe((authUser) => {
             if (authUser) {
-              console.log('[ AuthUser valueChanged ]', authUser);
+              this.logger.info('[ AuthUser valueChanged ]', authUser);
               const index = this._authUserMap.get(uid);
               if (index !== undefined) {
                 let old = this._authUser.value;
@@ -199,9 +200,9 @@ export class DataRepositoryService {
               } else {
                 let old = this._authUser.value;
                 old.push(authUser);
-                console.log(old);
+                this.logger.debug(old);
                 this._authUser.next(old);
-                console.log(this._authUser.value);
+                this.logger.debug(this._authUser.value);
                 this._authUserMap.set(uid, this._authUser.value.length - 1);
               }
               resolve(undefined);
@@ -247,10 +248,10 @@ export class DataRepositoryService {
               old[index] = sessionUsers[0];
               this._sessionUser.next(old);
             }
-            console.log('[ SessionUsers valueChanged ]', sessionUsers);
+            this.logger.info('[ SessionUsers valueChanged ]', sessionUsers);
           },
           (error) => {
-            console.log('[ SessionUsers error ]', error);
+            this.logger.warn('[ SessionUsers error ]', error);
           }
         );
 
@@ -276,7 +277,7 @@ export class DataRepositoryService {
         .get()
         .toPromise()
         .then((sessionMemberships) => {
-          console.log('[ SessionMemberships valueChanged ]', sessionMemberships);
+          this.logger.info('[ SessionMemberships valueChanged ]', sessionMemberships);
           let rval: any[] = [];
           sessionMemberships.forEach((doc) => {
             let team = doc.data() as Team;
@@ -287,7 +288,7 @@ export class DataRepositoryService {
               displayName: team.name,
               role: 'member',
             };
-            console.log('Found Membership in Team: ', team);
+            this.logger.info('Found Membership in Team: ', team);
 
             if (team.users.includes(sessionUserId)) {
               membership.role = 'member';
@@ -339,7 +340,7 @@ export class DataRepositoryService {
                     role: 'coach' | 'headcoach' | 'member';
                   };
                   code['code'] = doc.ref.id as string;
-                  console.log(code['teamId']);
+                  this.logger.debug(code['teamId']);
                   this.getTeam(code['teamId'], code['clubId']).then((team) => {
                     resolve({
                       teamId: team.uid,
@@ -350,7 +351,7 @@ export class DataRepositoryService {
                     } as joinableMembership);
                   });
                 } else {
-                  console.log('[ JoinCode not found ]', doc);
+                  this.logger.warn('[ JoinCode not found ]', doc);
                 }
               });
           } else {
@@ -650,9 +651,6 @@ export class DataRepositoryService {
    * @returns {Promise<void>}
    */
   async deleteAuthUser(authUserId: string) {
-    console.warn(
-      'You just ACTUALLY broke the internet. (Or at least this service) please call support, I beg you.'
-    );
     return await this.afs
       .collection(this.CollectionWithConverter('authUsers', AuthUserData.converter))
       .doc(authUserId)
@@ -759,7 +757,7 @@ export class DataRepositoryService {
         .ref.where('admins', 'array-contains', adminId)
         .get()
         .then((querySnapshot: QuerySnapshot<Club> | any) => {
-          console.log(querySnapshot);
+          this.logger.debug(querySnapshot);
           resolve(querySnapshot.docs.map((doc: DocumentSnapshot<Club>) => doc.id));
         });
     });
@@ -783,7 +781,7 @@ export class DataRepositoryService {
           querySnapshot.forEach((team: Team | any) => {
             if (team) {
               res.push(team);
-              console.log('[ Team valueChanged ]', team);
+              this.logger.info('[ Team valueChanged ]', team);
               var key = `${clubId}:${team.uid}`;
               const index = this._teamsMap.get(key);
               if (index !== undefined) {
@@ -798,17 +796,6 @@ export class DataRepositoryService {
         });
     });
   }
-  // if(team) {
-  //   console.log('[ Team valueChanged ]', team);
-  //   var key = `${clubId}:${uid}`;
-  //   const index = this._teamsMap.get(key);
-  //   if (index !== undefined) {
-  //     this._teams.value[index] = team;
-  //   } else {
-  //     this._teams.next([...this._teams.value, team]);
-  //     this._teamsMap.set(key, this._teams.value.length - 1);
-  //   }
-  // }
   /**
    * Get all teams for a sessionUser Id using a collectionGroup query
    * @since 2.0.0
@@ -906,7 +893,11 @@ export class DataRepositoryService {
         .get()
         .then((querySnapshot: QuerySnapshot<Object> | any) => {
           if (querySnapshot.docs.length == 1) {
-            console.log('[ JoinCode ]', querySnapshot.docs[0].data(), querySnapshot.docs[0].id);
+            this.logger.info(
+              '[ JoinCode ]',
+              querySnapshot.docs[0].data(),
+              querySnapshot.docs[0].id
+            );
             resolve(querySnapshot.docs[0].id);
           } else {
             reject(new Error(`Join code for team ${teamId} not found`));

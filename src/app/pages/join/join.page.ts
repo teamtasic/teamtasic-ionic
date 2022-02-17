@@ -11,6 +11,7 @@ import { NotificationService } from 'src/app/services/notification-service.servi
 import { ActivatedRoute, Router } from '@angular/router';
 import { MembershipsService } from 'src/app/services/memberships.service';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { LogService } from 'src/app/services/log-service.service';
 
 SwiperCore.use([Keyboard, Pagination, Scrollbar]);
 @Component({
@@ -29,7 +30,8 @@ export class JoinPage implements OnInit {
     private route: ActivatedRoute,
     private mss: MembershipsService,
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private logger: LogService
   ) {}
 
   sessionSelectionForm: FormGroup = this.fb.group({
@@ -42,27 +44,21 @@ export class JoinPage implements OnInit {
     try {
       this.drs.syncSessionUsers(this.drs.authUsers.getValue()[0].uid);
     } catch (e) {
-      console.log(e);
+      this.logger.warn(e);
     }
     this.drs.authUsers.subscribe((users) => {
       if (users.length > 0) {
-        console.log('user', users[0]);
         this.drs.syncSessionUsers(users[0].uid);
       }
     });
     this.drs.sessionUsers.subscribe((_users) => {
-      console.log('sessionUsersssss', _users);
       let users = _users[0];
       if (users?.length > 0) {
         this.sessionSelectionForm = this.fb.group({
           sessions: this.fb.array(users.map((user) => new FormControl(false))),
         });
       }
-      console.log(this.sessionSelectionForm);
       this.listedUsers = users;
-    });
-    this.sessionSelectionForm.controls['sessions'].valueChanges.subscribe((value) => {
-      console.log(value);
     });
   }
 
@@ -112,7 +108,6 @@ export class JoinPage implements OnInit {
             try {
               for (const [index, user] of this.drs.sessionUsers.getValue()[0].entries()) {
                 if (this.sessionSelectionForm.controls['sessions'].value[index]) {
-                  console.log(user);
                   await this.mss.joinUsingCode(
                     this.route.snapshot.params['joinCode'],
                     user.uid,
@@ -129,7 +124,7 @@ export class JoinPage implements OnInit {
               this.ns.showToast(
                 e.message || 'Team konnte nicht beigetreten werden. Stimmt der Code?'
               );
-              console.log(e);
+              this.logger.warn(e);
             } finally {
               this.ns.showToast('Team beigetreten');
               this.router.navigate(['/tabs/tab2']);

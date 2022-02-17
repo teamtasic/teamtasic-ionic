@@ -18,6 +18,7 @@ import { Team } from 'src/app/classes/team';
 import { Clipboard } from '@capacitor/clipboard';
 import { LoadingController } from '@ionic/angular';
 import { MembershipsService } from 'src/app/services/memberships.service';
+import { LogService } from 'src/app/services/log-service.service';
 @Component({
   selector: 'app-club-edit-team',
   templateUrl: './club-edit-team.page.html',
@@ -33,7 +34,8 @@ export class ClubEditTeamPage implements OnInit {
     public alertController: AlertController,
     public ns: NotificationService,
     public mms: MembershipsService,
-    public loadingController: LoadingController
+    public loadingController: LoadingController,
+    private logger: LogService
   ) {}
 
   codePrefix: string = 'https://teamtasic.app/join/';
@@ -86,7 +88,7 @@ export class ClubEditTeamPage implements OnInit {
     team.admins.forEach((userId) => {
       this.roles[userId] = 'admin';
     });
-    console.log(this.roles);
+    this.logger.debug(this.roles);
     this.membercode =
       this.codePrefix + (await this.drs.getJoinCodeForTeam(this.teamId, this.clubId, 'member'));
     this.trainercode =
@@ -110,7 +112,7 @@ export class ClubEditTeamPage implements OnInit {
       this.ns.showToast('Code in die Zwischenablage kopiert');
     } catch (e) {
       this.ns.showToast('Fehler beim Erstellen des Codes');
-      console.warn(e);
+      this.logger.warn(e);
     }
   }
   async addTrainer() {
@@ -121,7 +123,7 @@ export class ClubEditTeamPage implements OnInit {
       this.ns.showToast('Code in die Zwischenablage kopiert');
     } catch (e) {
       this.ns.showToast('Fehler beim Erstellen des Codes');
-      console.warn(e);
+      this.logger.warn(e);
     }
   }
   async addHeadcoach() {
@@ -132,7 +134,7 @@ export class ClubEditTeamPage implements OnInit {
       this.ns.showToast('Code in die Zwischenablage kopiert');
     } catch (e) {
       this.ns.showToast('Fehler beim Erstellen des Codes');
-      console.warn(e);
+      this.logger.warn(e);
     }
   }
 
@@ -188,7 +190,7 @@ export class ClubEditTeamPage implements OnInit {
         })
         .catch((e) => {
           this.ns.showToast('Fehler beim Entfernen des Mitglieds');
-          console.warn(e);
+          this.logger.warn(e);
         });
     } else {
       this.ns.showToast(

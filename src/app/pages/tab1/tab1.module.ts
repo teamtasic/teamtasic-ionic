@@ -12,8 +12,5 @@ import { AngularFirestore } from '@angular/fire/firestore';
   declarations: [Tab1Page],
 })
 export class Tab1PageModule {
-  constructor(private db: AngularFirestore) {
-    const things = db.collection('Clubs').valueChanges();
-    things.subscribe(console.log);
-  }
+  constructor(private db: AngularFirestore) {}
 }

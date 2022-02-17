@@ -15,6 +15,7 @@ import {
   SessionUserData,
 } from 'src/app/classes/session-user-data';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
+import { LogService } from 'src/app/services/log-service.service';
 import { MembershipsService } from 'src/app/services/memberships.service';
 import { NotificationService } from 'src/app/services/notification-service.service';
 
@@ -56,7 +57,8 @@ export class EditSessionUserComponent implements OnInit {
     public mss: MembershipsService,
     private fb: FormBuilder,
     private ns: NotificationService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private logger: LogService
   ) {}
 
   async ngOnInit() {
@@ -227,7 +229,7 @@ export class EditSessionUserComponent implements OnInit {
   }
 
   async photoUrlChanged(event: any) {
-    console.log(event);
+    this.logger.info(event);
     this.session.profilePictureUrl = event.url;
     await new Promise((resolve) => setTimeout(resolve, 4000));
     this.session.profilePictureUrl = event.url;

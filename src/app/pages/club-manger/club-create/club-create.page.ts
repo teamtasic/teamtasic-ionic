@@ -93,7 +93,6 @@ export class ClubCreatePage implements OnInit {
 
 function isValidLicenseKeyValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    console.log(control.value);
     return control.value !== 'FREEFORNOW' ? { invalidKey: { value: control.value } } : null;
   };
 }

@@ -4,6 +4,7 @@ import { AlertController, ModalController, PopoverController } from '@ionic/angu
 import { Meet } from 'src/app/classes/meet';
 import { Team } from 'src/app/classes/team';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
+import { LogService } from 'src/app/services/log-service.service';
 import { NotificationService } from 'src/app/services/notification-service.service';
 import { AdminSetMemberStatusComponent } from '../admin-set-member-status/admin-set-member-status.component';
 import { MeetCreateComponent } from '../meet-create/meet-create.component';
@@ -20,7 +21,8 @@ export class TrainingDetailViewComponent implements OnInit {
     private alertController: AlertController,
     private ns: NotificationService,
     private fb: FormBuilder,
-    private popoverController: PopoverController
+    private popoverController: PopoverController,
+    private logger: LogService
   ) {}
 
   @Input() sessionId: string = '';
@@ -69,7 +71,7 @@ export class TrainingDetailViewComponent implements OnInit {
       this.significantChange();
     });
     this.drs.meets.subscribe((meets) => {
-      console.log('meet change accepted in detail');
+      this.logger.info('meet change accepted in detail');
       meets.find((meet) => {
         if (meet.uid === this.meet?.uid) {
           this.meet = meet;
@@ -124,7 +126,7 @@ export class TrainingDetailViewComponent implements OnInit {
           }
         }
       });
-      console.log(this.trainers_else);
+      this.logger.debug(this.trainers_else);
 
       this.status = this.meet.acceptedUsers.includes(this.sessionId) ? 'accepted' : undefined;
       if (!this.status) {
@@ -163,9 +165,6 @@ export class TrainingDetailViewComponent implements OnInit {
         {
           text: 'Cancel',
           role: 'cancel',
-          handler: () => {
-            console.log('Confirm Cancel: blah');
-          },
         },
         {
           text: 'Delete',

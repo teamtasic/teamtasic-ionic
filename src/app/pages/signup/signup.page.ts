@@ -2,13 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
+import { LogService } from 'src/app/services/log-service.service';
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.page.html',
   styleUrls: ['./signup.page.scss'],
 })
 export class SignupPage implements OnInit {
-  constructor(private fb: FormBuilder, private auth: AuthService, private route: ActivatedRoute) {}
+  constructor(
+    private fb: FormBuilder,
+    private auth: AuthService,
+    private route: ActivatedRoute,
+    private logger: LogService
+  ) {}
 
   signupform: FormGroup = this.fb.group({});
 
@@ -29,13 +35,10 @@ export class SignupPage implements OnInit {
 
     this.route.queryParams.subscribe((params) => {
       this.joinCode = params.code;
-      console.log('Found joincode: ', this.joinCode);
     });
   }
 
   async signUp() {
-    console.log(this.signupform.value);
-
     await this.auth.createUser(
       this.email?.value,
       this.password?.value,

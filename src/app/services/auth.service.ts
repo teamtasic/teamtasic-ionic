@@ -6,6 +6,7 @@ import { AlertController } from '@ionic/angular';
 import { BehaviorSubject } from 'rxjs';
 import { AuthUserData } from '../classes/auth-user-data';
 import { DataRepositoryService } from './data-repository.service';
+import { LogService } from './log-service.service';
 import { LogicService } from './logic.service';
 import { NotificationService } from './notification-service.service';
 
@@ -58,23 +59,23 @@ export class AuthService {
         }
       })
       .catch((error) => {
-        console.warn('[ 🔑 createUser ]', 'createUser failed.');
+        this.logger.warn('[ 🔑 createUser ]', 'createUser failed.');
         return error;
       });
   }
 
   async login(user: string, pw: string) {
-    console.log('[ 🔑 login ]', 'Signing in with email and password');
+    this.logger.info('[ 🔑 login ]', 'Signing in with email and password');
     this.fba
       .signInWithEmailAndPassword(user, pw)
       .then(async (user) => {
-        console.log('[ 🔑 login ]', 'User logged in:', user.user?.uid);
+        this.logger.info('[ 🔑 login ]', 'User logged in:', user.user?.uid);
         return { state: true, error: '' };
       })
       .catch((error) => {
         var errorCode = error.code;
         this.ns.showToast(`Fehler: ${errorCode}`);
-        console.error('[ 🔑 login ]', 'authentication failed:', error);
+        this.logger.fatal('[ 🔑 login ]', 'authentication failed:', error);
         return { state: false, error: errorCode };
       });
   }
@@ -92,12 +93,13 @@ export class AuthService {
     private ng: NgZone,
     public ns: NotificationService,
     private logic: LogicService,
-    private location: Location
+    private location: Location,
+    private logger: LogService
   ) {
     this.fba.onAuthStateChanged(async (user) => {
-      console.log('[ 🔑 AuthService ]', 'AuthStateChanged:', user);
+      this.logger.info('[ 🔑 AuthService ]', 'AuthStateChanged:', user);
       if (user) {
-        console.log('[ 🔑 login ]', 'Signed in succsessfully, starting session');
+        this.logger.info('[ 🔑 login ]', 'Signed in succsessfully, starting session');
         this.logic.userId = user.uid;
         this.ns.registerPushNotifications(user.uid);
         await this.logic.startSession();

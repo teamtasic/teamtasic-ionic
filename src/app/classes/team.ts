@@ -82,7 +82,6 @@ export class Team {
         }
         t.profilePictureUrls[uid] = `https://avatars.dicebear.com/api/initials/${t.names[uid]}.svg`;
       }
-      console.log(t);
       return t;
     },
     toFirestore: function (team: Team) {

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, DocumentReference } from '@angular/fire/firestore';
 import { DataRepositoryService } from './data-repository.service';
+import { LogService } from './log-service.service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +13,11 @@ import { DataRepositoryService } from './data-repository.service';
  * @since 2.0.0
  */
 export class MembershipsService {
-  constructor(private afs: AngularFirestore, private drs: DataRepositoryService) {}
+  constructor(
+    private afs: AngularFirestore,
+    private drs: DataRepositoryService,
+    private logger: LogService
+  ) {}
   /**
    *  Creates a link to join a team specified by the teamId.
    * @param {string} role - The role of the user joining the team.
@@ -53,7 +58,7 @@ export class MembershipsService {
             const role: 'admin' | 'headcoach' | 'coach' | 'member' = data['role'];
             const clubId = data['clubId'];
             const teamId = data['teamId'];
-            console.log('Code resolved to: ', role, clubId, teamId);
+            this.logger.info('Code resolved to: ', role, clubId, teamId);
             this.drs.getClub(clubId).then(async (club: any) => {
               if (role === 'admin') {
                 club?.admins.push(userId);
@@ -90,7 +95,7 @@ export class MembershipsService {
                   team.profilePictureUrls[userId] = profilePictureUrl;
 
                   await this.drs.updateTeam(team, clubId, teamId);
-                  console.log('joined');
+                  this.logger.info('joined');
                   resolve(undefined);
                 });
               }
@@ -104,7 +109,7 @@ export class MembershipsService {
   leaveFromTeam(userId: string, teamId: string, clubId: string) {
     return new Promise<void>((resolve, reject) => {
       this.drs.getTeam(teamId, clubId).then((team) => {
-        console.log(team);
+        this.logger.debug(team);
 
         const i_head = team.headTrainers.indexOf(userId);
         const i_trainer = team.trainers.indexOf(userId);
@@ -120,7 +125,7 @@ export class MembershipsService {
         }
 
         delete team.names[userId];
-        console.log('Team with new user: ', team);
+        this.logger.debug('Team with new user: ', team);
         this.drs.updateTeam(team, clubId, teamId);
         resolve(undefined);
       });

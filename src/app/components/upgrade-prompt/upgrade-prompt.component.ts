@@ -19,6 +19,5 @@ export class UpgradePromptComponent implements OnInit {
     if (p == 'ios') {
       this.platform = 'ios';
     }
-    console.log(p);
   }
 }

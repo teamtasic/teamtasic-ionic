@@ -17,7 +17,6 @@ export class VersionService {
       .toPromise()
       .then(async (doc: any) => {
         var showDeprecated = false;
-        console.log('version', doc);
         if (!doc.exists) {
           showDeprecated = true;
         } else {

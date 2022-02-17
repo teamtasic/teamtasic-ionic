@@ -27,8 +27,6 @@ export class LoginPage implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
-
-    //this.loginform.valueChanges.subscribe(console.log);
   }
 
   async login() {

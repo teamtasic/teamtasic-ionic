@@ -12,6 +12,7 @@ import {
 import { AngularFirestore } from '@angular/fire/firestore';
 import { DataRepositoryService } from './data-repository.service';
 import * as firebase from 'firebase';
+import { LogService } from './log-service.service';
 @Injectable({
   providedIn: 'root',
 })
@@ -22,7 +23,8 @@ export class NotificationService {
     private toastController: ToastController,
     private alertController: AlertController,
     private afs: AngularFirestore,
-    private drs: DataRepositoryService
+    private drs: DataRepositoryService,
+    private logger: LogService
   ) {
     if (Capacitor.isNativePlatform()) {
       this.registerPushListeners();
@@ -55,7 +57,6 @@ export class NotificationService {
           role: 'cancel',
           cssClass: 'secondary',
           handler: () => {
-            console.log('Confirm Cancel');
             return undefined;
           },
         },
@@ -70,11 +71,9 @@ export class NotificationService {
     });
     await alert.present();
     const data = await alert.onDidDismiss();
-    console.log(data);
     if (data.role === 'cancel') {
       return undefined;
     }
-    console.log(data.data.values.newEmail);
     return data.data.values.newEmail;
   }
 
@@ -113,20 +112,22 @@ export class NotificationService {
     try {
       PushNotifications.register();
     } catch (err) {
-      console.warn('[ 🔔 PUSH NOTIFICATIONS ] Error registering:', err);
+      this.logger.warn('[ 🔔 PUSH NOTIFICATIONS ] Error registering:', err);
     }
   }
   registerPushListeners() {
     // On success, we should be able to receive notifications
     PushNotifications.addListener('registration', async (token: Token) => {
-      console.log('[ 🔔 PUSH NOTIFICATIONS ] Push registration success, token: ' + token.value);
+      this.logger.info(
+        '[ 🔔 PUSH NOTIFICATIONS ] Push registration success, token: ' + token.value
+      );
       // Send the token to your server so it can use it to send push notifications to this device
       this.token = token;
     });
 
     // Some issue with our setup and push will not work
     PushNotifications.addListener('registrationError', (error: any) => {
-      console.warn('[ 🔔 PUSH NOTIFICATIONS ] Error on registration: ' + JSON.stringify(error));
+      this.logger.warn('[ 🔔 PUSH NOTIFICATIONS ] Error on registration: ' + JSON.stringify(error));
     });
 
     // Show us the notification payload if the app is open on our device

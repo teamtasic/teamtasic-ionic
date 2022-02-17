@@ -9,6 +9,7 @@ import { Team } from 'src/app/classes/team';
 import { MeetCreateComponent } from 'src/app/components/meet-create/meet-create.component';
 import { TrainingDetailViewComponent } from 'src/app/components/training-detail-view/training-detail-view.component';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
+import { LogService } from 'src/app/services/log-service.service';
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.page.html',
@@ -57,7 +58,8 @@ export class ChatPage implements OnInit {
     private fb: FormBuilder,
     public drs: DataRepositoryService,
     public activatedRoute: ActivatedRoute,
-    public router: Router
+    public router: Router,
+    private logger: LogService
   ) {}
 
   ngOnInit() {
@@ -100,13 +102,13 @@ export class ChatPage implements OnInit {
       }
     });
     this.drs.sessionUsers.subscribe((sessionUsers) => {
-      console.log(sessionUsers, 'sessions');
+      this.logger.debug(sessionUsers, 'sessions');
       this.sessionUserString = sessionUsers[0].find((s) => s.uid === this.sessionId)?.name || '';
     });
   }
   init(meets: Meet[]) {
     this.loading = true;
-    console.log(meets, 'sorting...');
+    this.logger.debug(meets, 'sorting...');
     let m = meets;
     m.sort((a, b) => {
       return (a.start as any) - (b.start as any);
@@ -163,7 +165,6 @@ export class ChatPage implements OnInit {
   }
 
   async setFilterMode() {
-    console.log('setFilterMode');
     const actionSheet = await this.actionSheetController.create({
       header: 'Filter',
       buttons: [
