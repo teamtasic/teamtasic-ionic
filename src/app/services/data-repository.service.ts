@@ -530,7 +530,8 @@ export class DataRepositoryService {
     comment: string,
     deadline: number,
     meetpoint: string,
-    comments: {}
+    comments: {},
+    provisionally: boolean
   ) {
     await this.afs
       .collection(`clubs/${clubId}/teams/${teamId}/meets/`)
@@ -548,6 +549,7 @@ export class DataRepositoryService {
         deadline: deadline,
         meetpoint: meetpoint,
         comments: comments,
+        provisionally: provisionally,
       });
   }
   /**
