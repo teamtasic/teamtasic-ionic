@@ -508,23 +508,29 @@ export class DataRepositoryService {
         this.syncMeet(meetId, clubId, teamId);
       });
   }
-  /** update meet status in firestore
-   * @since 2.0.0
-   * @memberof DataRepositoryService
+  /**
+   * update meet status in firestore
+   *
    * @param {string} clubId
    * @param {string} teamId
    * @param {string} meetId
-   * @param {string} status
+   * @param {string} title
+   * @param {('accepted' | 'declined' | 'unknown')} status
    * @param {string} sessionId
    * @param {string} comment
-   * @param {string} deadline
+   * @param {number} deadline
    * @param {string} meetpoint
-   * @returns {Promise<void>}
+   * @param {{}} comments
+   * @param {boolean} provisionally
+   * @param {fb.default.firestore.Timestamp} startDate
+   * @param {fb.default.firestore.Timestamp} endDate
+   * @memberof DataRepositoryService
    */
   async updateMeetStatus(
     clubId: string,
     teamId: string,
     meetId: string,
+    title: string,
     status: 'accepted' | 'declined' | 'unknown',
     sessionId: string,
     comment: string,
@@ -533,7 +539,9 @@ export class DataRepositoryService {
     comments: {},
     provisionally: boolean,
     startDate: fb.default.firestore.Timestamp,
-    endDate: fb.default.firestore.Timestamp
+    endDate: fb.default.firestore.Timestamp,
+    slots: number,
+    limitedSlots: boolean
   ) {
     await this.afs
       .collection(`clubs/${clubId}/teams/${teamId}/meets/`)
@@ -554,6 +562,9 @@ export class DataRepositoryService {
         provisionally: provisionally,
         start: startDate,
         end: endDate,
+        title: title,
+        slots: slots,
+        limitedSlots: limitedSlots,
       });
   }
   /**

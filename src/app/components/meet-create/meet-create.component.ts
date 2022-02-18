@@ -55,6 +55,8 @@ export class MeetCreateComponent implements OnInit {
           ],
         ],
         provisionally: [this.templateMeet.provisionally],
+        limitedSlots: [this.templateMeet.limitedSlots],
+        slots: [this.templateMeet.slots],
       });
     } else {
       this.meetCreateGroup = this.fb.group({
@@ -73,6 +75,8 @@ export class MeetCreateComponent implements OnInit {
           ],
         ],
         provisionally: [false],
+        limitedSlots: [false],
+        slots: [8],
       });
     }
     this.drs.teams.subscribe((teams) => {
@@ -121,7 +125,9 @@ export class MeetCreateComponent implements OnInit {
           this.meetComment?.value,
           this.meetDeadline?.value,
           {},
-          this.meetProvisionally?.value
+          this.meetProvisionally?.value,
+          this.meetCreateGroup.value.limitedSlots,
+          this.meetCreateGroup.value.slots
         );
         await this.drs.createMeet(meet, team.owner, team.uid);
       }

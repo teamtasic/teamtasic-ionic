@@ -42,7 +42,9 @@ export class TrainingDetailViewComponent implements OnInit {
     '',
     0,
     {},
-    false
+    false,
+    false,
+    -1
   );
   team: Team | undefined;
   //presentational fields
@@ -71,10 +73,13 @@ export class TrainingDetailViewComponent implements OnInit {
     this.meetForm = this.fb.group({
       meetpoint: ['', Validators.required],
       comment: ['', Validators.required],
+      title: ['', Validators.required],
       deadline: ['', Validators.required],
       provisionally: [false],
       meetDate: ['', [Validators.required]],
       meetEndTime: ['', [Validators.required]],
+      slots: [0, [Validators.required]],
+      limitedSlots: [false],
     });
     this.commentForm = this.fb.group({
       comment: ['', Validators.required],
@@ -99,10 +104,13 @@ export class TrainingDetailViewComponent implements OnInit {
           this.meetForm = this.fb.group({
             meetpoint: [meet.meetpoint, Validators.required],
             comment: [meet.comment],
+            title: [meet.title, Validators.required],
             deadline: [meet.deadline, Validators.required],
             provisionally: [meet.provisionally],
             meetDate: [startDate, [Validators.required]],
             meetEndTime: [endDate, [Validators.required]],
+            slots: [meet.slots, [Validators.required, Validators.min(meet.acceptedUsers.length)]],
+            limitedSlots: [meet.limitedSlots],
           });
           this.commentForm = this.fb.group({
             comment: [meet.comments[this.sessionId] || '', []],
@@ -190,6 +198,7 @@ export class TrainingDetailViewComponent implements OnInit {
       this.clubId,
       this.teamId,
       this.meet?.uid || '',
+      this.meetForm.value.title || '',
       this.status || 'unknown',
       this.sessionId,
       this.meetForm.value.comment,
@@ -198,7 +207,9 @@ export class TrainingDetailViewComponent implements OnInit {
       this.meet?.comments || {},
       this.meetForm.value.provisionally || false,
       Meet.convertToFBTimestamp(startDate),
-      Meet.convertToFBTimestamp(end)
+      Meet.convertToFBTimestamp(end),
+      this.meetForm.value.slots,
+      this.meetForm.value.limitedSlots || false
     );
     this.modalController.dismiss();
   }

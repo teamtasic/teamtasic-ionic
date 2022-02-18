@@ -33,6 +33,14 @@ export class Meet {
 
   provisionally: boolean;
 
+  /**
+   * Max number of accepted users for this meet
+   * -1 means no limit
+   * @type {number}
+   */
+  limitedSlots: boolean;
+  slots: number;
+
   constructor(
     uid: string,
     title: string,
@@ -48,7 +56,9 @@ export class Meet {
     comments: {
       [key: string]: string;
     },
-    provisionally: boolean
+    provisionally: boolean,
+    limitedSlots: boolean,
+    slots: number
   ) {
     this.uid = uid;
     this.title = title;
@@ -63,6 +73,8 @@ export class Meet {
     this.deadline = deadline;
     this.comments = comments;
     this.provisionally = provisionally;
+    this.limitedSlots = limitedSlots;
+    this.slots = slots;
   }
 
   get startTimestamp(): fb.default.firestore.Timestamp {
@@ -89,7 +101,9 @@ export class Meet {
         data.comment || '',
         data.deadline || 0,
         data.comments || {},
-        data.provisionally || false
+        data.provisionally || false,
+        data.limitedSlots || false,
+        data.slots || data.acceptedUsers?.length || 0
       );
     },
     toFirestore: function (meet: Meet) {
@@ -107,6 +121,8 @@ export class Meet {
         deadline: meet.deadline,
         comments: meet.comments,
         provisionally: meet.provisionally,
+        limitedSlots: meet.limitedSlots,
+        slots: meet.slots,
       };
     },
   };

@@ -47,6 +47,17 @@
         <ion-label *ngIf="meet?.provisionally"> - </ion-label>
       </ion-item>
       <ion-item>
+        <ion-label position="stacked">Titel <ion-text color="danger">*</ion-text></ion-label>
+        <ion-input
+          type="text"
+          placeholder="Titel"
+          required
+          formControlName="title"
+          [readonly]="!team?.headTrainers?.includes(sessionId)"
+          *ngIf="team?.headTrainers?.includes(sessionId)"
+        ></ion-input>
+      </ion-item>
+      <ion-item>
         <ion-label position="stacked">Treffpunkt <ion-text color="danger">*</ion-text></ion-label>
         <ion-input
           type="text"
@@ -56,6 +67,7 @@
           [readonly]="!team?.headTrainers?.includes(sessionId)"
         ></ion-input>
       </ion-item>
+
       <ion-item>
         <ion-label position="stacked">Bemerkungen</ion-label>
         <ion-textarea
@@ -73,6 +85,24 @@
           type="text"
           placeholder="Deadline"
           formControlName="deadline"
+          [readonly]="!team?.headTrainers?.includes(sessionId)"
+        ></ion-input>
+      </ion-item>
+      <ion-item *ngIf="team?.headTrainers?.includes(sessionId)">
+        Limitierte Slots
+        <ion-checkbox
+          slot="end"
+          [disabled]="!team?.headTrainers?.includes(sessionId)"
+          formControlName="limitedSlots"
+        ></ion-checkbox>
+      </ion-item>
+      <ion-item *ngIf="meet?.limitedSlots || this.meetForm.value.limitedSlots">
+        <ion-label position="stacked">Slots</ion-label>
+        <ion-input
+          type="number"
+          placeholder="Slots"
+          required
+          formControlName="slots"
           [readonly]="!team?.headTrainers?.includes(sessionId)"
         ></ion-input>
       </ion-item>
@@ -209,7 +239,13 @@
             (ionChange)="change($event)"
             [disabled]="!isOpenToChanges()"
           >
-            <ion-segment-button value="accepted">
+            <ion-segment-button
+              value="accepted"
+              *ngIf="
+                (meet.limitedSlots ? meet.acceptedUsers.length < meet.slots : true) ||
+                meet.acceptedUsers.includes(sessionId)
+              "
+            >
               <ion-icon name="checkmark-circle-outline"></ion-icon>
             </ion-segment-button>
             <ion-segment-button value="declined">

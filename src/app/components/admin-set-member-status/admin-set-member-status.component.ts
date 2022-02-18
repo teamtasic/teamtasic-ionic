@@ -23,6 +23,7 @@ export class AdminSetMemberStatusComponent implements OnInit {
         this.meet?.clubId || '',
         this.meet?.teamId || '',
         this.meet?.uid || '',
+        this.meet?.title || '',
         status,
         this.sessionId,
         this.meet?.comment || '',
@@ -31,7 +32,9 @@ export class AdminSetMemberStatusComponent implements OnInit {
         this.meet?.comments || {},
         this.meet?.provisionally || false,
         Meet.convertToFBTimestamp(this.meet?.start || new Date()),
-        Meet.convertToFBTimestamp(this.meet?.end || new Date())
+        Meet.convertToFBTimestamp(this.meet?.end || new Date()),
+        this.meet?.slots || 0,
+        this.meet?.limitedSlots || false
       )
       .catch();
     this.popoverController.dismiss();

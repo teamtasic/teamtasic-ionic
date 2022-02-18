@@ -72,6 +72,17 @@
         </ion-datetime>
       </div>
     </div>
+    <ion-list class="ion-margin-vertical">
+      <ion-list-header> Slots </ion-list-header>
+      <ion-item>
+        Limitierte Slots
+        <ion-checkbox slot="end" formControlName="limitedSlots"></ion-checkbox>
+      </ion-item>
+      <ion-item *ngIf="meetCreateGroup.value.limitedSlots">
+        <ion-label position="stacked">Slots</ion-label>
+        <ion-input type="number" placeholder="Slots" required formControlName="slots"></ion-input>
+      </ion-item>
+    </ion-list>
   </form>
   <form class="ion-margin-vertical" [formGroup]="teamSelectionForm">
     <ion-list formArrayName="teams">
