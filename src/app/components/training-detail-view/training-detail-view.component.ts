@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlertController, ModalController, PopoverController } from '@ionic/angular';
+import { formatISO } from 'date-fns';
 import { Meet } from 'src/app/classes/meet';
 import { Team } from 'src/app/classes/team';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
@@ -71,6 +72,9 @@ export class TrainingDetailViewComponent implements OnInit {
       meetpoint: ['', Validators.required],
       comment: ['', Validators.required],
       deadline: ['', Validators.required],
+      provisionally: [false],
+      meetDate: ['', [Validators.required]],
+      meetEndTime: ['', [Validators.required]],
     });
     this.commentForm = this.fb.group({
       comment: ['', Validators.required],
@@ -89,10 +93,16 @@ export class TrainingDetailViewComponent implements OnInit {
       meets.find((meet) => {
         if (meet.uid === this.meet?.uid) {
           this.meet = meet;
+          var startDate = formatISO(this.meet.start);
+          var endDate = formatISO(this.meet.end);
+
           this.meetForm = this.fb.group({
             meetpoint: [meet.meetpoint, Validators.required],
             comment: [meet.comment],
             deadline: [meet.deadline, Validators.required],
+            provisionally: [meet.provisionally],
+            meetDate: [startDate, [Validators.required]],
+            meetEndTime: [endDate, [Validators.required]],
           });
           this.commentForm = this.fb.group({
             comment: [meet.comments[this.sessionId] || '', []],
@@ -158,6 +168,24 @@ export class TrainingDetailViewComponent implements OnInit {
     if (!this.meet) return;
     this.meet.comments[this.sessionId] = this.commentForm.value.comment;
 
+    const date: Date = new Date(Date.parse(this.meetForm.value.meetDate));
+    const end: Date = new Date(Date.parse(this.meetForm.value.meetEndTime));
+
+    let startDate = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      date.getHours(),
+      date.getMinutes()
+    );
+    let endDate = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      end.getHours(),
+      end.getMinutes()
+    );
+
     await this.drs.updateMeetStatus(
       this.clubId,
       this.teamId,
@@ -168,7 +196,9 @@ export class TrainingDetailViewComponent implements OnInit {
       this.meetForm.value.deadline,
       this.meetForm.value.meetpoint,
       this.meet?.comments || {},
-      this.meet?.provisionally || false
+      this.meetForm.value.provisionally || false,
+      Meet.convertToFBTimestamp(startDate),
+      Meet.convertToFBTimestamp(end)
     );
     this.modalController.dismiss();
   }

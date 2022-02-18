@@ -4,7 +4,8 @@ import { ModalController } from '@ionic/angular';
 import { Meet } from 'src/app/classes/meet';
 import { Team } from 'src/app/classes/team';
 import { DataRepositoryService } from 'src/app/services/data-repository.service';
-
+import { LogService } from 'src/app/services/log-service.service';
+import { formatISO } from 'date-fns';
 @Component({
   selector: 'app-meet-create',
   templateUrl: './meet-create.component.html',
@@ -14,7 +15,8 @@ export class MeetCreateComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     public drs: DataRepositoryService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private logger: LogService
   ) {}
 
   teamSelectionForm: FormGroup = this.fb.group({
@@ -34,15 +36,14 @@ export class MeetCreateComponent implements OnInit {
 
   ngOnInit() {
     if (this.templateMeet) {
-      var tzoffset = new Date().getTimezoneOffset() * 60000;
-      var startDate = new Date(this.templateMeet.start.getTime() - tzoffset);
-      var endDate = new Date(this.templateMeet.end.getTime() - tzoffset);
+      var startDate = formatISO(this.templateMeet.start);
+      var endDate = formatISO(this.templateMeet.end);
 
       this.meetCreateGroup = this.fb.group({
         meetName: [this.templateMeet.title, [Validators.required]],
         meetLocation: [this.templateMeet.meetpoint, [Validators.required]],
-        meetDate: [startDate.toISOString(), [Validators.required]],
-        meetEndTime: [endDate.toISOString(), [Validators.required]],
+        meetDate: [startDate, [Validators.required]],
+        meetEndTime: [endDate, [Validators.required]],
         meetComment: [this.templateMeet.comment],
         meetDeadline: [
           this.templateMeet.deadline,
@@ -53,6 +54,7 @@ export class MeetCreateComponent implements OnInit {
             Validators.pattern('[0-9]*'),
           ],
         ],
+        provisionally: [this.templateMeet.provisionally],
       });
     } else {
       this.meetCreateGroup = this.fb.group({
@@ -70,6 +72,7 @@ export class MeetCreateComponent implements OnInit {
             Validators.pattern('[0-9]*'),
           ],
         ],
+        provisionally: [false],
       });
     }
     this.drs.teams.subscribe((teams) => {
@@ -89,7 +92,7 @@ export class MeetCreateComponent implements OnInit {
       if (this.teamSelectionForm.controls['teams'].value[index]) {
         let date: Date = new Date(Date.parse(this.meetCreateGroup.value.meetDate));
         let end: Date = new Date(Date.parse(this.meetCreateGroup.value.meetEndTime));
-
+        console.log(this.meetCreateGroup.value.meetEndTime, 'newmeettime');
         let startDate = new Date(
           date.getFullYear(),
           date.getMonth(),
@@ -118,7 +121,7 @@ export class MeetCreateComponent implements OnInit {
           this.meetComment?.value,
           this.meetDeadline?.value,
           {},
-          false
+          this.meetProvisionally?.value
         );
         await this.drs.createMeet(meet, team.owner, team.uid);
       }
@@ -153,5 +156,8 @@ export class MeetCreateComponent implements OnInit {
   }
   get meetDeadline() {
     return this.meetCreateGroup.get('meetDeadline');
+  }
+  get meetProvisionally() {
+    return this.meetCreateGroup.get('provisionally');
   }
 }

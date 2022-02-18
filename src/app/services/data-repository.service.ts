@@ -531,7 +531,9 @@ export class DataRepositoryService {
     deadline: number,
     meetpoint: string,
     comments: {},
-    provisionally: boolean
+    provisionally: boolean,
+    startDate: fb.default.firestore.Timestamp,
+    endDate: fb.default.firestore.Timestamp
   ) {
     await this.afs
       .collection(`clubs/${clubId}/teams/${teamId}/meets/`)
@@ -550,6 +552,8 @@ export class DataRepositoryService {
         meetpoint: meetpoint,
         comments: comments,
         provisionally: provisionally,
+        start: startDate,
+        end: endDate,
       });
   }
   /**

@@ -29,7 +29,9 @@ export class AdminSetMemberStatusComponent implements OnInit {
         this.meet?.deadline || 0,
         this.meet?.meetpoint || '',
         this.meet?.comments || {},
-        this.meet?.provisionally || false
+        this.meet?.provisionally || false,
+        Meet.convertToFBTimestamp(this.meet?.start || new Date()),
+        Meet.convertToFBTimestamp(this.meet?.end || new Date())
       )
       .catch();
     this.popoverController.dismiss();

@@ -32,6 +32,18 @@
       <ion-input placeholder="Deadline" formControlName="meetDeadline"></ion-input>
       <ion-note slot="end">Tage vorher eintragen</ion-note>
     </ion-item>
+    <ion-item>
+      Ohne Zeitangabe
+      <ion-checkbox slot="end" formControlName="provisionally"></ion-checkbox>
+    </ion-item>
+    <ion-item *ngIf="meetProvisionally?.value">
+      <ion-label class="ion-text-wrap">
+        <ion-text color="medium">
+          Provisorische Termine haben nur ein Datum und noch keine Zeitangabe. (Fülle sie trotzdem
+          aus, den Mitgliedern wird die Zeit nicht angezeigt.)
+        </ion-text>
+      </ion-label>
+    </ion-item>
     <div class="grid-item">
       <ion-datetime
         placeholder="Datum auswählen"

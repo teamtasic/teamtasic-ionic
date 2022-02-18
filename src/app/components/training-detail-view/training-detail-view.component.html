@@ -75,6 +75,60 @@
           [readonly]="!team?.headTrainers?.includes(sessionId)"
         ></ion-input>
       </ion-item>
+      <ion-item *ngIf="team?.headTrainers?.includes(sessionId)">
+        Ohne Zeitangabe
+        <ion-checkbox
+          slot="end"
+          [disabled]="!team?.headTrainers?.includes(sessionId)"
+          formControlName="provisionally"
+        ></ion-checkbox>
+      </ion-item>
+      <ion-item *ngIf="this.meetForm.value.provisionally">
+        <ion-label class="ion-text-wrap">
+          <ion-text color="medium">
+            Provisorische Termine haben nur ein Datum und noch keine Zeitangabe.
+          </ion-text>
+        </ion-label>
+      </ion-item>
+
+      <ion-accordion-group *ngIf="team?.headTrainers?.includes(sessionId)">
+        <ion-accordion value="colors">
+          <ion-item slot="header">
+            <ion-label>Uhrzeit bearbeiten</ion-label>
+          </ion-item>
+
+          <ion-list slot="content">
+            <div class="datetime-time">
+              <ion-datetime
+                placeholder="Datum auswählen"
+                display-format="HH:mm"
+                [min]="today"
+                formControlName="meetDate"
+                presentation="time"
+                display="numpad"
+                size="cover"
+                hourCycle="h23"
+                [firstDayOfWeek]="1"
+              >
+                <ion-label slot="time-label">Startzeit</ion-label>
+              </ion-datetime>
+            </div>
+            <div class="datetime-time">
+              <ion-datetime
+                placeholder="Zeit auswählen"
+                display-format="HH:mm"
+                formControlName="meetEndTime"
+                presentation="time"
+                display="numpad"
+                size="cover"
+                hourCycle="h23"
+              >
+                <ion-label slot="time-label">Endzeit</ion-label>
+              </ion-datetime>
+            </div>
+          </ion-list>
+        </ion-accordion>
+      </ion-accordion-group>
     </form>
 
     <!-- My status section start -->

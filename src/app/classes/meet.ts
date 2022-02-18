@@ -110,4 +110,20 @@ export class Meet {
       };
     },
   };
+
+  static convertToFBTimestamp(date: Date) {
+    return fb.default.firestore.Timestamp.fromDate(date);
+  }
+
+  static getSTDTimezoneOffset() {
+    const jan = new Date(new Date(Date.now()).getFullYear(), 0, 1);
+    const jul = new Date(new Date(Date.now()).getFullYear(), 6, 1);
+    const stdAdj = Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
+
+    if (new Date(Date.now()).getTimezoneOffset() < stdAdj) {
+      return stdAdj;
+    } else {
+      return stdAdj - 60;
+    }
+  }
 }
