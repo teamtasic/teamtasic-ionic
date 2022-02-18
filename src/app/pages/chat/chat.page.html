@@ -82,10 +82,11 @@
       >
         {{ meet.start.toLocaleDateString(undefined, { year: '2-digit', month: 'numeric', day:
         'numeric' }) }} <br />
-        <span class="time">
+        <span class="time" *ngIf="!meet.provisionally">
           {{ meet.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }} - {{
           meet.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}
         </span>
+        <span class="time" *ngIf="meet.provisionally"> - </span>
       </div>
 
       <ng-container *ngFor="let user of sortedUsers; let i=index">

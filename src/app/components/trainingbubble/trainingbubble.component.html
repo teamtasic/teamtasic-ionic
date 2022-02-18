@@ -3,9 +3,12 @@
     <ion-col size="12" class="ion-align-self-center">
       <ion-card>
         <ion-card-header>
-          <ion-card-subtitle>
+          <ion-card-subtitle *ngIf="!meet?.provisionally">
             {{ meet?.start?.toLocaleString(undefined, options) }} -
             {{ meet?.end?.toLocaleTimeString(undefined, optionsTime) }}
+          </ion-card-subtitle>
+          <ion-card-subtitle *ngIf="meet?.provisionally">
+            {{ meet?.start?.toLocaleString(undefined, optionsProv) }}
           </ion-card-subtitle>
           <ion-card-title> {{ meet?.title }} </ion-card-title>
         </ion-card-header>

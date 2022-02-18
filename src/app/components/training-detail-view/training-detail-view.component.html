@@ -40,10 +40,11 @@
       <ion-item>
         <ion-note slot="start">Zeit:</ion-note>
 
-        <ion-label>
+        <ion-label *ngIf="!meet?.provisionally">
           {{ meet?.start?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }} -
           {{ meet?.end?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}
         </ion-label>
+        <ion-label *ngIf="meet?.provisionally"> - </ion-label>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Treffpunkt <ion-text color="danger">*</ion-text></ion-label>
@@ -86,7 +87,7 @@
       <ion-item *ngIf="this.meetForm.value.provisionally">
         <ion-label class="ion-text-wrap">
           <ion-text color="medium">
-            Provisorische Termine haben nur ein Datum und noch keine Zeitangabe.
+            Termine ohne Zeitangabe haben nur ein Datum und noch keine Zeitangabe.
           </ion-text>
         </ion-label>
       </ion-item>

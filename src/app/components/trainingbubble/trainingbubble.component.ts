@@ -23,6 +23,14 @@ export class TrainingbubbleComponent implements OnInit {
     hour: 'numeric',
     minute: 'numeric',
   };
+  optionsProv: DateTimeFormatOptions = {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: undefined,
+    minute: undefined,
+  };
   optionsTime: DateTimeFormatOptions = {
     weekday: undefined,
     year: undefined,
