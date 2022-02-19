@@ -58,6 +58,8 @@ export class TrainingDetailViewComponent implements OnInit {
   meetForm: FormGroup = this.fb.group({});
   commentForm: FormGroup = this.fb.group({});
 
+  today: string = new Date(Date.now()).toISOString();
+
   isOpenToChanges(a = false) {
     if (this.team?.headTrainers.includes(this.sessionId) && !a) return true;
     if (this.meet) {
