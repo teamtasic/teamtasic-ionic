@@ -151,7 +151,7 @@ export class DataRepositoryService {
         .valueChanges()
         .subscribe((meet) => {
           if (meet) {
-            this.logger.info('[ Meet valueChanged ]', meet);
+            this.logger.info('[ 🗓 Meet valueChanged ]', meet);
             var key = `${clubId}:${teamId}:${uid}`;
             const index = this._meetsMap.get(key);
             if (index !== undefined) {

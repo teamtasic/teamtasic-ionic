@@ -45,7 +45,7 @@ export class TrainingDetailViewComponent implements OnInit {
   today: string = new Date(Date.now()).toISOString();
 
   isOpenToChanges(a = false) {
-    if (this.team?.headTrainers.includes(this.sessionId) && !a) return true;
+    if (this.team?.isHeadTrainer(this.sessionId) && !a) return true;
     if (this.meet) {
       // is it 24h before the meet?
       return (

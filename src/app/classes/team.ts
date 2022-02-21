@@ -87,7 +87,6 @@ export class Team {
     toFirestore: function (team: Team) {
       return {
         name: team.name,
-
         names: team.names,
         users: team.users,
         trainers: team.trainers,
@@ -111,4 +110,54 @@ export class Team {
     team: 'Team',
     teams: 'Teams',
   };
+
+  isHeadTrainer(uid: string) {
+    return this.headTrainers.includes(uid);
+  }
+  isTrainer(uid: string) {
+    return this.trainers.includes(uid);
+  }
+  isUser(uid: string) {
+    return this.users.includes(uid);
+  }
+
+  removeUser(userId: string) {
+    const hi = this.headTrainers.indexOf(userId);
+    const ti = this.trainers.indexOf(userId);
+    const ui = this.users.indexOf(userId);
+    if (hi != -1) {
+      this.headTrainers.splice(hi, 1);
+    }
+    if (ti != -1) {
+      this.trainers.splice(ti, 1);
+    }
+    if (ui != -1) {
+      this.users.splice(ui, 1);
+    }
+  }
+
+  /**
+   * Getter for the role string
+   *
+   * @readonly
+   * @memberof Team
+   */
+  get athletesMultiple() {
+    return this.roleNames.athletes;
+  }
+  get athleteSingle() {
+    return this.roleNames.athlete;
+  }
+  get trainerMultiple() {
+    return this.roleNames.trainers;
+  }
+  get trainerSingle() {
+    return this.roleNames.trainer;
+  }
+  get headTrainerMultiple() {
+    return this.roleNames.headTrainers;
+  }
+  get headTrainerSingle() {
+    return this.roleNames.headTrainer;
+  }
 }

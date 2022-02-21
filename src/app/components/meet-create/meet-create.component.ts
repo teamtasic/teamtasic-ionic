@@ -81,7 +81,7 @@ export class MeetCreateComponent implements OnInit {
     }
     this.drs.teams.subscribe((teams) => {
       for (let team of teams) {
-        if (team.headTrainers.includes(this.sessionId)) {
+        if (team.isHeadTrainer(this.sessionId)) {
           this.teams?.push(team);
         }
       }

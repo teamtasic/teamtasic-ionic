@@ -69,18 +69,7 @@ export class MembershipsService {
               if (role != 'admin') {
                 this.drs.getTeam(teamId, clubId).then(async (team) => {
                   // remove the user from the team
-                  const hi = team.headTrainers.indexOf(userId);
-                  const ti = team.trainers.indexOf(userId);
-                  const ui = team.users.indexOf(userId);
-                  if (hi != -1) {
-                    team.headTrainers.splice(hi, 1);
-                  }
-                  if (ti != -1) {
-                    team.trainers.splice(ti, 1);
-                  }
-                  if (ui != -1) {
-                    team.users.splice(ui, 1);
-                  }
+                  team.removeUser(userId);
 
                   if (role == 'headcoach') {
                     team.headTrainers.push(userId);
@@ -109,23 +98,8 @@ export class MembershipsService {
   leaveFromTeam(userId: string, teamId: string, clubId: string) {
     return new Promise<void>((resolve, reject) => {
       this.drs.getTeam(teamId, clubId).then((team) => {
-        this.logger.debug(team);
+        team.removeUser(userId);
 
-        const i_head = team.headTrainers.indexOf(userId);
-        const i_trainer = team.trainers.indexOf(userId);
-        const i_user = team.users.indexOf(userId);
-        if (i_head != -1) {
-          team.headTrainers.splice(i_head, 1);
-        }
-        if (i_trainer != -1) {
-          team.trainers.splice(i_trainer, 1);
-        }
-        if (i_user != -1) {
-          team.users.splice(i_user, 1);
-        }
-
-        delete team.names[userId];
-        this.logger.debug('Team with new user: ', team);
         this.drs.updateTeam(team, clubId, teamId);
         resolve(undefined);
       });
