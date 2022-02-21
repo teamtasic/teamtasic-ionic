@@ -7,7 +7,7 @@ import { UpgradePromptComponent } from '../components/upgrade-prompt/upgrade-pro
   providedIn: 'root',
 })
 export class VersionService {
-  static version = '260';
+  static version = '261';
 
   constructor(private afs: AngularFirestore, private modalController: ModalController) {
     this.afs
