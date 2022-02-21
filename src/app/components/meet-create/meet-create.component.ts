@@ -127,7 +127,8 @@ export class MeetCreateComponent implements OnInit {
           {},
           this.meetProvisionally?.value,
           this.meetCreateGroup.value.limitedSlots,
-          this.meetCreateGroup.value.slots
+          this.meetCreateGroup.value.slots,
+          []
         );
         await this.drs.createMeet(meet, team.owner, team.uid);
       }

@@ -17,7 +17,8 @@
     "strictNullChecks": true,
     "noImplicitAny": true,
     "strictBindCallApply": true,
-    "strictFunctionTypes": true
+    "strictFunctionTypes": true,
+    "strict": true
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

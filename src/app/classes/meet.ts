@@ -41,6 +41,13 @@ export class Meet {
   limitedSlots: boolean;
   slots: number;
 
+  tasks: {
+    title: string;
+    description: string;
+    users: string[];
+    comments: { [key: string]: string | undefined };
+  }[] = [];
+
   constructor(
     uid: string,
     title: string,
@@ -58,7 +65,13 @@ export class Meet {
     },
     provisionally: boolean,
     limitedSlots: boolean,
-    slots: number
+    slots: number,
+    tasks: {
+      title: string;
+      description: string;
+      users: string[];
+      comments: { [key: string]: string | undefined };
+    }[]
   ) {
     this.uid = uid;
     this.title = title;
@@ -75,6 +88,7 @@ export class Meet {
     this.provisionally = provisionally;
     this.limitedSlots = limitedSlots;
     this.slots = slots;
+    this.tasks = tasks;
   }
 
   get startTimestamp(): fb.default.firestore.Timestamp {
@@ -103,7 +117,8 @@ export class Meet {
         data.comments || {},
         data.provisionally || false,
         data.limitedSlots || false,
-        data.slots || data.acceptedUsers?.length || 0
+        data.slots || data.acceptedUsers?.length || 0,
+        data.tasks || []
       );
     },
     toFirestore: function (meet: Meet) {
@@ -123,6 +138,7 @@ export class Meet {
         provisionally: meet.provisionally,
         limitedSlots: meet.limitedSlots,
         slots: meet.slots,
+        tasks: meet.tasks,
       };
     },
   };
@@ -142,4 +158,22 @@ export class Meet {
       return stdAdj - 60;
     }
   }
+  static null: Meet = new Meet(
+    '',
+    '',
+    new Date(),
+    new Date(),
+    '',
+    '',
+    '',
+    [],
+    [],
+    '',
+    0,
+    {},
+    false,
+    false,
+    0,
+    []
+  );
 }
