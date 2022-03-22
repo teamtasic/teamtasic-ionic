@@ -72,25 +72,53 @@
         </ion-datetime>
       </div>
     </div>
-    <ion-list class="ion-margin-vertical">
-      <ion-list-header> Slots </ion-list-header>
-      <ion-item>
-        Limitierte Slots
-        <ion-checkbox slot="end" formControlName="limitedSlots"></ion-checkbox>
-      </ion-item>
-      <ion-item *ngIf="meetCreateGroup.value.limitedSlots">
-        <ion-label position="stacked">Slots</ion-label>
-        <ion-input type="number" placeholder="Slots" required formControlName="slots"></ion-input>
-      </ion-item>
-    </ion-list>
+    <ion-accordion-group>
+      <ion-accordion>
+        <ion-item slot="header">
+          <ion-label>Slots</ion-label>
+        </ion-item>
+        <ion-list slot="content">
+          <ion-item>
+            Limitierte Slots
+            <ion-checkbox slot="end" formControlName="limitedSlots"></ion-checkbox>
+          </ion-item>
+          <ion-item *ngIf="meetCreateGroup.value.limitedSlots">
+            <ion-label position="stacked">Slots</ion-label>
+            <ion-input
+              type="number"
+              placeholder="Slots"
+              required
+              formControlName="slots"
+            ></ion-input>
+          </ion-item>
+        </ion-list>
+      </ion-accordion>
+    </ion-accordion-group>
   </form>
-  <form class="ion-margin-vertical" [formGroup]="teamSelectionForm">
-    <ion-list formArrayName="teams">
-      <ion-list-header> Teams </ion-list-header>
-      <ion-item *ngFor="let team of teams; index as i">
-        {{ team.name }}
-        <ion-checkbox slot="end" [formControlName]="i"></ion-checkbox>
+  <!-- <ion-accordion-group>
+    <ion-accordion>
+      <ion-item slot="header">
+        <ion-label>Aufgaben</ion-label>
       </ion-item>
-    </ion-list>
+      <ion-list slot="content">
+        <app-task-manager [(meet)]="meet" showCreateForm="true"></app-task-manager>
+      </ion-list>
+    </ion-accordion>
+  </ion-accordion-group> -->
+  <form class="ion-margin-bottom" [formGroup]="teamSelectionForm">
+    <ion-accordion-group>
+      <ion-accordion>
+        <ion-item slot="header">
+          <ion-label>Teams</ion-label>
+        </ion-item>
+
+        <ion-list formArrayName="teams" slot="content">
+          <ion-item *ngFor="let team of teams; index as i">
+            {{ team.name }}
+            <ion-checkbox slot="end" [formControlName]="i"></ion-checkbox>
+          </ion-item>
+        </ion-list>
+      </ion-accordion>
+    </ion-accordion-group>
   </form>
 </ion-content>

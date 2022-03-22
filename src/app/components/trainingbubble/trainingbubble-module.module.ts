@@ -6,9 +6,17 @@ import { TrainingDetailViewComponent } from '../training-detail-view/training-de
 import { AdminSetMemberStatusComponent } from '../admin-set-member-status/admin-set-member-status.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MeetCreateModule } from '../meet-create/meet-create.module';
+import { TaskManagerModule } from '../task-manager/task-manager.module';
 
 @NgModule({
-  imports: [CommonModule, IonicModule, FormsModule, ReactiveFormsModule, MeetCreateModule],
+  imports: [
+    CommonModule,
+    IonicModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MeetCreateModule,
+    TaskManagerModule,
+  ],
   declarations: [
     TrainingbubbleComponent,
     TrainingDetailViewComponent,

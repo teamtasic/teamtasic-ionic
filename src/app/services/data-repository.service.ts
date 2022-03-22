@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Team } from '../classes/team';
 import { Club } from '../classes/club';
-import { Meet } from '../classes/meet';
+import { Meet, meetTask } from '../classes/meet';
 import {
   AngularFirestore,
   DocumentReference,
@@ -541,7 +541,8 @@ export class DataRepositoryService {
     startDate: fb.default.firestore.Timestamp,
     endDate: fb.default.firestore.Timestamp,
     slots: number,
-    limitedSlots: boolean
+    limitedSlots: boolean,
+    tasks: meetTask[]
   ) {
     await this.afs
       .collection(`clubs/${clubId}/teams/${teamId}/meets/`)
@@ -565,6 +566,7 @@ export class DataRepositoryService {
         title: title,
         slots: slots,
         limitedSlots: limitedSlots,
+        tasks: tasks,
       });
   }
   /**

@@ -96,12 +96,12 @@ export class NotificationService {
       .get()
       .toPromise()
       .then((old) => {
-        if (old.exists && this.token) {
+        if (old.exists && this.token && this.token.value !== '') {
           ref.update({
             tokens: firebase.default.firestore.FieldValue.arrayUnion(this.token.value),
           });
         } else {
-          if (this.token) {
+          if (this.token && this.token.value !== '') {
             ref.set({
               tokens: [this.token.value],
             });

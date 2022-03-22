@@ -1,0 +1,35 @@
+<ion-list>
+  <form class="ion-margin-vertical" [formGroup]="taskCreationForm" *ngIf="showCreateForm">
+    <ion-item>
+      <ion-label position="stacked">Titel</ion-label>
+      <ion-input type="text" placeholder="Titel" required formControlName="title"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Bemerkungen</ion-label>
+      <ion-textarea formControlName="description" [rows]="4"> </ion-textarea>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Slots</ion-label>
+      <ion-input type="number" placeholder="Slots" required formControlName="slots"></ion-input>
+    </ion-item>
+    <ion-item>
+      Nur für Trainer
+      <ion-checkbox slot="end" formControlName="isTrainerOnly"></ion-checkbox>
+    </ion-item>
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <ion-button (click)="addTask()" expand="block"> Aufgabe hinzufügen </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+  <ion-item *ngFor="let task of meet?.tasks; index as i">
+    {{ task.title }}
+  </ion-item>
+  <ion-item *ngIf="meet?.tasks?.length == 0">
+    <ion-label class="ion-text-center ion-text-wrap">
+      <i>Noch keine Aufgaben vorhanden</i>
+    </ion-label>
+  </ion-item>
+</ion-list>

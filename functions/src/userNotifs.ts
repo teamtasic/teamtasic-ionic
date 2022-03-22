@@ -63,7 +63,9 @@ exports.newTrainingCreated = functions
                     });
                 }),
               ]).then((values: any[]) => {
-                const tokens = values[0];
+                const tokens = values[0].filter(
+                  (token: string) => token !== '' && token !== undefined
+                );
                 const userPushNotifOptions = values[1];
 
                 if (
@@ -172,7 +174,9 @@ exports.trainingChanged = functions
                     });
                 }),
               ]).then((values: any[]) => {
-                const tokens = values[0];
+                const tokens = values[0].filter(
+                  (token: string) => token !== '' && token !== undefined
+                );
                 const userPushNotifOptions = values[1];
 
                 if (

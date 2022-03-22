@@ -34,7 +34,8 @@ export class AdminSetMemberStatusComponent implements OnInit {
         Meet.convertToFBTimestamp(this.meet?.start || new Date()),
         Meet.convertToFBTimestamp(this.meet?.end || new Date()),
         this.meet?.slots || 0,
-        this.meet?.limitedSlots || false
+        this.meet?.limitedSlots || false,
+        this.meet?.tasks || []
       )
       .catch();
     this.popoverController.dismiss();

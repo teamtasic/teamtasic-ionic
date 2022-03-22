@@ -15,7 +15,7 @@ exports.newUserCreated = functions
         .get()
         .then(async (doc: DocumentSnapshot) => {
           const data = doc.data() || {};
-          const tokens = data.tokens || [];
+          const tokens = data.tokens.filter((token: string) => token !== '' && token !== undefined);
 
           var message = {
             notification: {

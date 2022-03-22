@@ -1,5 +1,4 @@
 import * as fb from 'firebase';
-import { BehaviorSubject } from 'rxjs';
 
 export class Meet {
   uid: string;
@@ -41,12 +40,7 @@ export class Meet {
   limitedSlots: boolean;
   slots: number;
 
-  tasks: {
-    title: string;
-    description: string;
-    users: string[];
-    comments: { [key: string]: string | undefined };
-  }[] = [];
+  tasks: meetTask[] = [];
 
   constructor(
     uid: string,
@@ -66,12 +60,7 @@ export class Meet {
     provisionally: boolean,
     limitedSlots: boolean,
     slots: number,
-    tasks: {
-      title: string;
-      description: string;
-      users: string[];
-      comments: { [key: string]: string | undefined };
-    }[]
+    tasks: meetTask[]
   ) {
     this.uid = uid;
     this.title = title;
@@ -142,27 +131,48 @@ export class Meet {
       };
     },
   };
+  static createMeet(
+    meetName: string,
+    startDate: Date,
+    endDate: Date,
+    location: string,
+    clubId: string,
+    teamId: string,
+    comment: string,
+    deadline: number,
+    provisionally: boolean,
+    limitedSlots: boolean,
+    slots: number
+  ): Meet {
+    return new Meet(
+      '',
+      meetName,
+      startDate,
+      endDate,
+      location,
+      clubId,
+      teamId,
+      [],
+      [],
+      comment,
+      deadline,
+      {},
+      provisionally,
+      limitedSlots,
+      slots,
+      []
+    );
+  }
 
   static convertToFBTimestamp(date: Date) {
     return fb.default.firestore.Timestamp.fromDate(date);
   }
 
-  static getSTDTimezoneOffset() {
-    const jan = new Date(new Date(Date.now()).getFullYear(), 0, 1);
-    const jul = new Date(new Date(Date.now()).getFullYear(), 6, 1);
-    const stdAdj = Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
-
-    if (new Date(Date.now()).getTimezoneOffset() < stdAdj) {
-      return stdAdj;
-    } else {
-      return stdAdj - 60;
-    }
-  }
   static null: Meet = new Meet(
     '',
     '',
-    new Date(),
-    new Date(),
+    new Date(Date.now()),
+    new Date(Date.now()),
     '',
     '',
     '',
@@ -173,7 +183,20 @@ export class Meet {
     {},
     false,
     false,
-    0,
+    8,
     []
   );
+}
+
+export interface meetTask {
+  title: string;
+  description: string;
+  slots: number;
+  isTrainerOnly: boolean;
+
+  /**
+   * under the hood values
+   */
+  users: string[];
+  comments: { [key: string]: string | undefined };
 }

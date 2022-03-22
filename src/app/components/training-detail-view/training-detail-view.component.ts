@@ -30,6 +30,7 @@ export class TrainingDetailViewComponent implements OnInit {
   @Input() teamId: string = '';
   @Input() clubId: string = '';
   @Input() meet: Meet = Meet.null;
+
   team: Team | undefined;
   //presentational fields
   trainers_accepted: string[] = [];
@@ -44,33 +45,11 @@ export class TrainingDetailViewComponent implements OnInit {
 
   today: string = new Date(Date.now()).toISOString();
 
-  isOpenToChanges(a = false) {
-    if (this.team?.isHeadTrainer(this.sessionId) && !a) return true;
-    if (this.meet) {
-      // is it 24h before the meet?
-      return (
-        (this.meet.start as any) > new Date(Date.now() + 24 * 60 * 60 * 1000 * this.meet.deadline)
-      );
-    }
-    return false;
-  }
+  status: 'accepted' | 'declined' | 'unknown' | undefined = 'unknown';
+  trainersOpen: boolean = false;
+  usersOpen: boolean = true;
 
   async ngOnInit() {
-    this.meetForm = this.fb.group({
-      meetpoint: ['', Validators.required],
-      comment: ['', Validators.required],
-      title: ['', Validators.required],
-      deadline: ['', Validators.required],
-      provisionally: [false],
-      meetDate: ['', [Validators.required]],
-      meetEndTime: ['', [Validators.required]],
-      slots: [0, [Validators.required]],
-      limitedSlots: [false],
-    });
-    this.commentForm = this.fb.group({
-      comment: ['', Validators.required],
-    });
-
     this.drs.teams.subscribe((teams) => {
       teams.find((team) => {
         if (team.uid === this.teamId) {
@@ -79,6 +58,7 @@ export class TrainingDetailViewComponent implements OnInit {
       });
       this.significantChange();
     });
+
     this.drs.meets.subscribe((meets) => {
       this.logger.info('meet change accepted in detail');
       meets.find((meet) => {
@@ -105,7 +85,45 @@ export class TrainingDetailViewComponent implements OnInit {
       });
       this.significantChange();
     });
+
+    this.meetForm.valueChanges.subscribe((value) => {
+      [
+        this.meet.meetpoint,
+        this.meet.comment,
+        this.meet.title,
+        this.meet.deadline,
+        this.meet.provisionally,
+        this.meet.start,
+        this.meet.end,
+        this.meet.slots,
+        this.meet.limitedSlots,
+        this.meet.tasks,
+      ] = [
+        value.meetpoint,
+        value.comment,
+        value.title,
+        value.deadline,
+        value.provisionally,
+        new Date(Date.parse(value.meetDate)),
+        new Date(Date.parse(value.meetEndTime)),
+        value.slots,
+        value.limitedSlots,
+        this.meet.tasks,
+      ];
+    });
+
     this.drs.syncTeam(this.teamId, this.clubId);
+  }
+
+  isOpenToChanges(a = false) {
+    if (this.team?.isHeadTrainer(this.sessionId) && !a) return true;
+    if (this.meet) {
+      // is it 24h before the meet?
+      return (
+        (this.meet.start as any) > new Date(Date.now() + 24 * 60 * 60 * 1000 * this.meet.deadline)
+      );
+    }
+    return false;
   }
 
   async significantChange() {
@@ -195,7 +213,8 @@ export class TrainingDetailViewComponent implements OnInit {
       Meet.convertToFBTimestamp(startDate),
       Meet.convertToFBTimestamp(end),
       this.meetForm.value.slots,
-      this.meetForm.value.limitedSlots || false
+      this.meetForm.value.limitedSlots || false,
+      this.meet?.tasks || []
     );
     this.modalController.dismiss();
   }
@@ -234,10 +253,6 @@ export class TrainingDetailViewComponent implements OnInit {
     await modal.present();
     await modal.onDidDismiss();
   }
-
-  status: 'accepted' | 'declined' | 'unknown' | undefined = 'unknown';
-  trainersOpen: boolean = false;
-  usersOpen: boolean = true;
 
   change(event: any) {
     this.status = event.detail.value;

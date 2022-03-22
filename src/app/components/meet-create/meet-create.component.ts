@@ -19,10 +19,6 @@ export class MeetCreateComponent implements OnInit {
     private logger: LogService
   ) {}
 
-  teamSelectionForm: FormGroup = this.fb.group({
-    teams: this.fb.array([]),
-  });
-
   today: string = new Date(Date.now()).toISOString();
 
   @Input() clubId: string = '';
@@ -30,55 +26,38 @@ export class MeetCreateComponent implements OnInit {
   @Input() sessionId: string = '';
   @Input() templateMeet: Meet | undefined;
 
+  meet: Meet = Meet.null;
+
   meetCreateGroup: FormGroup = this.fb.group({});
+  teamSelectionForm: FormGroup = this.fb.group({
+    teams: this.fb.array([]),
+  });
 
   teams: Team[] = [];
 
-  ngOnInit() {
-    if (this.templateMeet) {
-      var startDate = formatISO(this.templateMeet.start);
-      var endDate = formatISO(this.templateMeet.end);
+  oldMeet: Meet | undefined;
 
-      this.meetCreateGroup = this.fb.group({
-        meetName: [this.templateMeet.title, [Validators.required]],
-        meetLocation: [this.templateMeet.meetpoint, [Validators.required]],
-        meetDate: [startDate, [Validators.required]],
-        meetEndTime: [endDate, [Validators.required]],
-        meetComment: [this.templateMeet.comment],
-        meetDeadline: [
-          this.templateMeet.deadline,
-          [
-            Validators.required,
-            Validators.min(-1),
-            Validators.max(14),
-            Validators.pattern('[0-9]*'),
-          ],
-        ],
-        provisionally: [this.templateMeet.provisionally],
-        limitedSlots: [this.templateMeet.limitedSlots],
-        slots: [this.templateMeet.slots],
-      });
-    } else {
-      this.meetCreateGroup = this.fb.group({
-        meetName: ['', [Validators.required]],
-        meetLocation: ['', [Validators.required]],
-        meetDate: ['', [Validators.required]],
-        meetEndTime: ['', [Validators.required]],
-        meetComment: [''],
-        meetDeadline: [
-          '0',
-          [
-            Validators.required,
-            Validators.min(-1),
-            Validators.max(14),
-            Validators.pattern('[0-9]*'),
-          ],
-        ],
-        provisionally: [false],
-        limitedSlots: [false],
-        slots: [8],
-      });
-    }
+  ngOnInit() {
+    this.meet = this.templateMeet || Meet.null;
+
+    var startDate = formatISO(this.meet.start);
+    var endDate = formatISO(this.meet.end);
+
+    this.meetCreateGroup = this.fb.group({
+      meetName: [this.meet.title, [Validators.required]],
+      meetLocation: [this.meet.meetpoint, [Validators.required]],
+      meetDate: [startDate, [Validators.required]],
+      meetEndTime: [endDate, [Validators.required]],
+      meetComment: [this.meet.comment],
+      meetDeadline: [
+        this.meet.deadline,
+        [Validators.required, Validators.min(-1), Validators.max(14), Validators.pattern('[0-9]*')],
+      ],
+      provisionally: [this.meet.provisionally],
+      limitedSlots: [this.meet.limitedSlots],
+      slots: [this.meet.slots],
+    });
+
     this.drs.teams.subscribe((teams) => {
       for (let team of teams) {
         if (team.isHeadTrainer(this.sessionId)) {
@@ -89,55 +68,57 @@ export class MeetCreateComponent implements OnInit {
         teams: this.fb.array(this.teams.map((team) => new FormControl(team.uid == this.teamId))),
       });
     });
+
+    this.meetCreateGroup.valueChanges.subscribe((value) => {
+      let date: Date = new Date(Date.parse(this.meetCreateGroup.value.meetDate));
+      let end: Date = new Date(Date.parse(this.meetCreateGroup.value.meetEndTime));
+      let startDate = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        date.getHours(),
+        date.getMinutes()
+      );
+      let endDate = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        end.getHours(),
+        end.getMinutes()
+      );
+
+      this.meet = new Meet(
+        '',
+        this.meetCreateGroup.value.meetName,
+        startDate,
+        endDate,
+        this.meetCreateGroup.value.meetLocation,
+        '',
+        '',
+        [],
+        [],
+        this.meetComment?.value,
+        this.meetDeadline?.value,
+        {},
+        this.meetProvisionally?.value,
+        this.meetCreateGroup.value.limitedSlots,
+        this.meetCreateGroup.value.slots,
+        this.meet.tasks
+      );
+    });
   }
 
   async createMeet() {
     for (const [index, team] of this.teams.entries()) {
       if (this.teamSelectionForm.controls['teams'].value[index]) {
-        let date: Date = new Date(Date.parse(this.meetCreateGroup.value.meetDate));
-        let end: Date = new Date(Date.parse(this.meetCreateGroup.value.meetEndTime));
-        console.log(this.meetCreateGroup.value.meetEndTime, 'newmeettime');
-        let startDate = new Date(
-          date.getFullYear(),
-          date.getMonth(),
-          date.getDate(),
-          date.getHours(),
-          date.getMinutes()
-        );
-        let endDate = new Date(
-          date.getFullYear(),
-          date.getMonth(),
-          date.getDate(),
-          end.getHours(),
-          end.getMinutes()
-        );
-
-        let meet = new Meet(
-          '',
-          this.meetCreateGroup.value.meetName,
-          startDate,
-          endDate,
-          this.meetCreateGroup.value.meetLocation,
-          team.owner,
-          team.uid,
-          [],
-          [],
-          this.meetComment?.value,
-          this.meetDeadline?.value,
-          {},
-          this.meetProvisionally?.value,
-          this.meetCreateGroup.value.limitedSlots,
-          this.meetCreateGroup.value.slots,
-          []
-        );
+        let meet = this.meet;
+        [meet.clubId, meet.teamId] = [team.owner, team.uid];
         await this.drs.createMeet(meet, team.owner, team.uid);
       }
     }
     this.modalController.dismiss();
   }
   dismiss() {
-    // using the injected ModalController this page
-    // can "dismiss" itself and optionally pass back data
     this.modalController.dismiss({
       dismissed: true,
     });
@@ -167,4 +148,11 @@ export class MeetCreateComponent implements OnInit {
   get meetProvisionally() {
     return this.meetCreateGroup.get('provisionally');
   }
+
+  // get taskTitle() {
+  //   return this.taskCreationForm.get('title');
+  // }
+  // get taskSlots() {
+  //   return this.taskCreationForm.get('slots');
+  // }
 }
