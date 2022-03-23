@@ -199,4 +199,50 @@ export class ChatPage implements OnInit {
     await actionSheet.onDidDismiss();
     this.init(this.origMeets);
   }
+
+  exportCSV() {
+    var csv: string[][] = [];
+
+    let users: string[] = [];
+    let trainers: string[] = [];
+
+    this.team?.trainers.forEach((trainerId) => {
+      trainers.push(trainerId);
+    });
+    this.lastTrainerIndex = users.length - 1;
+    this.team?.users.forEach((userId) => {
+      if (!this.team?.trainers.includes(userId)) {
+        users.push(userId);
+      }
+    });
+
+    let m = this.origMeets;
+    m.sort((a, b) => {
+      return (a.start as any) - (b.start as any);
+    });
+    csv.push(['', ...m.map((meet) => meet.title)]);
+    csv.push(['', ...m.map((m) => m.getDate)]);
+    csv.push(['Trainers']);
+    trainers.forEach((userId) => {
+      csv.push([
+        this.team?.names[userId],
+        ...m.map((m) => (m.acceptedUsers.includes(userId) ? 'x' : '')),
+      ]);
+    });
+    csv.push(['Athleten']);
+    users.forEach((userId) => {
+      csv.push([
+        this.team?.names[userId],
+        ...m.map((m) => (m.acceptedUsers.includes(userId) ? 'x' : '')),
+      ]);
+    });
+
+    let csvContent = 'data:text/csv;charset=utf-8,' + csv.map((e) => e.join(';')).join('\n');
+    var encodedUri = encodeURI(csvContent);
+    var link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `${this.team?.name}-trainings-export.csv`);
+    document.body.appendChild(link); // Required for FF
+    link.click();
+  }
 }

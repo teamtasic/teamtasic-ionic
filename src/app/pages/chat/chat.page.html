@@ -14,6 +14,9 @@
       <ion-button (click)="toggleGrid()" *ngIf="gridAvailable">
         <ion-icon slot="icon-only" name="grid-outline"></ion-icon>
       </ion-button>
+      <ion-button (click)="exportCSV()" *ngIf="showTrainerCtrls">
+        <ion-icon slot="icon-only" name="download-outline"></ion-icon>
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
   <ion-toolbar>

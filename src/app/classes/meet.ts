@@ -91,7 +91,7 @@ export class Meet {
   static converter = {
     fromFirestore: function (snapshot: any, options: any) {
       const data = snapshot.data(options);
-      return new Meet(
+      let x = new Meet(
         snapshot.ref.id,
         data.title,
         (data.start as fb.default.firestore.Timestamp).toDate(),
@@ -109,6 +109,8 @@ export class Meet {
         data.slots || data.acceptedUsers?.length || 0,
         data.tasks || []
       );
+      console.log(x.getDate, 'getDate');
+      return x;
     },
     toFirestore: function (meet: Meet) {
       return {
@@ -186,6 +188,31 @@ export class Meet {
     8,
     []
   );
+
+  /**
+   * Gets the start and end date of the meet in readable format
+   *
+   *
+   * @type {string}
+   * @memberof Meet
+   */
+  get getDate(): string {
+    return (
+      this.start.toLocaleDateString(undefined, {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+
+        hour: 'numeric',
+        minute: 'numeric',
+      }) +
+      ' - ' +
+      this.end.toLocaleTimeString(undefined, {
+        hour: 'numeric',
+        minute: 'numeric',
+      })
+    );
+  }
 }
 
 export interface meetTask {
