@@ -273,4 +273,17 @@ export class TrainingDetailViewComponent implements OnInit {
       await popover.present();
     }
   }
+
+  saveICS() {
+    let icscontent = 'data:text/calendar;charset=utf-8,' + this.meet?.icsFile;
+    var encodedUri = encodeURI(icscontent);
+    var link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute(
+      'download',
+      `${this.meet.title}-${this.meet.start.toISOString()}-Teamtasic.ics`
+    );
+    document.body.appendChild(link); // Required for FF
+    link.click();
+  }
 }

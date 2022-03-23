@@ -10,7 +10,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "lab": "ionic serve --no-open --lab --external --host 0.0.0.0",
+    "lab": "ionic serve --no-open --lab --external --host 0.0.0.0 --disableHostCheck",
     "prodlab": "ionic serve --no-open --lab --external --host 0.0.0.0 --prod"
   },
   "private": true,

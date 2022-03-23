@@ -213,6 +213,31 @@ export class Meet {
       })
     );
   }
+  get icsFile(): string {
+    return `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:https://teamtasic.app/\r\nBEGIN:VEVENT\r\nUID:${
+      this.uid
+    }\r\nDTSTAMP:${new Date(Date.now())
+      .toISOString()
+      .replace('-', '')
+      .replace('-', '')
+      .replace(':', '')
+      .replace(':', '')
+      .slice(0, -6)}0Z\r\nDTSTART:${this.start
+      .toISOString()
+      .replace('-', '')
+      .replace('-', '')
+      .replace(':', '')
+      .replace(':', '')
+      .slice(0, -6)}0Z\r\nDTEND:${this.end
+      .toISOString()
+      .replace('-', '')
+      .replace('-', '')
+      .replace(':', '')
+      .replace(':', '')
+      .slice(0, -6)}0Z\r\nSUMMARY:${this.title}\r\nDESCRIPTION:${this.comment}\r\nLOCATION:${
+      this.meetpoint
+    }\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n`;
+  }
 }
 
 export interface meetTask {

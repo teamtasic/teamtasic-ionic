@@ -443,6 +443,16 @@
 
   <!-- <app-task-manager [(meet)]="meet"></app-task-manager> -->
 
+  <ion-list class="ion-margin-vetical">
+    <ion-row>
+      <ion-col>
+        <ion-button (click)="saveICS()" expand="block" color="primary"
+          >Termin herunterladen</ion-button
+        >
+      </ion-col>
+    </ion-row>
+  </ion-list>
+
   <ion-list *ngIf="team?.headTrainers?.includes(sessionId)" class="ion-margin-vertical">
     <ion-list-header>
       <ion-label>Mutationen</ion-label>
